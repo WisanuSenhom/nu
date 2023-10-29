@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
-       // window.location.href = 'login.html'; // แทน 'login.html' ด้วยหน้า login ของคุณ
+       window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
     }
 });
 
