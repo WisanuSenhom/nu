@@ -69,7 +69,7 @@ function checkin() {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                          //  window.location.href = 'https://www.example.com';
+                          liff.closeWindow(); 
                         }
                     });
 
