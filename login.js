@@ -23,7 +23,7 @@ async function getmember(yourid){
             // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
             if (result.isConfirmed) {
                 // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                window.location.href = 'register.html';
+                window.location.href = 'https://liff.line.me/1654797991-nkGwelwo';
             }
         });
     }else{  
@@ -32,50 +32,50 @@ async function getmember(yourid){
             // console.log(uuid);
   
             localStorage.setItem("uuid", user.uuid);
-            console.log(localStorage.getItem("uuid"));
+           // console.log(localStorage.getItem("uuid"));
 
             localStorage.setItem("cidhash", user.cidhash);
-            console.log(localStorage.getItem("cidhash"));
+           // console.log(localStorage.getItem("cidhash"));
 
             localStorage.setItem("userid", user.userid);
-            console.log(localStorage.getItem("userid"));
+           // console.log(localStorage.getItem("userid"));
 
             localStorage.setItem("name", user.name);
-            console.log(localStorage.getItem("name"));
+           // console.log(localStorage.getItem("name"));
 
             localStorage.setItem("position", user.position);
-            console.log(localStorage.getItem("position"));
+          //  console.log(localStorage.getItem("position"));
 
             localStorage.setItem("mainsub", user.mainsub);
-            console.log(localStorage.getItem("mainsub"));
+          //  console.log(localStorage.getItem("mainsub"));
 
             localStorage.setItem("office", user.office);
-            console.log(localStorage.getItem("office"));
+         //   console.log(localStorage.getItem("office"));
 
             localStorage.setItem("oflat", user.oflat);
-            console.log(localStorage.getItem("oflat"));
+          //  console.log(localStorage.getItem("oflat"));
 
             localStorage.setItem("oflong", user.oflong);
-            console.log(localStorage.getItem("oflong"));
+          //  console.log(localStorage.getItem("oflong"));
 
             localStorage.setItem("db1", user.db1);
-            console.log(localStorage.getItem("db1"));
+          //  console.log(localStorage.getItem("db1"));
 
             localStorage.setItem("token", user.token);
-            console.log(localStorage.getItem("token"));
+          //  console.log(localStorage.getItem("token"));
 
             localStorage.setItem("status", user.status);
-            console.log(localStorage.getItem("status"));
+          //  console.log(localStorage.getItem("status"));
 
             
             localStorage.setItem("role", user.role);
-            console.log(localStorage.getItem("role"));
+         //   console.log(localStorage.getItem("role"));
 
             localStorage.setItem("boss", user.boss);
-            console.log(localStorage.getItem("boss"));
+         //   console.log(localStorage.getItem("boss"));
 
             localStorage.setItem("ceo", user.ceo);
-            console.log(localStorage.getItem("ceo"));
+         //   console.log(localStorage.getItem("ceo"));
 
             Swal.fire({
                 confirmButtonColor: '#0ef',
