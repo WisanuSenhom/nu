@@ -6,7 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
         console.log('User is logged in. Token:', uuid);
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
-    } else {
+    } else if (!uuid) {
+        // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
+        console.log('User is not logged in. Redirecting to login page.');
+       window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
+    }else {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
        window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
