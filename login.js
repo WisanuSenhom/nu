@@ -58,8 +58,8 @@ async function getmember(yourid){
             localStorage.setItem("oflong", user.oflong);
             console.log(localStorage.getItem("oflong"));
 
-            localStorage.setItem("link", user.link);
-            console.log(localStorage.getItem("link"));
+            localStorage.setItem("db1", user.db1);
+            console.log(localStorage.getItem("db1"));
 
             localStorage.setItem("token", user.token);
             console.log(localStorage.getItem("token"));
