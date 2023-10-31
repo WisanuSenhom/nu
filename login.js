@@ -12,7 +12,7 @@ async function getmember(yourid){
     const records = await fetch(gas);
     const data = await records.json();
   
-    console.log(data.user);
+  //  console.log(data.user);
     if (data.user === null || data.user === undefined ||data.user == 0 ){
         Swal.fire({
             confirmButtonColor: '#0ef',
