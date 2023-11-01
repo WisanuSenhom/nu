@@ -25,7 +25,12 @@ function checkin() {
         navigator.geolocation.getCurrentPosition(showPositionin, showError);
     } else {
         alert("เบราว์เซอร์ไม่รองรับ Geolocation");
-    }
+    };
+    // กำหนดตัวแปรที่จะใช้เก็บ elements
+const loadingModal = document.getElementById('loadingModal');
+
+// แสดง loading modal
+loadingModal.style.display = 'block';
 
     // เมื่อได้รับค่าพิกัด
   async  function showPositionin(position) {
@@ -62,6 +67,7 @@ function checkin() {
           
         .then(response => response.json())
             .then(data => {
+                loadingModal.style.display = 'none';
                 // เพิ่ม option สำหรับแต่ละ subcategory
                 data.res.forEach(datas => {
                     let iconx = datas.icon;
@@ -113,7 +119,12 @@ function checkout() {
         navigator.geolocation.getCurrentPosition(showPositionin, showError);
     } else {
         alert("เบราว์เซอร์ไม่รองรับ Geolocation");
-    }
+    };
+    // กำหนดตัวแปรที่จะใช้เก็บ elements
+const loadingModal = document.getElementById('loadingModal');
+
+// แสดง loading modal
+loadingModal.style.display = 'block';
 
     // เมื่อได้รับค่าพิกัด
   async  function showPositionin(position) {
@@ -148,6 +159,7 @@ function checkout() {
           
         .then(response => response.json())
             .then(data => {
+                loadingModal.style.display = 'none';
                 // เพิ่ม option สำหรับแต่ละ subcategory
                 data.res.forEach(datas => {
                     let iconx = datas.icon;
