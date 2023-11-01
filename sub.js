@@ -39,18 +39,43 @@ function loadSubcategories() {
         option.value = subcategory.id;
         option.text = subcategory.name;
         subcategoryDropdown.add(option);
-        document.querySelector('#latitude').value = subcategory.lat;
-        document.querySelector('#longitude').value = subcategory.long;
-        document.querySelector('#db1').value = subcategory.db1;
-        document.querySelector('#db2').value = subcategory.db2;
-        document.querySelector('#db3').value = subcategory.db3;
-        document.querySelector('#maincode').value = subcategory.maincode;
-        document.querySelector('#subcode').value = subcategory.subcode;
       });
-      main();
+      loadSubdatas();
     })
     .catch(error => console.error("Error fetching subcategories:", error));
 }
+
+function loadSubdatas() {
+  const categoryDropdown = document.getElementById("category");
+  const subcategoryDropdown = document.getElementById("subcategory");
+
+  // ดึงค่าที่ถูกเลือกใน dropdown ของ category
+  const selectedCategoryId = categoryDropdown.value;
+  const selecteddatas = subcategoryDropdown.value;
+
+  // ดึงข้อมูล subcategories จาก API โดยใช้ selectedCategoryId
+  fetch(`https://script.google.com/macros/s/AKfycbxRMzDKnw3HwBzYZxxKUiRSQKYIUWhi6Le9-cY09zdgZ1uE1HUMkntKRkATNT8INBu3/exec?datas=${selecteddatas}`)
+    .then(response => response.json())
+    .then(data => {
+      // ลบค่าเก่าใน dropdown ของ subcategory
+console.log(data);
+      // เพิ่ม option สำหรับแต่ละ subcategory
+      data.datas.forEach(subdatas => {
+    
+        document.querySelector('#latitude').value = subdatas.lat;
+        document.querySelector('#longitude').value = subdatas.long;
+        document.querySelector('#db1').value = subdatas.db1;
+        document.querySelector('#db2').value = subdatas.db2;
+        document.querySelector('#db3').value = subdatas.db3;
+        document.querySelector('#maincode').value = subdatas.maincode;
+        document.querySelector('#subcode').value = subdatas.subcode;
+      });
+      main();
+    })
+   // .catch(error => console.error("Error fetching subcategories:", error));
+}
+
+
 
 async function getProfile() {
   const profile = await liff.getProfile();
@@ -168,7 +193,7 @@ async function insertdata() {
           // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
           if (result.isConfirmed) {
               // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-             window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+             window.location.href = 'login.html'; //https://liff.line.me/1654797991-pr0xKPxW
           }
       });
 
