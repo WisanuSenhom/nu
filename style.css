@@ -173,3 +173,21 @@ h2 {
   .line-breaks {
     line-height: 10; /* ปรับค่าตามที่ต้องการ */
   }
+
+.loading-spinner{
+  width:30px;
+  height:30px;
+  border:3px solid indigo;
+  border-radius:50%;
+  border-top-color:#0001;
+  display:inline-block;
+  animation:loadingspinner .7s linear infinite;
+}
+@keyframes loadingspinner{
+  0%{
+    transform:rotate(0deg)
+  }
+  100%{
+    transform:rotate(360deg)
+  }
+}
