@@ -58,7 +58,7 @@ function loadSubdatas() {
     .then(response => response.json())
     .then(data => {
       // ลบค่าเก่าใน dropdown ของ subcategory
-console.log(data);
+// console.log(data);
       // เพิ่ม option สำหรับแต่ละ subcategory
       data.datas.forEach(subdatas => {
     
@@ -72,7 +72,7 @@ console.log(data);
       });
       main();
     })
-   // .catch(error => console.error("Error fetching subcategories:", error));
+    .catch(error => console.error("Error fetching subcategories:", error));
 }
 
 
