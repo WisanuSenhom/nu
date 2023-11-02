@@ -59,7 +59,7 @@ loadingModal.style.display = 'block';
         let typea = document.querySelector('#typea').value;
         let nte = document.querySelector('#nte').value;
         let todayx = new Date();
-        todayx.toLocaleString("en-US", { hour12: false });
+        todayx.toLocaleTimeString('th-TH');
    
      //   console.log(typea);
 
@@ -153,7 +153,7 @@ loadingModal.style.display = 'block';
         let typea = document.querySelector('#typea').value;
         let nte = document.querySelector('#nte').value;
        let todayx = new Date();
-        todayx.toLocaleString("en-US", { hour12: false });
+        todayx.toLocaleTimeString('th-TH');
   //      console.log(typea);
         await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}`)
           
