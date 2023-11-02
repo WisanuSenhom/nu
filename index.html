@@ -196,7 +196,7 @@ let today = new Date();
 today.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
 let hm = today.toLocaleTimeString('th-TH');
 
-        if(hm <= "14:00" ){
+        if(hm <= "14:59" ){
           document.getElementById("cin").classList.remove('invisible');
         }else if(hm >= "15:00"){
           document.getElementById("cout").classList.remove('invisible');
