@@ -58,6 +58,13 @@ function loadSubdatas() {
     .then(response => response.json())
     .then(data => {
       // ลบค่าเก่าใน dropdown ของ subcategory
+        document.querySelector('#latitude').innerHTML = "";
+        document.querySelector('#longitude').innerHTML = "";
+        document.querySelector('#db1').innerHTML = "";
+        document.querySelector('#db2').innerHTML = "";
+        document.querySelector('#db3').innerHTML = "";
+        document.querySelector('#maincode').innerHTML = "";
+        document.querySelector('#subcode').innerHTML = "";
 // console.log(data);
       // เพิ่ม option สำหรับแต่ละ subcategory
       data.datas.forEach(subdatas => {
