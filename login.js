@@ -24,8 +24,7 @@ async function getmember(yourid){
             }
         });
     }else{ 
-    localStorage.clear();
-    data.user.forEach(function(user){
+      data.user.forEach(function(user){
             // let uuid = user.uuid;
             // console.log(uuid);
   
