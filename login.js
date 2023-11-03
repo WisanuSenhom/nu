@@ -23,7 +23,8 @@ async function getmember(yourid){
                 window.location.href = 'https://liff.line.me/1654797991-nkGwelwo';
             }
         });
-    }else{  
+    }else{ 
+    localStorage.clear();
     data.user.forEach(function(user){
             // let uuid = user.uuid;
             // console.log(uuid);
