@@ -2,8 +2,6 @@ async function getProfile() {
     const profile = await liff.getProfile();
     const yourid = profile.userId ;
     getmember(yourid);
-
-       
     }
 
 async function getmember(yourid){
@@ -18,7 +16,6 @@ async function getmember(yourid){
             confirmButtonColor: '#0ef',
             icon: 'error',
             title: 'ไม่พบข้อมูลของคุณในระบบ',
-        
         }).then((result) => {
             // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
             if (result.isConfirmed) {
@@ -76,7 +73,9 @@ async function getmember(yourid){
 
             localStorage.setItem("ceo", user.ceo);
          //   console.log(localStorage.getItem("ceo"));
-
+        
+        localStorage.setItem("refid", user.refid);
+        
             Swal.fire({
                 confirmButtonColor: '#0ef',
                 icon: 'success',
@@ -89,12 +88,7 @@ async function getmember(yourid){
                     window.location.href = 'https://liff.line.me/1654797991-WVJ2e129';
                 }
             });
-        
-     
-
-  
-      
-  
+    
     });
 }}
 
@@ -108,8 +102,6 @@ function clearLocal() {
         title: 'Local Storage has been cleared.'
 })
 }
-
-
 
 async function main() {
     await liff.init({ liffId: "1654797991-pr0xKPxW" })
