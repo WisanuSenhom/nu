@@ -85,6 +85,7 @@ loadingModal.style.display = 'block';
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
+                            localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
                           liff.closeWindow(); 
                         }
                     });
@@ -179,6 +180,7 @@ loadingModal.style.display = 'block';
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
+                            localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
                           //  window.location.href = 'https://www.example.com';
                             liff.closeWindow(); 
                         }
