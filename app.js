@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 // แจ้งการปรับปรุง
-        Swal.fire({
-        icon: 'warning',
-        title: 'แจ้งการปรับปรุง!',
-        html: 'ในวันเสาร์ ที่ 4 พ.ย. 2566 เวลา 20.00 - 23.00 น. <br>1. ปรับปรุงเลขที่สมาชิกสำหรับจัดทำรหัสอ้างอิง<br>2. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหลังบ้านทั้งหมด <br>3. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหน้าบ้านทั้งหมด <br>4. หากหลังปรังปรุงแล้วใช้งานไม่ได้ โปรด Clear Local Storage ในหน้า Login! ให้ทำการลงเวลาใหม่อีกครั้ง',
-        // footer: '<a href="">Why do I have this issue?</a>'
-      })    
+      //   Swal.fire({
+      //   icon: 'warning',
+      //   title: 'แจ้งการปรับปรุง!',
+      //   html: 'ในวันเสาร์ ที่ 4 พ.ย. 2566 เวลา 20.00 - 23.00 น. <br>1. ปรับปรุงเลขที่สมาชิกสำหรับจัดทำรหัสอ้างอิง<br>2. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหลังบ้านทั้งหมด <br>3. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหน้าบ้านทั้งหมด <br>4. หากหลังปรังปรุงแล้วใช้งานไม่ได้ โปรด Clear Local Storage ในหน้า Login! ให้ทำการลงเวลาใหม่อีกครั้ง',
+      //   // footer: '<a href="">Why do I have this issue?</a>'
+      // })    
     // ตรวจสอบว่ามีค่า user ใน Local Storage หรือไม่
     const uuid = localStorage.getItem('uuid');
 
@@ -92,7 +92,7 @@ loadingModal.style.display = 'block';
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                            localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
+                         //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
                           liff.closeWindow(); 
                         }
                     });
@@ -187,7 +187,7 @@ loadingModal.style.display = 'block';
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                            localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
+                         //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
                           //  window.location.href = 'https://www.example.com';
                             liff.closeWindow(); 
                         }
