@@ -25,7 +25,7 @@ async function loadSubcategories() {
 
   // ดึงค่าที่ถูกเลือกใน dropdown ของ category
   const selectedCategoryId = categoryDropdown.value;
-  console.log(selectedCategoryId);
+  // console.log(selectedCategoryId);
 
   // ดึงข้อมูล subcategories จาก API โดยใช้ selectedCategoryId
  await fetch(`https://script.google.com/macros/s/AKfycbwYUMzfkbM_B2fdgoGaJ7QKx_ACzg7cr0jn8I_x9yJdqHyWLurD_4IE5uX9tu_DW98/exec?categories=${selectedCategoryId}`)
@@ -52,7 +52,7 @@ async function loadSubdatas() {
 
   // ดึงค่าที่ถูกเลือกใน dropdown ของ category
   const selecteddatas = subcategoryDropdowns.value;
-  console.log(selecteddatas);
+ // console.log(selecteddatas);
   // ดึงข้อมูล subcategories จาก API โดยใช้ selectedCategoryId
 await  fetch(`https://script.google.com/macros/s/AKfycbxRMzDKnw3HwBzYZxxKUiRSQKYIUWhi6Le9-cY09zdgZ1uE1HUMkntKRkATNT8INBu3/exec?datas=${selecteddatas}`)
     .then(response => response.json())
@@ -65,7 +65,7 @@ await  fetch(`https://script.google.com/macros/s/AKfycbxRMzDKnw3HwBzYZxxKUiRSQKY
   document.querySelector('#db3').innerHTML = "";
   document.querySelector('#maincode').innerHTML = "";
   document.querySelector('#subcode').innerHTML = "";
-  console.log(data);
+//  console.log(data);
       // เพิ่ม option สำหรับแต่ละ subcategory
       data.datas.forEach(subdatas => {
     
