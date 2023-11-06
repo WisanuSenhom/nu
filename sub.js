@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded",async function () {
   // เมื่อหน้าเว็บโหลดเสร็จ, ดึงข้อมูล category และใส่ใน dropdown
-  fetch("https://script.google.com/macros/s/AKfycbxqDazVhojy3PDLD2asS6Dp2dh-5zqiE9SVJr15BBh2nddc00ehKQNTC7_H1KXM6EhJFA/exec")
+ await fetch("https://script.google.com/macros/s/AKfycbxqDazVhojy3PDLD2asS6Dp2dh-5zqiE9SVJr15BBh2nddc00ehKQNTC7_H1KXM6EhJFA/exec")
     .then(response => response.json())
     .then(data => {
       const categoryDropdown = document.getElementById("category");
@@ -19,15 +19,16 @@ document.addEventListener("DOMContentLoaded", function () {
     .catch(error => console.error("Error fetching categories:", error));
 });
 
-function loadSubcategories() {
+async function loadSubcategories() {
   const categoryDropdown = document.getElementById("category");
   const subcategoryDropdown = document.getElementById("subcategory");
 
   // ดึงค่าที่ถูกเลือกใน dropdown ของ category
   const selectedCategoryId = categoryDropdown.value;
+  console.log(selectedCategoryId);
 
   // ดึงข้อมูล subcategories จาก API โดยใช้ selectedCategoryId
-  fetch(`https://script.google.com/macros/s/AKfycbwYUMzfkbM_B2fdgoGaJ7QKx_ACzg7cr0jn8I_x9yJdqHyWLurD_4IE5uX9tu_DW98/exec?categories=${selectedCategoryId}`)
+ await fetch(`https://script.google.com/macros/s/AKfycbwYUMzfkbM_B2fdgoGaJ7QKx_ACzg7cr0jn8I_x9yJdqHyWLurD_4IE5uX9tu_DW98/exec?categories=${selectedCategoryId}`)
     .then(response => response.json())
     .then(data => {
       // ลบค่าเก่าใน dropdown ของ subcategory
@@ -45,27 +46,26 @@ function loadSubcategories() {
     .catch(error => console.error("Error fetching subcategories:", error));
 }
 
-function loadSubdatas() {
-  const categoryDropdown = document.getElementById("category");
-  const subcategoryDropdown = document.getElementById("subcategory");
+async function loadSubdatas() {
+  const subcategoryDropdowns = document.getElementById("subcategory");
+ 
 
   // ดึงค่าที่ถูกเลือกใน dropdown ของ category
-  const selectedCategoryId = categoryDropdown.value;
-  const selecteddatas = subcategoryDropdown.value;
-
+  const selecteddatas = subcategoryDropdowns.value;
+  console.log(selecteddatas);
   // ดึงข้อมูล subcategories จาก API โดยใช้ selectedCategoryId
-  fetch(`https://script.google.com/macros/s/AKfycbxRMzDKnw3HwBzYZxxKUiRSQKYIUWhi6Le9-cY09zdgZ1uE1HUMkntKRkATNT8INBu3/exec?datas=${selecteddatas}`)
+await  fetch(`https://script.google.com/macros/s/AKfycbxRMzDKnw3HwBzYZxxKUiRSQKYIUWhi6Le9-cY09zdgZ1uE1HUMkntKRkATNT8INBu3/exec?datas=${selecteddatas}`)
     .then(response => response.json())
     .then(data => {
-      // ลบค่าเก่าใน dropdown ของ subcategory
-        document.querySelector('#latitude').innerHTML = "";
-        document.querySelector('#longitude').innerHTML = "";
-        document.querySelector('#db1').innerHTML = "";
-        document.querySelector('#db2').innerHTML = "";
-        document.querySelector('#db3').innerHTML = "";
-        document.querySelector('#maincode').innerHTML = "";
-        document.querySelector('#subcode').innerHTML = "";
-// console.log(data);
+  // ลบค่าเก่าใน dropdown ของ subcategory
+  document.querySelector('#latitude').innerHTML = "";
+  document.querySelector('#longitude').innerHTML = "";
+  document.querySelector('#db1').innerHTML = "";
+  document.querySelector('#db2').innerHTML = "";
+  document.querySelector('#db3').innerHTML = "";
+  document.querySelector('#maincode').innerHTML = "";
+  document.querySelector('#subcode').innerHTML = "";
+  console.log(data);
       // เพิ่ม option สำหรับแต่ละ subcategory
       data.datas.forEach(subdatas => {
     
@@ -76,6 +76,7 @@ function loadSubdatas() {
         document.querySelector('#db3').value = subdatas.db3;
         document.querySelector('#maincode').value = subdatas.maincode;
         document.querySelector('#subcode').value = subdatas.subcode;
+        
       });
       main();
     })
