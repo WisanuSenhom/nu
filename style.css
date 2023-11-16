@@ -191,3 +191,17 @@ h2 {
     transform:rotate(360deg)
   }
 }
+
+/* Style the datetime-local input */
+.daytime {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+    margin: 15px auto; /* Center horizontally with 15px top and bottom margin */
+    border: 2px solid #0ef;
+    border-radius: 20px;
+    background-color: #1f293a;
+    color: #fff;
+    text-align: center; /* Center the text horizontally */
+}
