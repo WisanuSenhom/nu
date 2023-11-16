@@ -42,7 +42,7 @@
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="getLocationcheckout()" data-toggle="modal" data-target="#outModal">ลงเวลากลับ</button></div>     <div class="signup-link"> -->
                
               <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success" onclick="checkin()">ลงเวลามา</button></div>
-              
+              <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="window.location.href='https://liff.line.me/1654797991-Oqeqrgqw';">ลงเวลา(บันทึกคำขอ)</button></div>
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="checkout()">ลงเวลากลับ</button></div>    
                <!-- <div class="signup-link">
                 <a data-toggle="modal" data-target="#exampleModal">ตรวจสอบพิกัด/ลงทะเบียน</a>
@@ -196,9 +196,9 @@ let today = new Date();
 today.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
 let hm = today.toLocaleTimeString('th-TH');
 
-        if(hm <= "14:59" ){
+        if(hm <= "12:00" ){
           document.getElementById("cin").classList.remove('invisible');
-        }else if(hm >= "15:00"){
+        }else if(hm >= "16:00"){
           document.getElementById("cout").classList.remove('invisible');
             }else{
         document.getElementById("creq").classList.remove('invisible');
