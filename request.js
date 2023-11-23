@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const uuid = localStorage.getItem('uuid');
     const boss = localStorage.getItem('boss');
 
-    if (uuid || boss ) {
+    if (uuid || uuid !== null || uuid !== undefined || boss || boss !== null || boss !== undefined ) {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
         console.log('User is logged in. Token:', uuid);
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
