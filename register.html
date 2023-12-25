@@ -101,6 +101,23 @@ img {
         <img id ="upic"src="" alt="Avatar" style="width:200px">
         <h2 id ="uname">สมัครสมาชิก</h2>  
     </div>
+   <div class="input-container">
+    <i class="fa fa-building icon"></i>
+    <select id="category" onchange="loadSubcategories()">
+        <!-- Options will be dynamically added here -->
+      </select>
+  </div>
+  <div class="input-container">
+    <i class="fa fa-hospital-o icon"></i>
+    <select id="subcategory" onchange="loadSubdatas()">
+        <!-- Options will be dynamically added here -->
+      </select>
+  </div>
+    <div class="input-container">
+    <i class="fa fa-code  icon"></i>
+    <input class="input-field" id="subcode" type="text" placeholder="code" name="subcode" disabled>
+  </div>
+  
     <div class="input-container">
             <i class="fa fa-id-card icon"></i>
       <input class="input-field" id="cid" type="number" placeholder="เลขบัตรประจำตัวประชาชน" name="cid" maxlength="13" required>
@@ -122,22 +139,7 @@ img {
     <i class="fa fa-user-md icon"></i>
     <input class="input-field" id="job" type="text" placeholder="ตำแหน่ง" name="job" required>
   </div>
- <div class="input-container">
-    <i class="fa fa-building icon"></i>
-    <select id="category" onchange="loadSubcategories()">
-        <!-- Options will be dynamically added here -->
-      </select>
-  </div>
-  <div class="input-container">
-    <i class="fa fa-hospital-o icon"></i>
-    <select id="subcategory" onchange="loadSubdatas()">
-        <!-- Options will be dynamically added here -->
-      </select>
-  </div>
-    <div class="input-container">
-    <i class="fa fa-code  icon"></i>
-    <input class="input-field" id="subcode" type="text" placeholder="code" name="subcode" disabled>
-  </div>
+
   <button type="button" class="btn" onclick="insertdata()">สมัครสมาชิก</button>
   <div class="input-container">
 <!--     <i class="fa fa-user icon"></i> -->
