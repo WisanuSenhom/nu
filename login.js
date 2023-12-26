@@ -1,34 +1,38 @@
 async function getProfile() {
     const profile = await liff.getProfile();
     const yourid = profile.userId ;
-    getmember(yourid);
-    }
+    const yourpic = profile.pictureUrl;
+    getmember(yourid,yourpic);
+     }
 
-async function getmember(yourid){
-    // console.log(yourid);
+async function getmember(yourid,yourpic){
+  localStorage.clear();
+    showLoading();
     let gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourid}`;
     const records = await fetch(gas);
-    const data = await records.json();
-  
-  //  console.log(data.user);
+    const data = await records.json();  
+    console.log(data.user);
     if (data.user === null || data.user === undefined ||data.user == 0 ){
         Swal.fire({
             confirmButtonColor: '#0ef',
             icon: 'error',
             title: 'ไม่พบข้อมูลของคุณในระบบ',
+        
         }).then((result) => {
             // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
             if (result.isConfirmed) {
                 // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                window.location.href = 'https://liff.line.me/1654797991-nkGwelwo';
+             console.log("ผิดพลาด")
+              //     window.location.href = 'https://liff.line.me/1654797991-WVJ2e129'; // https://liff.line.me/1654797991-nkGwelwo
             }
         });
     }else{ 
-        localStorage.clear();
-      data.user.forEach(function(user){
+      
+     localStorage.setItem("yourpic", yourpic);
+    data.user.forEach(function(user){
             // let uuid = user.uuid;
             // console.log(uuid);
-  
+           
             localStorage.setItem("uuid", user.uuid);
            // console.log(localStorage.getItem("uuid"));
 
@@ -74,9 +78,11 @@ async function getmember(yourid){
 
             localStorage.setItem("ceo", user.ceo);
          //   console.log(localStorage.getItem("ceo"));
-        
-        localStorage.setItem("refid", user.refid);
-        
+         localStorage.setItem("upic", user.upic);
+
+         localStorage.setItem("refid", user.refid);
+         console.log(localStorage.getItem("refid"));
+
             Swal.fire({
                 confirmButtonColor: '#0ef',
                 icon: 'success',
@@ -86,11 +92,12 @@ async function getmember(yourid){
                 // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                 if (result.isConfirmed) {
                     // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                    window.location.href = 'https://liff.line.me/1654797991-WVJ2e129';
+                     window.location.href = 'index.html';
+                    console.log("สำเร็จ")
                 }
             });
-    
     });
+   hideLoading() ;     
 }}
 
 function clearLocal() {
@@ -104,12 +111,24 @@ function clearLocal() {
 })
 }
 
+function showLoading() {
+  var overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  var overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = 'none';
+}
+
+
 async function main() {
+    hideLoading() ;  
     await liff.init({ liffId: "1654797991-pr0xKPxW" })
       if (liff.isLoggedIn()) {
-        getProfile() 
+        getProfile();
       } else {
         liff.login()
       }
   }
-  main()
+ main();
