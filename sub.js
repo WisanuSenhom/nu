@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded",async function () {
       Swal.fire({
         icon: "info",
         title: "มีการปรับปรุงเวอร์ชั่นใหม่",
-        text: "กรุณาลงทะเบียนใหม่อีกครั้ง (เลขบัตรประจำตัวประชาชนมีการเข้ารหัสที่ไม่สามารถถอดได้ เพื่อให้ในการยื่นยันตัวตนบุคคล ในกรณีใช้มากกว่า 1 ไอดี)"
+        text: "กรุณาลงทะเบียนใหม่อีกครั้ง (เลขบัตรประจำตัวประชาชนมีการเข้ารหัสที่ไม่สามารถถอดได้ เพื่อใช้ในการยื่นยันตัวตนบุคคล ในกรณีใช้มากกว่า 1 ไอดี)"
       });
   // เมื่อหน้าเว็บโหลดเสร็จ, ดึงข้อมูล category และใส่ใน dropdown
  await fetch("https://script.google.com/macros/s/AKfycbxqDazVhojy3PDLD2asS6Dp2dh-5zqiE9SVJr15BBh2nddc00ehKQNTC7_H1KXM6EhJFA/exec")
