@@ -23,7 +23,7 @@ async function getmember(yourid,yourpic){
             if (result.isConfirmed) {
                 // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
              console.log("ผิดพลาด")
-              //     window.location.href = 'https://liff.line.me/1654797991-WVJ2e129'; // https://liff.line.me/1654797991-nkGwelwo
+               window.location.href = 'register.html'; // https://liff.line.me/1654797991-nkGwelwo
             }
         });
     }else{ 
