@@ -223,9 +223,13 @@ function clearLocal() {
     // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
     localStorage.clear();
   
-    Swal.fire({
+   Swal.fire({
         confirmButtonColor: '#0ef',
         icon: 'success',
         title: 'Local Storage has been cleared.'
-})
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'https://liff.line.me/1654797991-G0jqNZq4';
+        }
+    });
 }
