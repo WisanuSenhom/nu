@@ -187,8 +187,27 @@ async function insertdata() {
   let maincode = document.querySelector('#maincode').value;
   let subcode = document.querySelector('#subcode').value;
 
-
-  // ส่งค่า พร้อมดึงข้อมูล
+let message = `
+สังกัด : ${category}
+หน่วยงาน : ${subcategory}
+เลขบัตร : ${hash_cid}
+ชื่อ - สกุล : ${pname}${fname} ${lname}
+ตำแหน่ง : ${job}
+Main Code: ${maincode}
+Sub Code: ${subcode}
+`;
+      
+Swal.fire({
+  title: 'Values Received',
+  text: message,
+  icon: 'info',
+  showCancelButton: true,
+  confirmButtonText: 'OK',
+  cancelButtonText: 'Cancel'
+}).then((result) => {
+  // If the user clicks "OK", you can proceed with further actions
+  if (result.isConfirmed) {
+     // ส่งค่า พร้อมดึงข้อมูล
   await fetch(`https://script.google.com/macros/s/AKfycbzsWNRX6L0lfXRqmFeehqrmuNsPTUMBBa9IDSnU6tJEKLs0Q7qlRmClbqNkHmUOqX19uA/exec?hash_cid=${hash_cid}&pname=${pname}&fname=${fname}&lname=${lname}&job=${job}&category=${category}&subcategory=${subcategory}&username=${username}&userid=${userid}&userimg=${userimg}&useros=${useros}&latitude=${latitude}&longitude=${longitude}&db1=${db1}&db2=${db2}&db3=${db3}&maincode=${maincode}&subcode=${subcode}`)
     .then(response => response.json())
     .then(data => {
@@ -215,6 +234,11 @@ async function insertdata() {
 
     })
   .catch(error => console.error("Error fetching subcategories:", error));
+  }
+  // If the user clicks "Cancel", the dialog will simply close without further action
+});
+
+ 
 
 
 }
