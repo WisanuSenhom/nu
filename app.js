@@ -218,3 +218,14 @@ loadingModal.style.display = 'block';
     }
 
 }
+
+function clearLocal() {
+    // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
+    localStorage.clear();
+  
+    Swal.fire({
+        confirmButtonColor: '#0ef',
+        icon: 'success',
+        title: 'Local Storage has been cleared.'
+})
+}
