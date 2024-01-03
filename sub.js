@@ -190,7 +190,7 @@ async function insertdata() {
 let message = `
 สังกัด : ${category}
 หน่วยงาน : ${subcategory}
-เลขบัตร : ${hash_cid}
+เลขบัตร(เข้ารหัส) : ${hash_cid}
 ชื่อ - สกุล : ${pname}${fname} ${lname}
 ตำแหน่ง : ${job}
 Main Code: ${maincode}
@@ -198,12 +198,12 @@ Sub Code: ${subcode}
 `;
       
 Swal.fire({
-  title: 'Values Received',
+  title: 'โปรดตรวจสอบความถูกต้อง',
   text: message,
   icon: 'info',
   showCancelButton: true,
-  confirmButtonText: 'OK',
-  cancelButtonText: 'Cancel'
+  confirmButtonText: 'ยืนยัน',
+  cancelButtonText: 'แก้ไข'
 }).then((result) => {
   // If the user clicks "OK", you can proceed with further actions
   if (result.isConfirmed) {
