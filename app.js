@@ -229,7 +229,7 @@ function clearLocal() {
         title: 'Local Storage has been cleared.'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'https://liff.line.me/1654797991-G0jqNZq4';
+            window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
         }
     });
 }
