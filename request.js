@@ -72,7 +72,7 @@ function checkin() {
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
-        //    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
         //   const status = localStorage.getItem("status");
         //   const role = localStorage.getItem("role");
         const boss = localStorage.getItem("boss");
@@ -101,7 +101,7 @@ function checkin() {
 
         //   console.log(typea);
         let urlin = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
-        let prmin = `?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}`;
+        let prmin = `?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}`;
 
         await fetch(urlin + prmin)
             .then(response => response.json())
@@ -185,7 +185,7 @@ function checkout() {
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
-        //    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
         //   const status = localStorage.getItem("status");
         //   const role = localStorage.getItem("role");
         const boss = localStorage.getItem("boss");
@@ -232,7 +232,7 @@ function checkout() {
 
             console.log(dt);
             let urlout = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
-            let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}`;
+            let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}`;
             console.log(urlout + prmout);
             await fetch(urlout + prmout)
                 .then(response => response.json())
