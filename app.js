@@ -61,7 +61,7 @@ loadingModal.style.display = 'block';
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
-        //    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
      //   const status = localStorage.getItem("status");
      //   const role = localStorage.getItem("role");
         const boss = localStorage.getItem("boss");
@@ -77,7 +77,7 @@ loadingModal.style.display = 'block';
    
      //   console.log(typea);
 
-        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}`)
+        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}`)
           
         .then(response => response.json())
             .then(data => {
@@ -159,7 +159,7 @@ loadingModal.style.display = 'block';
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
-        //    const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
      //   const status = localStorage.getItem("status");
      //   const role = localStorage.getItem("role");
         const boss = localStorage.getItem("boss");
@@ -172,7 +172,7 @@ loadingModal.style.display = 'block';
         todays.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
         let todayx = todays.toLocaleTimeString('th-TH');
   //      console.log(typea);
-        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}`)
+        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}`)
           
         .then(response => response.json())
             .then(data => {
