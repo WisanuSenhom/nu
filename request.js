@@ -3,14 +3,40 @@ document.addEventListener("DOMContentLoaded", function () {
     const uuid = localStorage.getItem('uuid');
     const boss = localStorage.getItem('boss');
 
-    if (uuid || uuid !== null || uuid !== undefined || uuid !== '' || boss || boss !== null || boss !== undefined || boss !== '' ) {
+    if (uuid || uuid !== null || uuid !== undefined || uuid !== ''  ) {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
         console.log('User is logged in. Token:', uuid);
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
-    } else if (!uuid || !boss) {
+    } else if (!uuid) {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
         window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
+
+    }else if (boss || boss !== null || boss !== undefined || boss !== '') {
+        // กำหนดหัวหน้า
+Swal.fire({
+  title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
+  text: "โปรดกำหนด เมื่อกำหนดแล้ว ให้กด Reset หน้าลงเวลา",
+  icon: "error",
+  confirmButtonText: "ตกลง"
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.location.href = "https://wisanusenhom.github.io/sekatime/user.html";
+  }
+});
+
+    }else if ( !boss) {
+        // กำหนดหัวหน้า
+        Swal.fire({
+  title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
+  text: "โปรดกำหนด เมื่อกำหนดแล้ว ให้กด Reset หน้าลงเวลา",
+  icon: "error",
+  confirmButtonText: "ตกลง"
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.location.href = "https://wisanusenhom.github.io/sekatime/user.html";
+  }
+});
     } else {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
