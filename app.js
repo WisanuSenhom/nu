@@ -226,7 +226,7 @@ function clearLocal() {
    Swal.fire({
         confirmButtonColor: '#0ef',
         icon: 'success',
-        title: 'Local Storage has been cleared.'
+        title: 'รีเซ็ตข้อมูลสำเร็จ'
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
