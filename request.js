@@ -15,23 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (boss !== null && boss !== undefined && boss !== '') {
         // Boss is assigned
-        displayBossAssignedError();
+      console.log('User is logged in. Boss :', boss);
 
     } else {
         // Boss is not assigned
         displayBossNotAssignedError();
-    }
-
-    function displayBossAssignedError() {
-        // Show SweetAlert error message for assigned boss
-        Swal.fire({
-            title: "Boss Assigned",
-            text: "Boss is already assigned.",
-            icon: "error",
-            confirmButtonText: "OK"
-        }).then((result) => {
-            // Handle confirmation if needed
-        });
     }
 
     function displayBossNotAssignedError() {
