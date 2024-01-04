@@ -25,8 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayBossNotAssignedError() {
         // Show SweetAlert error message for unassigned boss
         Swal.fire({
-            title: "Boss Not Assigned",
-            text: "Boss is not assigned. Please set a boss and click 'Reset' on the time tracking page.",
+            title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
+            text: "โปรดกำหนด หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา.",
             icon: "error",
             confirmButtonText: "OK"
         }).then((result) => {
