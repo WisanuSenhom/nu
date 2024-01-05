@@ -91,10 +91,8 @@ function gettoken() {
             showCancelButton: true,
             confirmButtonText: 'ใช่',
             cancelButtonText: 'ไม่'
-        }).then((result) => {
-            if (result.isConfirmed) {
-               tokenapi();
-            }
+      }).then((result) => {
+            tokenapi();
         });
     }else{
         Swal.fire({
@@ -102,10 +100,8 @@ function gettoken() {
             text: '',
             icon: 'info',
             confirmButtonText: 'ตกลง',
-        }).then((result) => {
-            if (result.isConfirmed) {
+       }).then((result) => {
             tokenapi();
-            }
         });
     }
 }
