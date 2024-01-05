@@ -93,10 +93,7 @@ function gettoken() {
             cancelButtonText: 'ไม่'
         }).then((result) => {
             if (result.isConfirmed) {
-                let url = 'https://wisanusenhom.github.io/nu/token.html';
-                let cid = 'oXTr5al05irtPoZ9pkWof9';
-                let noti = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${cid}&redirect_uri=${url}&scope=notify&state=${uuid}`;
-                window.location.replace(noti);
+               tokenapi();
             }
         });
     }else{
@@ -107,13 +104,17 @@ function gettoken() {
             confirmButtonText: 'ตกลง',
         }).then((result) => {
             if (result.isConfirmed) {
+            tokenapi();
+            }
+        });
+    }
+}
+
+function tokenapi(){
                 let url = 'https://wisanusenhom.github.io/nu/token.html';
                 let cid = 'oXTr5al05irtPoZ9pkWof9';
                 let noti = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${cid}&redirect_uri=${url}&scope=notify&state=${uuid}`;
                 window.location.replace(noti);
-            }
-        });
-    }
 }
 
 function checktoken() {
