@@ -94,7 +94,7 @@ function gettoken() {
       }).then((result) => {
             tokenapi();
         });
-    }else{
+    }else if (!tokenvar || tokenvar.trim() === '') {
         Swal.fire({
             title: 'ดำเนินการ ออก Line Token!',
             text: '',
