@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data.user.forEach(function (user) {
                 document.querySelector('#token').value = user.token;
             });
-            checktoken();
+           checkid();
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -142,6 +142,7 @@ function checkid() {
         }).then((result) => {
             editauth();
         });  
+    }else{
+       checktoken() ;
     }
 }
-checkid() 
