@@ -109,7 +109,7 @@ function checktoken() {
             icon: 'error',
             confirmButtonText: 'ตกลง',
         }).then((result) => {
-            gettoken()
+            gettoken();
         });
   
     }
