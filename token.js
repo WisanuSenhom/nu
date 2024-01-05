@@ -85,13 +85,27 @@ function gettoken() {
         Swal.fire({
             title: 'พบ Token ในระบบแล้ว!',
             text: 'ต้องการออก Token ใหม่อีกครั้งใช่หรือไม่',
-            icon: 'warning',
+            icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'ใช่',
             cancelButtonText: 'ไม่'
         }).then((result) => {
             if (result.isConfirmed) {
                 let url = 'https://wisanusenhom.github.io/nu/token.html';
+                let cid = 'oXTr5al05irtPoZ9pkWof9';
+                let noti = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${cid}&redirect_uri=${url}&scope=notify&state=${uuid}`;
+                window.location.replace(noti);
+            }
+        });
+    }else{
+        Swal.fire({
+            title: 'ดำเนินการ ออก Line Token!',
+            text: '',
+            icon: 'info',
+            confirmButtonText: 'ตกลง',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let url = 'http://127.0.0.1:5500/linetoken.html';
                 let cid = 'oXTr5al05irtPoZ9pkWof9';
                 let noti = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${cid}&redirect_uri=${url}&scope=notify&state=${uuid}`;
                 window.location.replace(noti);
