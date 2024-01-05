@@ -23,6 +23,8 @@ function editauth() {
             title: 'กรุณา ออก Token ก่อน!',
             text: 'ค่าพารามิเตอร์ว่างเปล่า',
             icon: 'error'
+       }).then((result) => {
+            gettoken();
         });
         return; // Exit the function
     }
