@@ -92,9 +92,11 @@ function gettoken() {
             confirmButtonText: 'ใช่',
             cancelButtonText: 'ไม่'
       }).then((result) => {
+                if (result.isConfirmed) {
             tokenapi();
+        }
         });
-    }else if (!tokenvar || tokenvar.trim() === '') {
+    }else {
         Swal.fire({
             title: 'ดำเนินการ ออก Line Token!',
             text: '',
