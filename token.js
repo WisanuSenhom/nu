@@ -29,9 +29,9 @@ function editauth() {
 
     var exc = myParam.split('code=')[1].split('&')[0];
     Swal.fire({
-        title: 'ยืนยันการแก้ไข.!',
+        title: 'ยืนยันการบันทึก.!',
         html: exc,
-        icon: 'warning',
+        icon: 'info',
         showCancelButton: true,
         confirmButtonColor: '#007bff',
         cancelButtonColor: '#d33',
@@ -58,7 +58,7 @@ function editauth() {
                         text: 'การแก้ไขข้อมูลเสร็จสิ้น',
                         icon: 'success'
                     }).then(() => {
-                        location.reload();
+                        window.location.href = 'about:blank';
                     });
                 })
                 .catch(error => {
@@ -91,7 +91,7 @@ function gettoken() {
             cancelButtonText: 'ไม่'
         }).then((result) => {
             if (result.isConfirmed) {
-                let url = 'https://wisanusenhom.github.io/nu/token.html';
+                let url = 'http://127.0.0.1:5500/linetoken.html';
                 let cid = 'oXTr5al05irtPoZ9pkWof9';
                 let noti = `https://notify-bot.line.me/oauth/authorize?response_type=code&client_id=${cid}&redirect_uri=${url}&scope=notify&state=${uuid}`;
                 window.location.replace(noti);
