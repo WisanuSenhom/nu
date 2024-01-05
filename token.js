@@ -54,8 +54,8 @@ function editauth() {
 
                     // Show a success message using SweetAlert
                     Swal.fire({
-                        title: 'สำเร็จ!',
-                        text: 'การแก้ไขข้อมูลเสร็จสิ้น',
+                        title: 'การบันทึกข้อมูลสำเร็จ!',
+                        text: 'ปิดหน้าเว็บออกได้เลยครับ',
                         icon: 'success'
                     }).then(() => {
                         window.location.href = 'about:blank';
