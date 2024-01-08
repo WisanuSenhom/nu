@@ -35,11 +35,11 @@ function editauth() {
         title: 'ยืนยันการบันทึก.!',
         html: exc,
         icon: 'info',
-        showCancelButton: true,
+      //  showCancelButton: true,
         confirmButtonColor: '#007bff',
         cancelButtonColor: '#d33',
         confirmButtonText: 'ตกลง',
-        cancelButtonText: 'ยกเลิก'
+       // cancelButtonText: 'ยกเลิก'
     }).then((result) => {
         if (result.isConfirmed) {
             var urlperson = `https://script.google.com/macros/s/AKfycbxX2rhJcNk-Fek0QzesB9fGe0cVQemEg7QqH0r2beMwknjbKBA0yb4VC7hOqMsTSPM0OQ/exec`;
@@ -89,9 +89,9 @@ function gettoken() {
             title: 'พบ Token ในระบบแล้ว!',
             text: 'ต้องการออก Token ใหม่อีกครั้งใช่หรือไม่',
             icon: 'question',
-           // showCancelButton: true,
+            showCancelButton: true,
             confirmButtonText: 'ใช่',
-          //  cancelButtonText: 'ไม่'
+            cancelButtonText: 'ไม่'
       }).then((result) => {
                 if (result.isConfirmed) {
             tokenapi();
