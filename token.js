@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    showLoading();
     urlapi = 'https://script.google.com/macros/s/AKfycbwSQn-VpYHC6lGntFx3eqZbeGW5_MJhOvT9bynDi7j6wlFpkJILoM1ADjhlz3AuoUVLWQ/exec';
     queryapi = `?id=${localStorage.getItem('uuid')}`;
     fetch(urlapi + queryapi)
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error fetching data:', error);
         });
-       
+        
 });
 
 function editauth() {
@@ -132,6 +133,7 @@ function checktoken() {
 }
 
 function checkid() {
+     hideLoading() ;   
     let myParam = window.location.search;
     if (myParam) {
         Swal.fire({
@@ -146,3 +148,14 @@ function checkid() {
        checktoken() ;
     }
 }
+
+// css loadding
+function showLoading() {
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+  }
+  
+  function hideLoading() {
+    var overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'none';
+  }
