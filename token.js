@@ -89,9 +89,9 @@ function gettoken() {
             title: 'พบ Token ในระบบแล้ว!',
             text: 'ต้องการออก Token ใหม่อีกครั้งใช่หรือไม่',
             icon: 'question',
-            showCancelButton: true,
+           // showCancelButton: true,
             confirmButtonText: 'ใช่',
-            cancelButtonText: 'ไม่'
+          //  cancelButtonText: 'ไม่'
       }).then((result) => {
                 if (result.isConfirmed) {
             tokenapi();
