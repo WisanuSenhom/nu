@@ -1,150 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ออก Token เพื่อรับการแจ้งเตือนผ่านไลน์ Notify | SekaTime</title>
 
-<!-- Add icon library -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
+  <!-- Add icon library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Sarabun', sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Sarabun', sans-serif;
+    }
 
-* {box-sizing: border-box;}
+    * {
+      box-sizing: border-box;
+    }
 
-input[type=text], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-}
+    input[type=text],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
 
-.input-container {
-  display: -ms-flexbox; /* IE10 */
-  display: flex;
-  width: 100%;
-  margin-bottom: 15px;
-}
-img {
-  border-radius: 50%;
-  margin: 0 auto;
-}
+    .input-container {
+      display: -ms-flexbox;
+      /* IE10 */
+      display: flex;
+      width: 100%;
+      margin-bottom: 15px;
+    }
 
-.icon {
-  padding: 15px;
-  background: #1e90ff;
-  color: white;
-  min-width: 50px;
-  text-align: center;
-}
+    img {
+      border-radius: 50%;
+      margin: 0 auto;
+    }
 
-.input-field {
-  width: 100%;
-  padding: 10px;
-  outline: none;
-}
+    .icon {
+      padding: 15px;
+      background: #1e90ff;
+      color: white;
+      min-width: 50px;
+      text-align: center;
+    }
 
-.input-field:focus {
-  border: 2px solid dodgerblue;
-}
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      outline: none;
+    }
 
-/* Set a style for the submit button */
-.btn {
-  background-color: rgb(6, 108, 209);
-  color: white;
-  padding: 20px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  opacity: 0.9;
-}
+    .input-field:focus {
+      border: 2px solid dodgerblue;
+    }
 
-.btnline {
-  background-color: green;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  opacity: 0.9;
-}
+    /* Set a style for the submit button */
+    .btn {
+      background-color: rgb(6, 108, 209);
+      color: white;
+      padding: 20px 20px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
 
-.btntoken {
-  background-color: yellowgreen;
-  color: black;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  opacity: 0.9;
-}
+    .btnline {
+      background-color: green;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
 
-.btn:hover {
-  opacity: 1;
-}
+    .btntoken {
+      background-color: yellowgreen;
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      opacity: 0.9;
+    }
 
-.error{
-  color:#F00;
-}
-.error.true{
-  color:#6bc900;
-}
+    .btn:hover {
+      opacity: 1;
+    }
 
-h4 {
+    .error {
+      color: #F00;
+    }
+
+    .error.true {
+      color: #6bc900;
+    }
+
+    h4 {
       text-align: center;
       margin: auto;
       padding: 20px 10px;
     }
 
-h6 {
+    h6 {
       text-align: center;
       margin: auto;
     }
+  </style>
 
-</style>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
-<script type='text/javascript' src='https://code.jquery.com/jquery-1.12.4.min.js' crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/css/loading.css">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    crossorigin="anonymous">
+  <script type='text/javascript' src='https://code.jquery.com/jquery-1.12.4.min.js' crossorigin="anonymous"></script>
 </head>
+
 <body>
-<div class="container ">
+  <div class="container ">
     <h4>กำหนด Token สำหรับแจ้งเตือนผ่าน Line Notify</h4>
     <h6>(แนะนำ รับการแจ้งเตือนแบบตัวต่อตัวจาก LINE Notify)</h6>
-<form  style="max-width:500px;margin:auto">
-     
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+    </div>
+    <form style="max-width:500px;margin:auto">
+      <div class="input-container">
+        <i class="fa fa-bell icon"></i>
+        <input class="input-field" id="token" type="text" placeholder="Line Token ID" name="token" required disabled>
+      </div>
 
-  <div class="input-container">
-    <i class="fa fa-bell icon"></i>
-    <input class="input-field" id="token" type="text" placeholder="Line Token ID" name="token" required disabled>
+      <button type="button" class="btnline" onclick="gettoken()">ออก Token</button>
+      <P></P>
+      <button type="button" class="btn" onclick="editauth()">บันทึก</button>
+
+    
+      <P></P>
+      <div class="input-container">
+        <p> *หากออก Token แล้ว ไม่ได้รับการแจ้งเตือน โปรดเพิ่มเพื่อน LINE Notify ด้วย ID "@linenotify" หรือกดที่ปุ่ม
+          เพิ่มเพื่อน</p>
+        <div class="line-it-button" data-lang="th" data-type="friend" data-env="REAL" data-count="true" data-home="true"
+          data-lineId="@linenotify" style="display: none;"></div>
+        <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async"
+          defer="defer"></script>
+      </div>
+
+    </form>  
+
   </div>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <button type="button" class="btnline" onclick="gettoken()">ออก Token</button>
-  <P></P>
-  <button type="button" class="btn" onclick="editauth()">บันทึก</button>
- 
-<!--     <i class="fa fa-user icon"></i> -->
-  <P></P>
-<div class="input-container">
-    <p> *หากออก Token แล้ว ไม่ได้รับการแจ้งเตือน โปรดเพิ่มเพื่อน LINE Notify ด้วย ID "@linenotify" หรือกดที่ปุ่ม เพิ่มเพื่อน</p>
-<div class="line-it-button" data-lang="th" data-type="friend" data-env="REAL" data-count="true" data-home="true" data-lineId="@linenotify" style="display: none;"></div>
-<script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async" defer="defer"></script> 
-</div>  
-
-<!--     <button type="button" class="btn" onclick="insertdata()">สมัครสมาชิก</button> -->
-</form>
-</div>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script src="token.js"></script> 
+  <script src="token.js"></script>
 
 
 </body>
+
 </html>
