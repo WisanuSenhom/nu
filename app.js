@@ -97,7 +97,8 @@ loadingModal.style.display = 'block';
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
                          //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
-                          liff.closeWindow(); 
+                        //  liff.closeWindow(); 
+                               checktoken();
                         }
                     });
 
@@ -193,7 +194,8 @@ loadingModal.style.display = 'block';
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
                          //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
                           //  window.location.href = 'https://www.example.com';
-                            liff.closeWindow(); 
+                          //  liff.closeWindow(); 
+                               checktoken();
                         }
                     });
 
@@ -234,6 +236,42 @@ function clearLocal() {
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+        }
+    });
+}
+
+
+function checktoken() {
+    urlapi = 'https://script.google.com/macros/s/AKfycbwSQn-VpYHC6lGntFx3eqZbeGW5_MJhOvT9bynDi7j6wlFpkJILoM1ADjhlz3AuoUVLWQ/exec';
+    queryapi = `?id=${localStorage.getItem('uuid')}`;
+    fetch(urlapi + queryapi)
+        .then(response => response.json())
+        .then(data => {
+            data.user.forEach(function (user) {
+                if (user.token && user.token.trim() !== '') {
+                   liff.closeWindow(); 
+                } else {
+                // If user.token is empty or undefined, call fn
+                createtoken();
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+function createtoken(){
+    Swal.fire({
+        title: 'แจ้งเตือนทางไลน์ไม่สำเร็จ - ไม่พบ LINE TOKEN ในระบบ',
+        text: 'กด ตกลง เพื่อออก Line Token ',
+        icon: 'warning',
+        confirmButtonText: 'ตกลง'
+    }).then((result) => {
+        // Check if the user clicked ok
+        if (result.isConfirmed) {
+            // Redirect to the specified URL
+            window.location.href = 'https://wisanusenhom.github.io/nu/token.html';
         }
     });
 }
