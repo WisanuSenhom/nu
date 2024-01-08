@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
        window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
-    }else if (uuid == '558b0d56-b0ea-425a-9a4d-7c84c2d5e869' && refid == '1137' ) {
+    }else if (uuid == '558b0d56-b0ea-425a-9a4d-7c84c2d5e869' && refid == '1237' ) {
         localStorage.clear();  
           // สำหรับเคลียร์ผิดพลาด
     }else {
