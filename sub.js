@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded",async function () {
       Swal.fire({
         icon: "info",
-        title: "ชี้แจง",
+        title: "คำชี้แจง",
         text: "เลขบัตรประจำตัวประชาชนมีการเข้ารหัสที่ไม่สามารถถอดได้ เพื่อใช้ในการยื่นยันตัวตนบุคคล ในกรณีใช้มากกว่า 1 ไอดี"
       });
   // เมื่อหน้าเว็บโหลดเสร็จ, ดึงข้อมูล category และใส่ใน dropdown
