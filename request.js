@@ -98,6 +98,11 @@ function checkin() {
             });
             return;
         }
+        // เลือก id "latlong"
+             var latlongElement = document.getElementById('latlong');
+
+             // แสดงค่าใน element
+             latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude;
 
         //   console.log(typea);
         let urlin = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
@@ -229,8 +234,13 @@ function checkout() {
 
                 return;
             }
+                         // เลือก id "latlong"
+             var latlongElement = document.getElementById('latlong');
 
-            console.log(dt);
+             // แสดงค่าใน element
+             latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude;
+
+       //     console.log(dt);
             let urlout = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
             let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}`;
             console.log(urlout + prmout);
