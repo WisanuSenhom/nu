@@ -275,3 +275,20 @@ function createtoken(){
         }
     });
 }
+
+function openWebAdmin() {
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'คลิก "ตกลง" เพื่อเข้าสู่ระบบการจัดการการลงเวลาปฏิบัติงาน',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open('https://wisanusenhom.github.io/sekatime/', '_blank');
+           } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
+        }
+    });
+}
