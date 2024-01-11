@@ -47,10 +47,6 @@ loadingModal.style.display = 'block';
   async  function showPositionin(position) {
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
-
-        console.log("Latitude: " + latitude);
-        console.log("Longitude: " + longitude);
-
         const uuid = localStorage.getItem('uuid');
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
@@ -76,6 +72,11 @@ loadingModal.style.display = 'block';
         let todayx = todays.toLocaleTimeString('th-TH');
    
      //   console.log(typea);
+         // เลือก id "latlong"
+        var latlongElement = document.getElementById('latlong');
+
+        // แสดงค่าใน element
+        latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude;
 
         await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}`)
           
@@ -147,9 +148,6 @@ loadingModal.style.display = 'block';
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
 
-        console.log("Latitude: " + latitude);
-        console.log("Longitude: " + longitude);
-
         const uuid = localStorage.getItem('uuid');
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
@@ -173,6 +171,12 @@ loadingModal.style.display = 'block';
         todays.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
         let todayx = todays.toLocaleTimeString('th-TH');
   //      console.log(typea);
+     // เลือก id "latlong"
+        var latlongElement = document.getElementById('latlong');
+
+        // แสดงค่าใน element
+        latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude;
+        
         await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}`)
           
         .then(response => response.json())
@@ -227,15 +231,27 @@ loadingModal.style.display = 'block';
 
 function clearLocal() {
     // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
-    localStorage.clear();
-  
-   Swal.fire({
-        confirmButtonColor: '#0ef',
-        icon: 'success',
-        title: 'รีเซ็ตข้อมูลสำเร็จ'
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'กด "ตกลง" เพื่อดำเนินการ รีเช็ทค่าเดิม เพื่ออัพเดพค่าใหม่',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+            localStorage.clear();
+            Swal.fire({
+                confirmButtonColor: '#0ef',
+                icon: 'success',
+                title: 'รีเซ็ตข้อมูลสำเร็จ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+                }
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
         }
     });
 }
