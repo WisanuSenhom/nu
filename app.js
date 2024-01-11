@@ -233,7 +233,7 @@ function clearLocal() {
     // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
     Swal.fire({
         title: 'ยืนยันการดำเนินการ',
-        text: 'กด "ตกลง" เพื่อดำเนินการ รีเช็ทค่าเดิม เพื่ออัพเดพค่าใหม่',
+        text: 'กด "ตกลง" เพื่อดำเนินการ รีเช็ต เพื่อรับค่าใหม่',
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'ตกลง',
