@@ -37,6 +37,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// จากพี่ดำรงศักดิ์ สสจ.บึงกาฬ
+// Function to calculate distance between two points using the Haversine formula
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const earthRadius = 6371; // Earth's radius in kilometers
+
+    // Convert latitude and longitude from degrees to radians
+    const radLat1 = (Math.PI * lat1) / 180;
+    const radLon1 = (Math.PI * lon1) / 180;
+    const radLat2 = (Math.PI * lat2) / 180;
+    const radLon2 = (Math.PI * lon2) / 180;
+
+    // Calculate the differences between the latitudes and longitudes
+    const latDiff = radLat2 - radLat1;
+    const lonDiff = radLon2 - radLon1;
+
+    // Calculate the distance using the Haversine formula
+    const a =
+        Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+        Math.cos(radLat1) * Math.cos(radLat2) * Math.sin(lonDiff / 2) * Math.sin(lonDiff / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = earthRadius * c; // Distance in kilometers
+
+    return distance;
+}
+
 // Function to display distance on the HTML element
 function displayDistance(distance) {
     let xdistance = distance.toFixed(3);
