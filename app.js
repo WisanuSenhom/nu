@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (uuid) {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
-        console.log('User is logged in. Token:', uuid);
+        checknotify();
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
     } else if (!uuid) {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
@@ -307,4 +307,23 @@ function openWebAdmin() {
             Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
         }
     });
+}
+
+function checknotify() {
+    urlapi = 'https://script.google.com/macros/s/AKfycbwSQn-VpYHC6lGntFx3eqZbeGW5_MJhOvT9bynDi7j6wlFpkJILoM1ADjhlz3AuoUVLWQ/exec';
+    queryapi = `?id=${localStorage.getItem('uuid')}`;
+    fetch(urlapi + queryapi)
+        .then(response => response.json())
+        .then(data => {
+            data.user.forEach(function (user) {
+                if (user.token && user.token.trim() !== '') {
+                } else {
+                // If user.token is empty or undefined, call fn
+                createtoken();
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
 }
