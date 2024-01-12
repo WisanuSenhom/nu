@@ -37,6 +37,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Function to display distance on the HTML element
+function displayDistance(distance) {
+    let xdistance = distance.toFixed(3);
+    let unit = 'กม.';
+    
+    if (xdistance < 1) {
+        xdistance = (xdistance * 1000).toFixed(0);
+        unit = 'ม.';
+    }
+
+    const dispDistanceElement = document.getElementById('dispDistance');
+    
+    dispDistanceElement.textContent = `ระยะห่าง : ${xdistance} ${unit}`;
+
+    // Check if xdistance is greater than 1
+    if (parseFloat(xdistance) > 10) {
+        // Set the text color to red
+        dispDistanceElement.style.color = 'red';
+    } else {
+        // Reset the text color to its default
+        dispDistanceElement.style.color = ''; // or you can use 'black' or any other color you prefer
+    }
+}
+
+
+// Get the user's current geolocation
+navigator.geolocation.getCurrentPosition((position) => {
+    const currentLat = position.coords.latitude;
+    const currentLon = position.coords.longitude;
+
+    // Replace these with the latitude and longitude of your target location
+    const targetLat = localStorage.getItem('oflat');
+    const targetLon = localStorage.getItem('oflong');
+
+    // const targetLat = 18.3747422;
+    // const targetLon = 103.6442384;
+
+    const distance = calculateDistance(currentLat, currentLon, targetLat, targetLon);
+    displayDistance(distance);
+}, (error) => {
+    console.error('Error getting geolocation:', error);
+});
+// สิ้นสุด
 
 
 function checkin() {
