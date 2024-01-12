@@ -69,7 +69,7 @@ function displayDistance(distance) {
     dispDistanceElement.textContent = `ระยะห่าง : ${xdistance} ${unit}`;
 
     // Check if xdistance is greater than 1
-    if (parseFloat(xdistance) > 10) {
+    if (parseFloat(distance) > 10) {
         // Set the text color to red
         dispDistanceElement.style.color = 'red';
     } else {
