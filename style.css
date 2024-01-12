@@ -65,6 +65,12 @@ h2 {
     text-align: center;
 }
 
+h3 {
+    font-size: 1em;
+    color: #0ef;
+    text-align: center;
+}
+
 .input-box {
     position: relative;
     margin: 25px 0;
