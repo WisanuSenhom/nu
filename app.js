@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (uuid) {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
-        checknotify();
+          updateUser(uuid);
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
     } else if (!uuid) {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
@@ -398,8 +398,7 @@ function checknotify() {
 }
 
 
-async function UpdateUser(){
- const uuid = localStorage.getItem('uuid');
+async function updateUser(uuid){
     let gas = `https://script.google.com/macros/s/AKfycbziO9f62v0bfAz2bmPFQzuYibCxyamxDLOE08TZBcXx_UxzEqWvtGRIkSQQvYeV23Ko/exec?id=${uuid}`;
     const records = await fetch(gas);
     const data = await records.json();  
@@ -419,5 +418,5 @@ async function UpdateUser(){
             localStorage.setItem("upic", user.upic);
          localStorage.setItem("refid", user.refid);
     });   
+              checknotify();
 }
-UpdateUser()
