@@ -74,7 +74,7 @@ function displayDistance(distance) {
 
     const dispDistanceElement = document.getElementById('dispDistance');
     
-    dispDistanceElement.textContent = `ระยะห่าง : ${xdistance} ${unit}`;
+      dispDistanceElement.textContent = `${localStorage.getItem("office")} : ${xdistance} ${unit}`;
 
     // Check if xdistance is greater than 1
     if (parseFloat(distance) > 10) {
