@@ -58,11 +58,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // Function to display distance on the HTML element
 function displayDistance(distance) {
     let xdistance = distance.toFixed(3);
-    let unit = 'กิโลเมตร';
+    let unit = 'กม.';
     
     if (xdistance < 1) {
         xdistance = (xdistance * 1000).toFixed(0);
-        unit = 'เมตร';
+        unit = 'ม.';
     }
 
     const dispDistanceElement = document.getElementById('dispDistance');
