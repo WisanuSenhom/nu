@@ -20,9 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
        window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // แทน 'login.html' ด้วยหน้า login ของคุณ
-    }else if (uuid == '6e584e97-d60c-4573-941a-505d7a60937a' && refid == 'สสจ.บึงกาฬ' || uuid == '403260de-8016-4823-8d53-e18b1a629dc1' && office == 'สสอ.เซกา' || uuid == '19f58bf0-543a-4407-a0ce-f057b75918d7' && office == 'สสอ.เซกา' || uuid == 'f2581181-f6f3-4008-bc8d-026e2f1ef629' && office == 'สสอ.เซกา' || uuid == '6d15be30-6e53-4eca-8ea0-e60df84a8321' && office == 'สสอ.เซกา' ) {
-        localStorage.clear();  
-          // สำหรับเคลียร์ผิดพลาด
     }else {
         // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
         console.log('User is not logged in. Redirecting to login page.');
