@@ -9,10 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // })    
     // ตรวจสอบว่ามีค่า user ใน Local Storage หรือไม่
     const uuid = localStorage.getItem('uuid');
-    const refid = localStorage.getItem('mainsub');
-      const office = localStorage.getItem('office');
-
-    if (uuid) {
+       if (uuid) {
         // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
           updateUser(uuid);
         // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
