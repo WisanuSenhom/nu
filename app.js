@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+      showLoading();
 // แจ้งการปรับปรุง
       //   Swal.fire({
       //   icon: 'warning',
@@ -417,6 +418,18 @@ async function updateUser(uuid){
             localStorage.setItem("ceo", user.ceo);
             localStorage.setItem("upic", user.upic);
          localStorage.setItem("refid", user.refid);
+          hideLoading();
     });   
               checknotify();
 }
+
+function showLoading() {
+  var overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = 'flex';
+}
+
+function hideLoading() {
+  var overlay = document.getElementById('loadingOverlay');
+  overlay.style.display = 'none';
+}
+
