@@ -64,7 +64,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 // Function to display distance on the HTML element
 function displayDistance(distance) {
-    let xdistance = distance.toFixed(3);
+    let xdistance = distance.toFixed(2);
     let unit = 'กม.';
     
     if (xdistance < 1) {
