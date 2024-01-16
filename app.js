@@ -373,24 +373,24 @@ function openWebAdmin() {
     });
 }
 
-function checknotify() {
-    urlapi = 'https://script.google.com/macros/s/AKfycbwSQn-VpYHC6lGntFx3eqZbeGW5_MJhOvT9bynDi7j6wlFpkJILoM1ADjhlz3AuoUVLWQ/exec';
-    queryapi = `?id=${localStorage.getItem('uuid')}`;
-    fetch(urlapi + queryapi)
-        .then(response => response.json())
-        .then(data => {
-            data.user.forEach(function (user) {
-                if (user.token && user.token.trim() !== '') {
-                } else {
-                // If user.token is empty or undefined, call fn
-                createtoken();
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-        });
-}
+// function checknotify() {
+//     urlapi = 'https://script.google.com/macros/s/AKfycbwSQn-VpYHC6lGntFx3eqZbeGW5_MJhOvT9bynDi7j6wlFpkJILoM1ADjhlz3AuoUVLWQ/exec';
+//     queryapi = `?id=${localStorage.getItem('uuid')}`;
+//     fetch(urlapi + queryapi)
+//         .then(response => response.json())
+//         .then(data => {
+//             data.user.forEach(function (user) {
+//                 if (user.token && user.token.trim() !== '') {
+//                 } else {
+//                 // If user.token is empty or undefined, call fn
+//                 createtoken();
+//                 }
+//             });
+//         })
+//         .catch(error => {
+//             console.error('Error fetching data:', error);
+//         });
+// }
 
 
 async function updateUser(uuid){
