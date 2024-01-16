@@ -414,7 +414,7 @@ async function updateUser(uuid){
          localStorage.setItem("refid", user.refid);
           hideLoading();
     });   
-              checknotify();
+   
 }
 
 function showLoading() {
