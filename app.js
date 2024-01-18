@@ -410,7 +410,8 @@ async function updateUser(uuid){
             localStorage.setItem("boss", user.boss);
             localStorage.setItem("ceo", user.ceo);
             localStorage.setItem("upic", user.upic);
-         localStorage.setItem("refid", user.refid);
+           localStorage.setItem("refid", user.refid);
+           localStorage.setItem("token", user.token);
           hideLoading();
     });   
    
