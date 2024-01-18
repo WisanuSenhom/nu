@@ -405,7 +405,6 @@ async function updateUser(uuid){
             localStorage.setItem("oflat", user.oflat);
             localStorage.setItem("oflong", user.oflong);
             localStorage.setItem("db1", user.db1);
-            localStorage.setItem("token", user.token);
             localStorage.setItem("status", user.status);
             localStorage.setItem("role", user.role);
             localStorage.setItem("boss", user.boss);
