@@ -27,61 +27,26 @@ async function getmember(yourid,yourpic){
             }
         });
     }else{ 
-      
-     localStorage.setItem("yourpic", yourpic);
-    data.user.forEach(function(user){
-            // let uuid = user.uuid;
-            // console.log(uuid);
-           
-            localStorage.setItem("uuid", user.uuid);
-           // console.log(localStorage.getItem("uuid"));
-
-            localStorage.setItem("cidhash", user.cidhash);
-           // console.log(localStorage.getItem("cidhash"));
-
-            localStorage.setItem("userid", user.userid);
-           // console.log(localStorage.getItem("userid"));
-
-            localStorage.setItem("name", user.name);
-           // console.log(localStorage.getItem("name"));
-
-            localStorage.setItem("position", user.position);
-          //  console.log(localStorage.getItem("position"));
-
-            localStorage.setItem("mainsub", user.mainsub);
-          //  console.log(localStorage.getItem("mainsub"));
-
-            localStorage.setItem("office", user.office);
-         //   console.log(localStorage.getItem("office"));
-
-            localStorage.setItem("oflat", user.oflat);
-          //  console.log(localStorage.getItem("oflat"));
-
-            localStorage.setItem("oflong", user.oflong);
-          //  console.log(localStorage.getItem("oflong"));
-
-            localStorage.setItem("db1", user.db1);
-          //  console.log(localStorage.getItem("db1"));
-
-            localStorage.setItem("token", user.token);
-          //  console.log(localStorage.getItem("token"));
-
-            localStorage.setItem("status", user.status);
-          //  console.log(localStorage.getItem("status"));
-
-            
-            localStorage.setItem("role", user.role);
-         //   console.log(localStorage.getItem("role"));
-
-            localStorage.setItem("boss", user.boss);
-         //   console.log(localStorage.getItem("boss"));
-
-            localStorage.setItem("ceo", user.ceo);
-         //   console.log(localStorage.getItem("ceo"));
-         localStorage.setItem("upic", user.upic);
-
-         localStorage.setItem("refid", user.refid);
-         console.log(localStorage.getItem("refid"));
+    localStorage.setItem("yourpic", yourpic);
+    data.user.forEach(function (user) {
+      localStorage.setItem("uuid", user.uuid);   
+      localStorage.setItem("cidhash", user.cidhash);  
+      localStorage.setItem("userid", user.userid);
+      localStorage.setItem("name", user.name);
+      localStorage.setItem("job", user.job);
+      localStorage.setItem("mainsub", user.mainsub);
+      localStorage.setItem("office", user.office);
+      localStorage.setItem("oflat", user.oflat);
+      localStorage.setItem("oflong", user.oflong);
+      localStorage.setItem("db1", user.db1);
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("status", user.status);
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("boss", user.boss);
+      localStorage.setItem("ceo", user.ceo);
+      localStorage.setItem("docno", user.docno);
+      localStorage.setItem("upic", user.upic);
+      localStorage.setItem("refid", user.refid);
 
             Swal.fire({
                 confirmButtonColor: '#0ef',
