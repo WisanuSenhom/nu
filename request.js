@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     const uuid = localStorage.getItem('uuid');
     const boss = localStorage.getItem('boss');
 
@@ -134,15 +135,15 @@ function checkin() {
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
         const name = localStorage.getItem("name");
-        //  const positionx = localStorage.getItem("positionx");
+        const job = localStorage.getItem("job");
         const mainsub = localStorage.getItem("mainsub");
         const office = localStorage.getItem("office");
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
-            const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         //   const status = localStorage.getItem("status");
-        //   const role = localStorage.getItem("role");
+        const docno = localStorage.getItem("docno");
         const boss = localStorage.getItem("boss");
         const ceo = localStorage.getItem("ceo");
         const refid = localStorage.getItem("refid");
@@ -174,7 +175,7 @@ function checkin() {
 
         //   console.log(typea);
         let urlin = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
-        let prmin = `?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}`;
+        let prmin = `?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}&job=${job}&docno=${docno}`;
 
         await fetch(urlin + prmin)
             .then(response => response.json())
@@ -252,14 +253,14 @@ function checkout() {
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
         const name = localStorage.getItem("name");
-        //  const positionx = localStorage.getItem("positionx");
+        const job = localStorage.getItem("job");
         const mainsub = localStorage.getItem("mainsub");
         const office = localStorage.getItem("office");
         const latx = localStorage.getItem("oflat");
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
             const token = localStorage.getItem("token");
-        //   const status = localStorage.getItem("status");
+      const docno = localStorage.getItem("docno");
         //   const role = localStorage.getItem("role");
         const boss = localStorage.getItem("boss");
         const ceo = localStorage.getItem("ceo");
@@ -310,7 +311,7 @@ function checkout() {
 
        //     console.log(dt);
             let urlout = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
-            let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}`;
+            let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}&job=${job}&docno=${docno}`;
             console.log(urlout + prmout);
             await fetch(urlout + prmout)
                 .then(response => response.json())
