@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //   // footer: '<a href="">Why do I have this issue?</a>'
     // })    
 // ตรวจระบบ
-// ตรวจระบบ
 var isWindows = /Windows/i.test(navigator.userAgent);
 var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
 if (isWindows || isMacOS) {
