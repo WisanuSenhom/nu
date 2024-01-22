@@ -398,20 +398,21 @@ async function updateUser(uuid){
     const records = await fetch(gas);
     const data = await records.json();  
     data.user.forEach(function(user){
-           localStorage.setItem("name", user.name);
-           localStorage.setItem("position", user.position);
-            localStorage.setItem("mainsub", user.mainsub);
-            localStorage.setItem("office", user.office);
-            localStorage.setItem("oflat", user.oflat);
-            localStorage.setItem("oflong", user.oflong);
-            localStorage.setItem("db1", user.db1);
-            localStorage.setItem("status", user.status);
-            localStorage.setItem("role", user.role);
-            localStorage.setItem("boss", user.boss);
-            localStorage.setItem("ceo", user.ceo);
-            localStorage.setItem("upic", user.upic);
-           localStorage.setItem("refid", user.refid);
-           localStorage.setItem("token", user.token);
+         localStorage.setItem("name", user.name);
+        localStorage.setItem("job", user.job);
+        localStorage.setItem("mainsub", user.mainsub);
+        localStorage.setItem("office", user.office);
+        localStorage.setItem("oflat", user.oflat);
+        localStorage.setItem("oflong", user.oflong);
+        localStorage.setItem("db1", user.db1);
+        localStorage.setItem("token", user.token);
+        localStorage.setItem("status", user.status);
+        localStorage.setItem("role", user.role);
+        localStorage.setItem("boss", user.boss);
+        localStorage.setItem("ceo", user.ceo);
+        localStorage.setItem("upic", user.upic);
+        localStorage.setItem("refid", user.refid);
+        localStorage.setItem("docno", user.docno);
           hideLoading();
     });   
    
