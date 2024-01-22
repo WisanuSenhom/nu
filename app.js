@@ -7,6 +7,26 @@ document.addEventListener("DOMContentLoaded", function () {
     //   html: 'ในวันเสาร์ ที่ 4 พ.ย. 2566 เวลา 20.00 - 23.00 น. <br>1. ปรับปรุงเลขที่สมาชิกสำหรับจัดทำรหัสอ้างอิง<br>2. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหลังบ้านทั้งหมด <br>3. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหน้าบ้านทั้งหมด <br>4. หากหลังปรังปรุงแล้วใช้งานไม่ได้ โปรด Clear Local Storage ในหน้า Login! ให้ทำการลงเวลาใหม่อีกครั้ง',
     //   // footer: '<a href="">Why do I have this issue?</a>'
     // })    
+// ตรวจระบบ
+var isWindows = /Windows/i.test(navigator.userAgent);
+var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
+
+if (isWindows || isMacOS) {
+ Swal.fire({
+    title: 'อุปกรณ์เครื่องนี้ไม่ใช่สมาร์ทโฟน(Android,iPhone)',
+    text: 'คลิก "ตกลง" เพื่อดำเนินการ หรือ "ยกเลิก" (แนะนำให้ใช้สมาร์ทโฟน ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของพิกัด)',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ตกลง',
+    cancelButtonText: 'ยกเลิก',
+}).then((result) => {
+    if (result.isConfirmed) {
+        Swal.fire('การดำเนินการถูกยืนยัน', '', 'info');
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+        window.location.href = 'about:blank';
+    }
+});
+}    
     // ตรวจสอบว่ามีค่า user ใน Local Storage หรือไม่
     const token = localStorage.getItem('token');
     if (!token) {
