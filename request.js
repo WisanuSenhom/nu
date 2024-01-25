@@ -296,7 +296,7 @@ function checkout() {
         dateTime = dateTime.slice(0, -8);
 
         let dtt = dt.substring(dt.length - 5);
-        if (dt == dateTime + "08:30" || dt <= dateTime + "16:30") {
+        if (dt == dateTime + "08:30" || dt <= dateTime + "11:59") {
             swal.fire({
                 position: 'center',
                 icon: 'warning',
