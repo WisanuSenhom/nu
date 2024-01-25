@@ -41,9 +41,12 @@
               <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="window.location.href='https://liff.line.me/1654797991-8K5AMpAz';">ลงเวลา(บันทึกชี้แจง)</button></div>
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="getLocationcheckout()" data-toggle="modal" data-target="#outModal">ลงเวลากลับ</button></div>     <div class="signup-link"> -->
                
-              <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success" onclick="checkin()">ยื่นคำขอลงเวลามา</button></div>
+<!--               <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success" onclick="checkin()">ยื่นคำขอลงเวลามา</button></div>
               
-              <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="checkout()">ยื่นคำขอลงเวลากลับ</button></div>    
+              <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="checkout()">ยื่นคำขอลงเวลากลับ</button></div>    -->
+
+		<button id="cin" type="button" class="btn btn-success" onclick="checkin()">ยื่นคำขอลงเวลามา</button>
+		<button id="cout" type="button" class="btn btn-danger" onclick="checkout()">ยื่นคำขอลงเวลากลับ</button>
                <!-- <div class="signup-link">
                 <a data-toggle="modal" data-target="#exampleModal">ตรวจสอบพิกัด/ลงทะเบียน</a>
                 </div> -->
@@ -192,13 +195,13 @@ let today = new Date();
 today.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
 let hm = today.toLocaleTimeString('th-TH');
 
-        if(hm <= "16:29" ){
-          document.getElementById("cin").classList.remove('invisible');
-        }else if(hm >= "11:59"){
-          document.getElementById("cout").classList.remove('invisible');
-            }else{
-        document.getElementById("creq").classList.remove('invisible');
-            };
+        // if(hm <= "16:29" ){
+        //   document.getElementById("cin").classList.remove('invisible');
+        // }else if(hm >= "11:59"){
+        //   document.getElementById("cout").classList.remove('invisible');
+        //     }else{
+        // document.getElementById("creq").classList.remove('invisible');
+        //     };
  let day = today.getDay();
  if (day === 0 || day === 6) {
     // กำหนดค่าให้กับอิลิเมนต์ที่มี id เป็น "typea"
