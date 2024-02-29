@@ -44,7 +44,7 @@
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="getLocationcheckout()" data-toggle="modal" data-target="#outModal">ลงเวลากลับ</button></div>     <div class="signup-link"> -->
                
               <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success" onclick="checkin()">ลงเวลามา</button></div>
-<!--               <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="window.open('https://liff.line.me/1654797991-Oqeqrgqw', '_blank');">ลงเวลา(บันทึกคำขอ)</button></div> -->
+              <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="window.open('https://liff.line.me/1654797991-Oqeqrgqw', '_blank');">ลงเวลา(บันทึกคำขอ)</button></div> 
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="checkout()">ลงเวลากลับ</button></div>    
                <!-- <div class="signup-link">
                 <a data-toggle="modal" data-target="#exampleModal">ตรวจสอบพิกัด/ลงทะเบียน</a>
@@ -208,7 +208,7 @@ let hm = today.toLocaleTimeString('th-TH');
           document.getElementById("cout").classList.remove('invisible');
         }else{
 	window.open('https://liff.line.me/1654797991-Oqeqrgqw', '_blank');
-	// document.getElementById("creq").classList.remove('invisible');
+	 document.getElementById("creq").classList.remove('invisible');
         };
  let day = today.getDay();
  if (day === 0 || day === 6) {
