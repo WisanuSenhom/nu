@@ -42,6 +42,7 @@ if (isWindows || isMacOS) {
     }
 
     function displayBossNotAssignedError() {
+       localStorage.clear();
         // Show SweetAlert error message for unassigned boss
         Swal.fire({
             title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
