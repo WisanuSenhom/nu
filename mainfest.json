@@ -1,0 +1,14 @@
+{
+    "name": "ลงเวลาปฏิบัติงาน",
+    "short_name": "ลงเวลาปฏิบัติงาน",
+    "description": "ลงเวลาปฏิบัติงาน",
+    "start_url": "https://4279-134-236-112-238.ngrok-free.app/index.html",
+    "display": "standalone",
+    "icons": [
+      {
+        "src": "https://lh5.googleusercontent.com/d/1drwaNk76iLO_s4bWO_D6AUIJUGi0WeZc",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ]
+  }
