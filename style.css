@@ -211,3 +211,50 @@ h3 {
     color: #fff;
     text-align: center; /* Center the text horizontally */
 }
+
+// nav
+
+.navbar-dark .navbar-nav {
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 1%; /* เยื้องข้อความเล็กน้อยไปทางขวา */
+    width: 18%;
+}
+  
+.navbar-dark .navbar-nav .nav-link {
+    margin-right: 10px;
+    text-align: left; 
+    color: #ffffff; 
+    border-radius: 5px;
+    margin: 5 5px;
+    background-color: #2b374b ;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    background-color: #495057;
+    color: #ffffff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-dark .navbar-nav .nav-link:active {
+    background-color: #007bff;
+}
+
+.navbar-dark .navbar-nav .nav-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background-color: #ffffff;
+    transition: width 0.3s;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #ffffff;
+    transition: width 0.3s;
+}
