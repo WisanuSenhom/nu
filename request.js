@@ -382,3 +382,48 @@ function checkout() {
     }
 
 }
+
+
+function clearLocal() {
+    // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'กด "ตกลง" เพื่อดำเนินการ รีเช็ต เพื่อรับค่าใหม่',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.clear();
+            Swal.fire({
+                confirmButtonColor: '#0ef',
+                icon: 'success',
+                title: 'รีเซ็ตข้อมูลสำเร็จ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+                }
+            });
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
+        }
+    });
+}
+
+function openWebAdmin() {
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'คลิก "ตกลง" เพื่อเข้าสู่ระบบการจัดการการลงเวลาปฏิบัติงาน',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open('https://wisanusenhom.github.io/sekatime/', '_blank');
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
+        }
+    });
+}
