@@ -213,21 +213,22 @@ h3 {
 }
 
 // nav
-
 .navbar-dark .navbar-nav {
     display: flex;
     justify-content: flex-start;
     margin-left: 1%; /* เยื้องข้อความเล็กน้อยไปทางขวา */
-    width: 18%;
+    width: auto;
 }
   
 .navbar-dark .navbar-nav .nav-link {
-    margin-right: 10px;
+    margin-right: 10px; /* ระยะห่างด้านขวา */
+    margin-left: 10px; /* ระยะห่างด้านซ้าย */
     text-align: left; 
     color: #ffffff; 
     border-radius: 5px;
-    margin: 5 5px;
-    background-color: #2b374b ;
+    margin: 1.5px; /* ระยะห่างด้านบนและด้านล่าง */
+    background-color: #2b374b;
+    margin-left: auto;
     transition: background-color 0.3s, color 0.3s;
 }
 
@@ -258,3 +259,4 @@ h3 {
     background-color: #ffffff;
     transition: width 0.3s;
 }
+
