@@ -454,3 +454,34 @@ function hideLoading() {
     overlay.style.display = 'none';
 }
 
+function openWebToken() {
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'คลิก "ตกลง" เพื่อออกไลน์โทเค็นสำหรับการแจ้งเตือนผ่านไลน์',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open('https://wisanusenhom.github.io/nu/token.html', '_blank');
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
+        }
+    });
+}
+
+// รับอ้างอิงถึง Collapsible menu
+var collapsibleMenu = document.getElementById('collapsibleNavbar');
+
+// เพิ่ม Event Listener ให้กับเอกสาร
+document.addEventListener('click', function(event) {
+    // ตรวจสอบว่าคลิกไปที่ Collapsible menu หรือไม่
+    var isClickInsideMenu = collapsibleMenu.contains(event.target);
+
+    // หากไม่ได้คลิกที่ Collapsible menu ให้ซ่อนมัน
+    if (!isClickInsideMenu) {
+        collapsibleMenu.classList.remove('show'); // ซ่อน Collapsible menu
+    }
+});
+
