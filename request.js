@@ -46,7 +46,7 @@ if (isWindows || isMacOS) {
         // Show SweetAlert error message for unassigned boss
         Swal.fire({
             title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
-            text: "โปรดกำหนด หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา.",
+            text: "โปรดกำหนด หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา. หรือแจ้งผู้แดระบบในหน่วยงานของท่านกำหนดให้",
             icon: "error",
             confirmButtonText: "OK"
         }).then((result) => {
