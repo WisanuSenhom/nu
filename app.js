@@ -333,7 +333,7 @@ function clearLocal() {
                 title: 'รีเซ็ตข้อมูลสำเร็จ'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+                    window.location.href = 'login.html';
                 }
             });
         } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -377,7 +377,7 @@ function createtoken() {
         // Check if the user clicked ok
         if (result.isConfirmed) {
             // Redirect to the specified URL
-            window.location.href = 'https://wisanusenhom.github.io/nu/token.html';
+            window.location.href = 'token.html';
         }
     });
 }
@@ -464,7 +464,7 @@ function openWebToken() {
         cancelButtonText: 'ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            window.open('https://wisanusenhom.github.io/nu/token.html', '_blank');
+            window.open('token.html', '_blank');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
         }
