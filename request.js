@@ -29,7 +29,7 @@ if (isWindows || isMacOS) {
     } else {
         // User is not logged in, redirect to the login page
         console.log('User is not logged in. Redirecting to login page.');
-        window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW'; // Replace with your login page URL
+        window.location.href = 'login.html'; // Replace with your login page URL
     }
 
     if (boss !== null && boss !== undefined && boss !== '') {
@@ -46,7 +46,7 @@ if (isWindows || isMacOS) {
         // Show SweetAlert error message for unassigned boss
         Swal.fire({
             title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
-            text: "โปรดกำหนด หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา. หรือแจ้งผู้แดระบบในหน่วยงานของท่านกำหนดให้",
+            text: "โปรดกำหนดหรือแจ้งผู้แดระบบในหน่วยงานของท่านกำหนดให้ หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา.",
             icon: "error",
             confirmButtonText: "OK"
         }).then((result) => {
@@ -402,7 +402,7 @@ function clearLocal() {
                 title: 'รีเซ็ตข้อมูลสำเร็จ'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = 'https://liff.line.me/1654797991-pr0xKPxW';
+                    window.location.href = 'login.html';
                 }
             });
         } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -438,7 +438,7 @@ function openWebToken() {
         cancelButtonText: 'ยกเลิก',
     }).then((result) => {
         if (result.isConfirmed) {
-            window.open('https://wisanusenhom.github.io/nu/token.html', '_blank');
+            window.open('token.html', '_blank');
         } else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
         }
