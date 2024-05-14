@@ -207,6 +207,27 @@ Swal.fire({
 }).then((result) => {
   // If the user clicks "OK", you can proceed with further actions
   if (result.isConfirmed) {
+        // เตือน
+            let timerInterval;
+    Swal.fire({
+      title: "กำลังดำเนินการโปรดรอสักครู่...",
+      timerProgressBar: true,
+      didOpen: () => {
+        Swal.showLoading();
+        const timer = Swal.getPopup().querySelector("b");
+        timerInterval = setInterval(() => {
+          timer.textContent = `${Swal.getTimerLeft()}`;
+        }, 100);
+      },
+      willClose: () => {
+        clearInterval(timerInterval);
+      }
+    }).then((result) => {
+      /* Read more about handling dismissals below */
+      if (result.dismiss === Swal.DismissReason.timer) {
+        console.log("I was closed by the timer");
+      }
+    });
      // ส่งค่า พร้อมดึงข้อมูล
   fetch(`https://script.google.com/macros/s/AKfycbzsWNRX6L0lfXRqmFeehqrmuNsPTUMBBa9IDSnU6tJEKLs0Q7qlRmClbqNkHmUOqX19uA/exec?hash_cid=${hash_cid}&pname=${pname}&fname=${fname}&lname=${lname}&job=${job}&category=${category}&subcategory=${subcategory}&username=${username}&userid=${userid}&userimg=${userimg}&useros=${useros}&latitude=${latitude}&longitude=${longitude}&db1=${db1}&db2=${db2}&db3=${db3}&maincode=${maincode}&subcode=${subcode}`)
     .then(response => response.json())
