@@ -365,21 +365,26 @@ function checktoken() {
 
 function createtoken() {
     Swal.fire({
-        title: 'แจ้งเตือนทางไลน์ไม่สำเร็จ - ไม่พบ LINE TOKEN ในระบบ',
-        text: 'กด ตกลง เพื่อออก Line Token หากทำไม่เป็นให้สอบถามเจ้าหน้าที่ "ไอที" ของท่านนะครับ',
+        title: 'ไม่พบ LINE TOKEN ในระบบ',
+        text: 'กด ตกลง เพื่อออก Line Token หรือกดรับค่าใหม่ในกรณีออก Token แล้ว',
         icon: 'warning',
         confirmButtonText: 'ตกลง',
+        cancelButtonText: 'รับค่าใหม่',
+        showCancelButton: true,
         imageUrl: "https://lh5.googleusercontent.com/d/1vCuMH9g4FDHdqoi3hOJi7YY005fBpx9a",
         imageWidth: 350,
         imageHeight: 550,
         imageAlt: "Custom image"
     }).then((result) => {
-        // Check if the user clicked ok
         if (result.isConfirmed) {
             // Redirect to the specified URL
             window.location.href = 'token.html';
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // Clear local storage
+            localStorage.clear();
         }
     });
+    
 }
 
 function openWebAdmin() {
@@ -439,9 +444,41 @@ async function updateUser(uuid) {
         localStorage.setItem("upic", user.upic);
         localStorage.setItem("refid", user.refid);
         localStorage.setItem("docno", user.docno);
-        hideLoading();
+            
     });
+    checktoday();
+}
 
+async function checktoday(){
+    // Select the element with id "utimeline"
+    var utimelineElement = document.getElementById("utimeline");
+
+    // Fetch data from the server (replace 'your_api_endpoint' with the actual API endpoint)
+    var gas = 'https://script.google.com/macros/s/AKfycby0bCwNY5tyoVzfb1aM_48Yvs0PInOqUEnb_Aw2Bdyt4t2dBQ-m3FBA4lkMtmgaYHC53w/exec';
+    var qdata = `?id=${localStorage.getItem("refid")}&db=${localStorage.getItem("db1")}`;
+
+  await  fetch(gas + qdata)
+        .then(response => response.json())
+        .then(data => {
+            if (data.cc && data.cc.length > 0) {
+                // Assuming the server response has a property named 'cc' and 'intime'
+                var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \n ลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`; // Assuming you want the first 'intime' value
+
+                // Set the text content of the element with the fetched data
+                utimelineElement.innerText = timelineData;
+            } else {
+                var timelineData = `วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน`;
+                utimelineElement.innerText = timelineData;
+              //  console.error('Invalid or empty server response:', data);
+           
+                // Handle errors or empty responses here
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // Handle fetch errors here
+        });
+        hideLoading();  
 }
 
 function showLoading() {
