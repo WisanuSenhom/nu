@@ -71,6 +71,12 @@ h3 {
     text-align: center;
 }
 
+h4 {
+    font-size: 0.7em;
+    color: rgb(248, 251, 252);
+    text-align: center;
+}
+
 .input-box {
     position: relative;
     margin: 25px 0;
