@@ -479,6 +479,23 @@ function openWebToken() {
     });
 }
 
+function openWeb5s() {
+    Swal.fire({
+        title: 'ยืนยันการดำเนินการ',
+        text: 'คลิก "ตกลง" เพื่อเข้าสู่ระบบการจัดการงาน 5 ส.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.open('https://wisanusenhom.github.io/5s/', '_blank');
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การดำเนินการถูกยกเลิก', '', 'info');
+        }
+    });
+}
+
 // รับอ้างอิงถึง Collapsible menu
 var collapsibleMenu = document.getElementById('collapsibleNavbar');
 
