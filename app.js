@@ -441,6 +441,7 @@ function openWeb5s() {
 
 
 async function updateUser(uuid) {
+    hideLoading();  
     let gas = `https://script.google.com/macros/s/AKfycbziO9f62v0bfAz2bmPFQzuYibCxyamxDLOE08TZBcXx_UxzEqWvtGRIkSQQvYeV23Ko/exec?id=${uuid}`;
     const records = await fetch(gas);
     const data = await records.json();
@@ -494,7 +495,7 @@ async function checktoday(){
             console.error('Error fetching data:', error);
             // Handle fetch errors here
         });
-        hideLoading();  
+      //  hideLoading();  
 }
 
 function showLoading() {
