@@ -527,6 +527,15 @@ function openWebToken() {
     });
 }
 
+function logupdate() {
+    Swal.fire({
+        title: 'การปรับปรุง',
+        html : '18 ต.ค. 2567 <br> 1. ยกเลิกการตรวจสอบการลงเวลามาในระบบหลังบ้าน <br> 2. เพิ่มการตรวจสอบการลงเวลามาในระบบหน้าบ้าน',
+        icon: 'info',
+        confirmButtonText: 'ตกลง'
+    })
+}
+
 // รับอ้างอิงถึง Collapsible menu
 var collapsibleMenu = document.getElementById('collapsibleNavbar');
 
