@@ -118,6 +118,18 @@ navigator.geolocation.getCurrentPosition((position) => {
 // สิ้นสุด
 
 function checkin() {
+    Swal.fire({
+        title: 'คุณต้องการลงเวลาปฏิบัติงานหรือไม่?',
+        text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลามาปฏิบัติงาน',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+        allowOutsideClick: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // เริ่มต้น ลงเวลา
+
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
         // ขอค่าพิกัด
@@ -176,7 +188,7 @@ function checkin() {
                     let iconx = datas.icon;
                     let header = datas.header;
                     let text = datas.text;
-                      Swal.fire({
+                    Swal.fire({
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
@@ -204,6 +216,8 @@ function checkin() {
                             }, 500);  // Adjust the delay time as needed (500ms in this case)
                         }
                     });
+                    
+                    
 
                     // ---
                 });
@@ -228,10 +242,27 @@ function checkin() {
                 break;
         }
     }
+          // ฟังก์ชั่นลงเวลา
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การลงเวลาถูกยกเลิก', '', 'info');
+        }
+    });  
 
 }
 
 function checkout() {
+    Swal.fire({
+        title: 'คุณต้องการลงเวลากลับหรือไม่?',
+        text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลากลับ',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+           allowOutsideClick: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // เริ่มต้น ลงเวลา
+
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
         // ขอค่าพิกัด
@@ -327,6 +358,12 @@ function checkout() {
                 break;
         }
     }
+
+            // ฟังก์ชั่นลงเวลา
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การลงเวลาถูกยกเลิก', '', 'info');
+        }
+    });
 
 }
 
