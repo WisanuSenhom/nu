@@ -496,6 +496,60 @@ function openWeb5s() {
     });
 }
 
+
+function logupdate() {
+    Swal.fire({
+        title: 'การปรับปรุงล่าสุด',
+        html: '<strong>วันที่ 21 ตุลาคม 2567</strong><br>' +
+              '1. ยกเลิกการตรวจสอบการลงเวลาที่ระบบหลังบ้านเพื่อเพิ่มความสะดวกในการใช้งาน<br>' +
+              '2. เพิ่มฟังก์ชันการตรวจสอบการลงเวลาผ่านระบบหน้าบ้านเพื่อความรวดเร็ว<br>' +
+              '3. ตั้งทริกเกอร์ให้ตรวจสอบและลบข้อมูลซ้ำซ้อนในช่วงเวลา 03:00 - 04:00 น.',
+        icon: 'info',
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-success',  // Adding a success color to the title
+            content: 'text-dark'  // Darker text for better readability
+        }
+    });
+}
+
+
+
+
+function checkinfo() {
+    Swal.fire({
+        title: 'การลงเวลา',
+        html: 'คุณได้ทำการลงเวลาในการปฏิบัติงานในวันที่ <strong>' + localStorage.getItem("datecheck") + '</strong> เรียบร้อยแล้ว',
+        icon: 'info',
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-primary',  // Adds a primary color to the title
+            content: 'text-muted'  // Makes the content a bit more subtle
+        }
+    });
+}
+
+function aboutme() {
+    Swal.fire({
+        title: 'ข้อมูลของฉัน',
+        html: 
+            'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
+            'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
+            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
+            'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
+        icon: 'info',
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-primary',  // Adds a primary color to the title
+            content: 'text-dark'   // Makes the content more prominent
+        }
+    });
+}
+
+
 // รับอ้างอิงถึง Collapsible menu
 var collapsibleMenu = document.getElementById('collapsibleNavbar');
 
