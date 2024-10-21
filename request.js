@@ -128,6 +128,19 @@ navigator.geolocation.getCurrentPosition((position) => {
 
 
 function checkin() {
+    Swal.fire({
+        title: 'คุณต้องการยื่นคำขอหรือไม่?',
+        text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการยื่นคำขอลงเวลาปฏิบัติงาน',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+           allowOutsideClick: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // เริ่มต้น ลงเวลา
+
+
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
         // ขอค่าพิกัด
@@ -243,9 +256,27 @@ function checkin() {
         }
     }
 
+            // ฟังก์ชั่นลงเวลา
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การยื่นคำขอถูกยกเลิก', '', 'info');
+        }
+    });
+
 }
 
 function checkout() {
+    Swal.fire({
+        title: 'คุณต้องการยื่นคำขอหรือไม่?',
+        text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการยื่นคำขอลงเวลากลับ',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+           allowOutsideClick: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // เริ่มต้น ลงเวลา
+
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
         // ขอค่าพิกัด
@@ -380,6 +411,11 @@ function checkout() {
                 break;
         }
     }
+           // ฟังก์ชั่นลงเวลา
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            Swal.fire('การยื่นคำขอถูกยกเลิก', '', 'info');
+        }
+    });
 
 }
 
