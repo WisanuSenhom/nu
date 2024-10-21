@@ -176,7 +176,7 @@ function checkin() {
                     let iconx = datas.icon;
                     let header = datas.header;
                     let text = datas.text;
-                    Swal.fire({
+                      Swal.fire({
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
@@ -185,10 +185,23 @@ function checkin() {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                            const cktoday = new Date();
-                            const ckfd = cktoday.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
-                            localStorage.setItem("datecheck",ckfd );
-                             liff.closeWindow(); 
+                            if (iconx === 'success') {
+                                const cktoday = new Date();
+                                const ckfd = cktoday.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
+                                localStorage.setItem("datecheck", ckfd);
+                            }
+                    
+                            try {
+                                liff.closeWindow();
+                            } catch (error) {
+                                console.error("Failed to close window, refreshing...");
+                                location.reload(); // รีเฟรชหน้า
+                            }
+                    
+                            // Use a timeout to refresh the page after trying to close the window
+                            setTimeout(() => {
+                                location.reload();  // Refresh if liff.closeWindow() does not work
+                            }, 500);  // Adjust the delay time as needed (500ms in this case)
                         }
                     });
 
@@ -529,11 +542,54 @@ function openWebToken() {
 
 function logupdate() {
     Swal.fire({
-        title: 'การปรับปรุง',
-        html : '18 ต.ค. 2567 <br> 1. ยกเลิกการตรวจสอบการลงเวลามาในระบบหลังบ้าน <br> 2. เพิ่มการตรวจสอบการลงเวลามาในระบบหน้าบ้าน',
+        title: 'การปรับปรุงล่าสุด',
+        html: '<strong>วันที่ 21 ตุลาคม 2567</strong><br>' +
+              '1. ยกเลิกการตรวจสอบการลงเวลาที่ระบบหลังบ้านเพื่อเพิ่มความสะดวกในการใช้งาน<br>' +
+              '2. เพิ่มฟังก์ชันการตรวจสอบการลงเวลาผ่านระบบหน้าบ้านเพื่อความรวดเร็ว<br>' +
+              '3. ตั้งทริกเกอร์ให้ตรวจสอบและลบข้อมูลซ้ำซ้อนในช่วงเวลา 03:00 - 04:00 น.',
         icon: 'info',
-        confirmButtonText: 'ตกลง'
-    })
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-success',  // Adding a success color to the title
+            content: 'text-dark'  // Darker text for better readability
+        }
+    });
+}
+
+
+
+
+function checkinfo() {
+    Swal.fire({
+        title: 'การลงเวลา',
+        html: 'คุณได้ทำการลงเวลาในการปฏิบัติงานในวันที่ <strong>' + localStorage.getItem("datecheck") + '</strong> เรียบร้อยแล้ว',
+        icon: 'info',
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-primary',  // Adds a primary color to the title
+            content: 'text-muted'  // Makes the content a bit more subtle
+        }
+    });
+}
+
+function aboutme() {
+    Swal.fire({
+        title: 'ข้อมูลของฉัน',
+        html: 
+            'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
+            'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
+            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
+            'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
+        icon: 'info',
+        confirmButtonText: 'ยืนยัน',
+        showCloseButton: true,
+        customClass: {
+            title: 'text-primary',  // Adds a primary color to the title
+            content: 'text-dark'   // Makes the content more prominent
+        }
+    });
 }
 
 // รับอ้างอิงถึง Collapsible menu
