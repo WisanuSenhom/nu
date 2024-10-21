@@ -568,7 +568,12 @@ function checkinfo() {
 }
 
 function aboutme() {
+    var yourpic = localStorage.getItem("upic");
     Swal.fire({
+        imageUrl: yourpic,
+        imageWidth: 200,
+        imageHeight: 200,
+        imageAlt: "Custom image",
         title: 'ข้อมูลของฉัน',
         html: 
             'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
@@ -581,6 +586,81 @@ function aboutme() {
         customClass: {
             title: 'text-primary',  // Adds a primary color to the title
             content: 'text-dark'   // Makes the content more prominent
+        }
+    });
+}
+
+function editpic() {
+    var yourpic = localStorage.getItem("yourpic");
+    if (!yourpic || yourpic.trim() === '') {
+        // Show a warning message using SweetAlert
+        Swal.fire({
+            title: 'ไม่พบรูปโปรไฟล์ LINE ของคุณ',
+            text: 'ระบบจะลงชื่อออกและนำคุณเข้าสู่ระบบใหม่อีกครั้ง เมื่อคุณกด "ยืนยัน" เพื่อแก้ไขปัญหานี้',
+            icon: 'error',
+            confirmButtonText: 'ยืนยัน',
+            cancelButtonText: 'ยกเลิก',
+            showCancelButton: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // เคลียร์ localStorage
+                localStorage.clear();
+                // รีโหลดหน้าเว็บ
+                location.reload();
+            }
+        });
+        
+        return; // Exit the function to prevent further execution
+    }    
+    Swal.fire({
+        title: 'ยืนยันการแก้ไข.!',
+
+        imageUrl: yourpic,
+        imageWidth: 200,
+        imageHeight: 200,
+        imageAlt: "Custom image",
+
+        showCancelButton: true,
+        confirmButtonColor: '#007bff',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ตกลง',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var urlperson = `https://script.google.com/macros/s/AKfycbyJkVKoVcJV28-1NitWY-WwST5AWHguNDO1aB-l-4ZCCYyNDuBRznMvCbyLxjLi2EJU5Q/exec`;
+            var dataperson = `?id=${localStorage.getItem('uuid')}&pic=${yourpic}`;
+            fetch(urlperson + dataperson)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle the data returned from the server
+                    console.log(data);
+
+                    // Show a success message using SweetAlert
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        text: 'การแก้ไขข้อมูลเสร็จสิ้น',
+                        icon: 'success'
+                    }).then(() => {
+                           localStorage.clear();
+                           location.reload();
+                    });
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the fetch
+                    console.error('Fetch error:', error);
+
+                    // Show an error message using SweetAlert
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: 'ไม่สามารถแก้ไขข้อมูลได้',
+                        icon: 'error'
+                    });
+                });
         }
     });
 }
