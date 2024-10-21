@@ -26,22 +26,31 @@
     </button>
 
     <!-- Collapsible menu -->
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">- การจัดการ</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="window.open('request.html', '_blank');">- ยื่นคำขอ / Submit Request</a>
+        </li>       
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">- การจัดการ / Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">- ออก Line Token</a>
-        </li>
-           <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">- 5ส.</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">- ออก Line Token / Issue Line Token</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">- รีเซ็ต</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">- 5ส. / 5S</a>
         </li>
-              <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">- Log</a>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">- รีเซ็ต / Reset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">- ข้อมูลของฉัน / My Information</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">- การปรับปรุง / Updates</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="window.open('register.html', '_blank');">- การสมัคร / Register</a>
         </li>
       </ul>
     </div>
@@ -79,13 +88,11 @@
               <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary">คุณลงเวลาปฏิบัติงานในวันนี้แล้ว</button></div>
               <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger" onclick="getLocationcheckout()" data-toggle="modal" data-target="#outModal">ลงเวลากลับ</button></div>     <div class="signup-link"> -->
 
-   <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success"
-            onclick="checkin()">ลงเวลามา</button></div>
+      <div id="cin" class="invisible"><button id="cin" type="button" class="btn btn-success"   onclick="checkin()">ลงเวลามา</button></div>
         <!-- <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="window.open('request.html', '_blank');">ลงเวลา(บันทึกคำขอ)</button></div>  -->
-        <div id="creq" class="invisible"><button id="creq" type="button"
-            class="btn btn-primary">คุณลงเวลาปฏิบัติงานในวันนี้แล้ว</button></div>
-        <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger"
-            onclick="checkout()">ลงเวลากลับ</button></div>
+        <div id="creq" class="invisible"><button id="creq" type="button" class="btn btn-primary" onclick="checkinfo()" >คุณลงเวลาปฏิบัติงานในวันนี้แล้ว</button></div>
+        <div id="cout" class="invisible"><button id="cout" type="button" class="btn btn-danger"  onclick="checkout()">ลงเวลากลับ</button></div>
+        
         <!-- <div class="signup-link">
                 <a data-toggle="modal" data-target="#exampleModal">ตรวจสอบพิกัด/ลงทะเบียน</a>
                 </div> -->
