@@ -626,7 +626,7 @@ function checkinfo() {
     let dateCheckout = localStorage.getItem("datecheckout");
     let timeCheckout = localStorage.getItem("datetimecheckout");
 
-    if (formattedToday === dateCheck && !dateCheckout) {
+    if (formattedToday === dateCheck && !dateCheckout || formattedToday === dateCheck && formattedToday !== dateCheckout) {
         // Case: User has checked in but not yet checked out
         Swal.fire({
             title: 'การลงเวลาปฏิบัติงาน',
