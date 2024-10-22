@@ -28,32 +28,32 @@
     <!-- Collapsible menu -->
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="window.open('register.html', '_blank');">- สมัครสมาชิก / Register Now</a>
+        </li>   -->
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="window.open('request.html', '_blank');">- ยื่นคำขอ / Submit Request</a>
-        </li>       
+          <a class="nav-link" href="javascript:void(0);" onclick="window.open('request.html', '_blank');">- ส่งคำขอ / Submit Request</a>
+        </li>    
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">- การจัดการ / Management</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">- จัดการระบบ / System Management</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">- ออก Line Token / Issue Line Token</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">- ขอ Line Token / Generate Line Token</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">- 5ส. / 5S</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">- ระบบ 5ส. / 5S System</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">- รีเซ็ต / Reset</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">- ข้อมูลส่วนตัว / My Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">- ข้อมูลของฉัน / My Information</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="editpic()">- อัปเดตโปรไฟล์ / Update Profile Picture</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="editpic()">- แก้ไขรูปภาพโปรไฟล์ / Edit Profile Picture</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">- บันทึกการเปลี่ยนแปลง / Change Logs</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">- การปรับปรุง / Updates</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="window.open('register.html', '_blank');">- การสมัคร / Register</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">- รีเซ็ตข้อมูลระบบ / Reset System Data</a>
         </li>
       </ul>
     </div>
@@ -250,37 +250,47 @@
     </div>
   </div>
 
-  <script>
-window.onload = function checks() {
-  let today = new Date();
-  today.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' });
-  let hm = today.toLocaleTimeString('th-TH');
-
-  if (hm <= "08:31") {
-    const cinElement = document.getElementById("cin");
-    cinElement.classList.remove('invisible');
-
-    const cktodayx = new Date();
-    const ckfdx = cktodayx.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
-
-    if (ckfdx === localStorage.getItem("datecheck")) {
-      cinElement.classList.add('invisible');
-      document.getElementById("creq").classList.remove('invisible');
-    }
-
-  } else if (hm >= "16:29") {
-    document.getElementById("cout").classList.remove('invisible');
-  } else {
-    window.location.href = 'request.html';
-    document.getElementById("cin").classList.add('invisible');
-  };
-
-  let day = today.getDay();
-  if (day === 0 || day === 6) {
-    document.getElementById("typea").value = "วันหยุด";
-  }
-};
-  </script>
+ <script>
+    window.onload = function checks() {
+      // ดึงวันที่และเวลาใน timezone 'Asia/Bangkok'
+      let today = new Date();
+      let hm = today.getHours() * 60 + today.getMinutes(); // แปลงเวลาเป็นนาทีจากเที่ยงคืน
+    
+      // ดึง DOM elements ที่ต้องใช้งาน
+      const cinElement = document.getElementById("cin");
+      const creqElement = document.getElementById("creq");
+      const coutElement = document.getElementById("cout");
+      const typeaElement = document.getElementById("typea");
+    
+      // แปลงวันที่เป็นรูปแบบ 'th-TH' (ภาษาไทย)
+      let formattedToday = today.toLocaleDateString('th-TH');
+      
+      // ตรวจสอบวันที่วันนี้กับวันที่ที่เก็บใน localStorage
+      if (formattedToday === localStorage.getItem("datecheck")) {
+        // ถ้าวันที่ตรงกัน แสดง creqElement
+        creqElement.classList.remove('invisible');
+      } else {
+        // ถ้าวันที่ไม่ตรงกัน ตรวจสอบเวลา
+        if (hm <= 511) { // เวลา <= 08:31 (511 นาที)
+          cinElement.classList.remove('invisible'); // แสดงปุ่ม check-in
+        } else if (hm < 989) { // ถ้าเวลาอยู่ระหว่าง 08:31 และ 16:29
+          // ถ้าเวลาอยู่ระหว่าง 08:31 และ 16:29 ให้ redirect ไปหน้า 'request.html'
+          window.location.href = 'request.html';
+        }
+      }    
+      // เช็คว่าเวลา >= 16:29 (989 นาที) หรือไม่
+      if (hm >= 989) {
+        coutElement.classList.remove('invisible'); // แสดงปุ่ม check-out เสมอ
+      }
+    
+      // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
+      let day = today.getDay();
+      if (day === 0 || day === 6) {
+        typeaElement.value = "วันหยุด"; // ตั้งค่าเป็นวันหยุด
+      }
+    };
+    </script>
+  
   <script src="app.js"></script>
 
 
