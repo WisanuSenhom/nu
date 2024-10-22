@@ -622,7 +622,7 @@ function aboutme() {
         html: 
             'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
             'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
-            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
+            'หน่วยงาน/กลุ่มงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
             'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
         icon: 'info',
         confirmButtonText: 'ยืนยัน',
@@ -707,6 +707,58 @@ function editpic() {
                 });
         }
     });
+}
+
+
+function checkMap() {
+    // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
+    if (navigator.geolocation) {
+        // ขอค่าพิกัด
+        navigator.geolocation.getCurrentPosition(showPosition, handleError);
+    } else {
+        alert("เบราว์เซอร์ไม่รองรับ Geolocation");
+    }
+}
+
+// เมื่อได้รับค่าพิกัด
+async function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+    const destination = `${localStorage.getItem("oflat")},${localStorage.getItem("oflong")}`;
+    const googleMapUrl = `https://www.google.co.th/maps/dir/${destination}/${latitude},${longitude}`;
+    
+    // แสดงโมดัลเพื่อยืนยันการเปิด Google Maps
+    Swal.fire({
+        title: 'เปิด Google Maps หรือไม่?',
+        text: 'คุณต้องการเปิด Google Maps เพื่อดูระยะห่างระหว่างหน่วยงานกับตำแหน่งปัจจุบันของคุณหรือไม่?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ใช่',
+        cancelButtonText: 'ไม่'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Open the Google Maps link if the user confirms
+            window.open(googleMapUrl, '_blank');
+        }
+    });
+}
+
+// ฟังก์ชันจัดการข้อผิดพลาด
+function handleError(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            alert("ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่ง");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("ไม่สามารถรับตำแหน่งได้");
+            break;
+        case error.TIMEOUT:
+            alert("การขอข้อมูลใช้เวลานานเกินไป");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("เกิดข้อผิดพลาดที่ไม่รู้จัก");
+            break;
+    }
 }
 
 // รับอ้างอิงถึง Collapsible menu
