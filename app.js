@@ -595,21 +595,44 @@ function logupdate() {
 }
 
 
-
-
 function checkinfo() {
-    Swal.fire({
-        title: 'การลงเวลา',
-        html: 'คุณได้ทำการลงเวลาในการปฏิบัติงานในวันที่ <strong>' + localStorage.getItem("datecheck") + '</strong> เรียบร้อยแล้ว',
-        icon: 'info',
-        confirmButtonText: 'ยืนยัน',
-        showCloseButton: true,
-        customClass: {
-            title: 'text-primary',  // Adds a primary color to the title
-            content: 'text-muted'  // Makes the content a bit more subtle
-        }
-    });
+    let today = new Date();
+    let formattedToday = today.toLocaleDateString('th-TH');
+
+    let dateCheck = localStorage.getItem("datecheck");
+    let timeCheck = localStorage.getItem("datetimecheck");
+    let dateCheckout = localStorage.getItem("datecheckout");
+    let timeCheckout = localStorage.getItem("datetimecheckout");
+
+    if (formattedToday === dateCheck && !dateCheckout) {
+        // Case: User has checked in but not yet checked out
+        Swal.fire({
+            title: 'การลงเวลาปฏิบัติงาน',
+            html: 'ท่านได้ลงเวลาปฏิบัติงานในวันที่ <strong>' + dateCheck + '</strong> เวลา <strong>' + timeCheck + ' น.</strong> เรียบร้อยแล้ว',
+            icon: 'info',
+            confirmButtonText: 'ตกลง',
+            showCloseButton: true,
+            customClass: {
+                title: 'text-primary',
+                content: 'text-muted'
+            }
+        });
+    } else if (formattedToday === dateCheck && formattedToday === dateCheckout) {
+        // Case: User has checked in and out
+        Swal.fire({
+            title: 'การลงเวลาปฏิบัติงาน',
+            html: 'ท่านได้ลงเวลาปฏิบัติงานในวันที่ <strong>' + dateCheck + '</strong> เวลา <strong>' + timeCheck + ' น.</strong> และได้ลงเวลาสิ้นสุดการปฏิบัติงานในเวลา <strong>' + timeCheckout + ' น.</strong> เรียบร้อยแล้ว',
+            icon: 'success',
+            confirmButtonText: 'ตกลง',
+            showCloseButton: true,
+            customClass: {
+                title: 'text-success',
+                content: 'text-muted'
+            }
+        });
+    }
 }
+
 
 function aboutme() {
     var yourpic = localStorage.getItem("upic");
