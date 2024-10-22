@@ -248,7 +248,7 @@
     </div>
   </div>
 
- <script>
+<script>
     window.onload = function checks() {
       // ดึงวันที่และเวลาใน timezone 'Asia/Bangkok'
       let today = new Date();
@@ -272,13 +272,18 @@
         if (hm <= 511) { // เวลา <= 08:31 (511 นาที)
           cinElement.classList.remove('invisible'); // แสดงปุ่ม check-in
         } else if (hm < 989) { // ถ้าเวลาอยู่ระหว่าง 08:31 และ 16:29
-          // ถ้าเวลาอยู่ระหว่าง 08:31 และ 16:29 ให้ redirect ไปหน้า 'request.html'
-          window.location.href = 'request.html';
+          window.location.href = 'request.html'; // redirect ไปยัง 'request.html'
         }
-      }    
+      }
+    
       // เช็คว่าเวลา >= 16:29 (989 นาที) หรือไม่
       if (hm >= 989) {
-        coutElement.classList.remove('invisible'); // แสดงปุ่ม check-out เสมอ
+        // ถ้าตรงกับ datecheckout ใน localStorage ให้ซ่อน coutElement
+        if (formattedToday === localStorage.getItem("datecheckout")) {
+          coutElement.classList.add('invisible'); // ซ่อนปุ่ม check-out
+        } else {
+          coutElement.classList.remove('invisible'); // แสดงปุ่ม check-out
+        }
       }
     
       // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
