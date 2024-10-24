@@ -742,6 +742,19 @@ function editpic() {
         cancelButtonText: 'ยกเลิก'
     }).then((result) => {
         if (result.isConfirmed) {
+
+            // Show loading status
+            Swal.fire({
+                title: 'กำลังปรับปรุงรูปโปรไฟล์...',
+                text: 'โปรดรอสักครู่',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false, // Hide confirm button
+                didOpen: () => {
+                    Swal.showLoading(); // Show loading spinner
+                }
+            });
+
             var urlperson = `https://script.google.com/macros/s/AKfycbyJkVKoVcJV28-1NitWY-WwST5AWHguNDO1aB-l-4ZCCYyNDuBRznMvCbyLxjLi2EJU5Q/exec`;
             var dataperson = `?id=${localStorage.getItem('uuid')}&pic=${yourpic}`;
             fetch(urlperson + dataperson)
@@ -752,17 +765,14 @@ function editpic() {
                     return response.json();
                 })
                 .then(data => {
-                    // Handle the data returned from the server
-                    console.log(data);
-
                     // Show a success message using SweetAlert
                     Swal.fire({
                         title: 'สำเร็จ!',
-                        text: 'การแก้ไขข้อมูลเสร็จสิ้น',
+                        text: 'การแก้ไขข้อมูลเสร็จสิ้น ระบบจะทำการรีเซ็ตอัตโนมัติ',
                         icon: 'success'
                     }).then(() => {
-                           localStorage.clear();
-                           location.reload();
+                        localStorage.clear();
+                        location.reload();
                     });
                 })
                 .catch(error => {
@@ -779,7 +789,6 @@ function editpic() {
         }
     });
 }
-
 
 function checkMap() {
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
