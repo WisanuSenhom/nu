@@ -295,8 +295,8 @@ function checkout() {
         const longx = localStorage.getItem("oflong");
         const db1 = localStorage.getItem("db1");
         const token = localStorage.getItem("token");
-        //   const status = localStorage.getItem("status");
-        //   const role = localStorage.getItem("role");
+        const docno = localStorage.getItem("docno");
+          const job = localStorage.getItem("job");
         const boss = localStorage.getItem("boss");
         const ceo = localStorage.getItem("ceo");
         const refid = localStorage.getItem("refid");
@@ -311,9 +311,9 @@ function checkout() {
         var latlongElement = document.getElementById('latlong');
 
         // แสดงค่าใน element
-        latlongElement.innerHTML = 'พิกัดปัจจุบันของคุณ:<br>ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude + '<br><br>กรุณารอสักครู่ ระบบกำลังประมวลผลข้อมูล...';
+        latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude + '<br><br>กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล';
 
-        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}`)
+        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}`)
 
             .then(response => response.json())
             .then(data => {
@@ -323,7 +323,8 @@ function checkout() {
                     let iconx = datas.icon;
                     let header = datas.header;
                     let text = datas.text;
-             Swal.fire({
+                    // เพิ่มการตรวจสอบการลงเวลากลับ
+                    Swal.fire({
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
@@ -357,7 +358,7 @@ function checkout() {
                         }
                     });
 
-                    // ---
+                    // --- สิ้นสุดการตรวจสอบ
                 });
 
             })
