@@ -540,36 +540,62 @@ async function updateUser(uuid) {
   //  checktoday();
 }
 
-async function checktoday(){
-    // Select the element with id "utimeline"
-    var utimelineElement = document.getElementById("utimeline");
+async function checktoday() {
+    // แสดงสถานะกำลังโหลดข้อมูล
+    Swal.fire({
+        title: 'กำลังโหลดข้อมูล...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-    // Fetch data from the server (replace 'your_api_endpoint' with the actual API endpoint)
     var gas = 'https://script.google.com/macros/s/AKfycby0bCwNY5tyoVzfb1aM_48Yvs0PInOqUEnb_Aw2Bdyt4t2dBQ-m3FBA4lkMtmgaYHC53w/exec';
     var qdata = `?id=${localStorage.getItem("refid")}&db=${localStorage.getItem("db1")}`;
 
-  await  fetch(gas + qdata)
+    await fetch(gas + qdata)
         .then(response => response.json())
         .then(data => {
+            // ปิดการแสดงสถานะการโหลด
+            Swal.close();
+
             if (data.cc && data.cc.length > 0) {
                 // Assuming the server response has a property named 'cc' and 'intime'
-                var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \n ลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`; // Assuming you want the first 'intime' value
+                var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \nลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`;
 
-                // Set the text content of the element with the fetched data
-                utimelineElement.innerText = timelineData;
+                // แสดงข้อมูลที่ดึงมาใน Swal
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ตรวจสอบการลงเวลา',
+                    text: timelineData,
+                    confirmButtonText: 'ตกลง'
+                });
             } else {
                 var timelineData = `วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน`;
-                utimelineElement.innerText = timelineData;
-              //  console.error('Invalid or empty server response:', data);
-           
-                // Handle errors or empty responses here
+
+                // แสดงข้อความเตือนใน Swal
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ตรวจสอบการลงเวลา',
+                    text: timelineData,
+                    confirmButtonText: 'ตกลง'
+                });
             }
         })
         .catch(error => {
+            // ปิดการแสดงสถานะการโหลด
+            Swal.close();
+
             console.error('Error fetching data:', error);
-            // Handle fetch errors here
+
+            // แสดงข้อความผิดพลาดใน Swal
+            Swal.fire({
+                icon: 'error',
+                title: 'ข้อผิดพลาด',
+                text: 'ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง',
+                confirmButtonText: 'ตกลง'
+            });
         });
-      //  hideLoading();  
 }
 
 function showLoading() {
@@ -758,6 +784,17 @@ function editpic() {
 function checkMap() {
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
+        // แสดงสถานะกำลังประมวลผล
+        Swal.fire({
+            title: 'กำลังประมวลผล...',
+            text: 'กำลังตรวจสอบตำแหน่งของคุณ กรุณารอสักครู่',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         // ขอค่าพิกัด
         navigator.geolocation.getCurrentPosition(showPosition, handleError);
     } else {
@@ -771,7 +808,10 @@ async function showPosition(position) {
     const longitude = position.coords.longitude;
     const destination = `${localStorage.getItem("oflat")},${localStorage.getItem("oflong")}`;
     const googleMapUrl = `https://www.google.co.th/maps/dir/${destination}/${latitude},${longitude}`;
-    
+
+    // ปิดสถานะกำลังประมวลผลเมื่อได้รับข้อมูล
+    Swal.close();
+
     // แสดงโมดัลเพื่อยืนยันการเปิด Google Maps
     Swal.fire({
         title: 'เปิด Google Maps หรือไม่?',
@@ -790,18 +830,39 @@ async function showPosition(position) {
 
 // ฟังก์ชันจัดการข้อผิดพลาด
 function handleError(error) {
+    Swal.close(); // ปิดสถานะกำลังประมวลผลในกรณีเกิดข้อผิดพลาด
     switch (error.code) {
         case error.PERMISSION_DENIED:
-            alert("ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่ง");
+            Swal.fire({
+                title: 'การเข้าถึงถูกปฏิเสธ',
+                text: 'ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่งของคุณ',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.POSITION_UNAVAILABLE:
-            alert("ไม่สามารถรับตำแหน่งได้");
+            Swal.fire({
+                title: 'ตำแหน่งไม่พร้อมใช้งาน',
+                text: 'ไม่สามารถรับตำแหน่งได้',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.TIMEOUT:
-            alert("การขอข้อมูลใช้เวลานานเกินไป");
+            Swal.fire({
+                title: 'หมดเวลา',
+                text: 'การขอข้อมูลใช้เวลานานเกินไป',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.UNKNOWN_ERROR:
-            alert("เกิดข้อผิดพลาดที่ไม่รู้จัก");
+            Swal.fire({
+                title: 'ข้อผิดพลาดที่ไม่รู้จัก',
+                text: 'เกิดข้อผิดพลาดที่ไม่รู้จัก',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
     }
 }
