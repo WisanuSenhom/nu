@@ -218,7 +218,7 @@ function checkin() {
                     let iconx = datas.icon;
                     let header = datas.header;
                     let text = datas.text;
-                    Swal.fire({
+                      Swal.fire({
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
@@ -227,8 +227,28 @@ function checkin() {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
                             // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                            //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
-                            liff.closeWindow();
+                            if (iconx === 'success') {
+                                const cktoday = new Date();
+                                const ckfd = cktoday.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
+                                const hours = cktoday.getHours().toString().padStart(2, '0');
+                                const minutes = cktoday.getMinutes().toString().padStart(2, '0');
+                                const seconds = cktoday.getSeconds().toString().padStart(2, '0');
+                                const ckfdtime = `${hours}:${minutes}:${seconds}`;
+                                localStorage.setItem("datecheck", ckfd);
+                                localStorage.setItem("datetimecheck", ckfdtime);
+                            }
+                    
+                            try {
+                                liff.closeWindow();
+                            } catch (error) {
+                                console.error("Failed to close window, refreshing...");
+                                location.reload(); // รีเฟรชหน้า
+                            }
+                    
+                            // Use a timeout to refresh the page after trying to close the window
+                            setTimeout(() => {
+                                location.reload();  // Refresh if liff.closeWindow() does not work
+                            }, 500);  // Adjust the delay time as needed (500ms in this case)
                         }
                     });
 
@@ -372,20 +392,42 @@ function checkout() {
                         let iconx = datas.icon;
                         let header = datas.header;
                         let text = datas.text;
-                        Swal.fire({
-                            confirmButtonColor: '#1e90ff',
-                            icon: iconx,
-                            title: header,
-                            text: text
-                        }).then((result) => {
-                            // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
-                            if (result.isConfirmed) {
-                                // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                                //   localStorage.clear(); // เคลียร์ข้อมูลเดิม เพื่อทำการปรับปรุง 3/11/2023
-                                //  window.location.href = 'https://www.example.com';
-                                liff.closeWindow();
+                         // เพิ่มการตรวจสอบการลงเวลากลับ
+                    Swal.fire({
+                        confirmButtonColor: '#1e90ff',
+                        icon: iconx,
+                        title: header,
+                        text: text
+                    }).then((result) => {
+                        // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
+                        if (result.isConfirmed) {
+                            // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
+                            if (iconx === 'success') {
+                                const cktoday = new Date();
+                                const ckfd = cktoday.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
+                                const hours = cktoday.getHours().toString().padStart(2, '0');
+                                const minutes = cktoday.getMinutes().toString().padStart(2, '0');
+                                const seconds = cktoday.getSeconds().toString().padStart(2, '0');
+                                const ckfdtime = `${hours}:${minutes}:${seconds}`;
+                                localStorage.setItem("datecheckout", ckfd);
+                                localStorage.setItem("datetimecheckout", ckfdtime);
                             }
-                        });
+                    
+                            try {
+                                liff.closeWindow();
+                            } catch (error) {
+                                console.error("Failed to close window, refreshing...");
+                                location.reload(); // รีเฟรชหน้า
+                            }
+                    
+                            // Use a timeout to refresh the page after trying to close the window
+                            setTimeout(() => {
+                                location.reload();  // Refresh if liff.closeWindow() does not work
+                            }, 500);  // Adjust the delay time as needed (500ms in this case)
+                        }
+                    });
+
+                    // --- สิ้นสุดการตรวจสอบ
 
                         // ---
                     });
