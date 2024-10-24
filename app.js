@@ -690,10 +690,11 @@ function aboutme() {
         imageHeight: 200,
         imageAlt: "Custom image",
         title: 'ข้อมูลของฉัน',
-        html: 
+       html: 
+            'รหัส : <strong>' + localStorage.getItem("refid") + '</strong><br>' +
             'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
             'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
-            'หน่วยงาน/กลุ่มงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
+            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
             'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
         icon: 'info',
         confirmButtonText: 'ยืนยัน',
