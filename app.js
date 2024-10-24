@@ -537,7 +537,7 @@ async function updateUser(uuid) {
         localStorage.setItem("docno", user.docno);
             
     });
-    checktoday();
+  //  checktoday();
 }
 
 async function checktoday(){
