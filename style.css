@@ -226,32 +226,32 @@ margin: 3px 0;
 
 /* nav  */
 .navbar-dark .navbar-nav {
+  backdrop-filter: blur(20px);
   display: flex;
   justify-content: flex-start;
-  margin-left: 1%; /* เยื้องข้อความเล็กน้อยไปทางขวา */
+  margin-left: 2%; /* เยื้องข้อความเล็กน้อยไปทางขวา */
   width: auto;
 }
 
 .navbar-dark .navbar-nav .nav-link {
-  margin-right: 10px; /* ระยะห่างด้านขวา */
-  margin-left: 10px; /* ระยะห่างด้านซ้าย */
+  margin: 0 15px; /* จัดระยะห่างระหว่างลิงก์ */
   text-align: left;
   color: #ffffff;
-  border-radius: 5px;
-  margin: 1.5px; /* ระยะห่างด้านบนและด้านล่าง */
-  background-color: #2b374b;
-  margin-left: auto;
-  transition: background-color 0.3s, color 0.3s;
+  padding: 10px 15px; /* เพิ่มพื้นที่ภายในลิงก์ */
+  border-radius: 30px; /* ทำให้ลิงก์มีมุมโค้งมน */
+  background-color: rgba(43, 55, 75, 0.6); /* พื้นหลังโปร่งแสง */
+  transition: background-color 0.3s, color 0.3s, transform 0.3s;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
-  background-color: #495057;
+  background-color: rgba(73, 80, 87, 0.85); /* สีพื้นหลังที่เข้มขึ้นเมื่อ hover */
   color: #ffffff;
-  transition: background-color 0.3s, color 0.3s;
+  transform: translateY(-3px); /* ยกขึ้นเล็กน้อยเมื่อ hover */
 }
 
 .navbar-dark .navbar-nav .nav-link:active {
-  background-color: #007bff;
+  background-color: #007bff; /* พื้นหลังเมื่อกด active */
+  transform: translateY(0); /* รีเซตการยกขึ้นเมื่อกด */
 }
 
 .navbar-dark .navbar-nav .nav-link::after {
@@ -264,10 +264,22 @@ margin: 3px 0;
 }
 
 .navbar-dark .navbar-nav .nav-link:hover::after {
-  content: "";
-  display: block;
-  width: 100%;
+  width: 100%; /* เส้นใต้ขยายเต็มเมื่อ hover */
   height: 2px;
   background-color: #ffffff;
   transition: width 0.3s;
+}
+
+.navbar-dark .navbar-brand {
+  font-size: 1.5rem; /* ขนาดใหญ่สำหรับโลโก้หรือชื่อแบรนด์ */
+  font-weight: bold;
+  color: #ffffff;
+  margin-right: 20px;
+}
+
+
+#avatar {
+  width: 40px; /* Adjust the size of the avatar */
+  height: 40px;
+  border-radius: 50%; /* Make it circular */
 }
