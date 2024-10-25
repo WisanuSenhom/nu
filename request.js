@@ -600,9 +600,10 @@ function aboutme() {
         imageAlt: "Custom image",
         title: 'ข้อมูลของฉัน',
         html: 
+            'รหัส : <strong>' + localStorage.getItem("refid") + '</strong><br>' +
             'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
             'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
-            'หน่วยงาน/กลุ่มงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
+            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
             'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
         icon: 'info',
         confirmButtonText: 'ยืนยัน',
@@ -651,6 +652,19 @@ function editpic() {
         cancelButtonText: 'ยกเลิก'
     }).then((result) => {
         if (result.isConfirmed) {
+
+            // Show loading status
+            Swal.fire({
+                title: 'กำลังปรับปรุงรูปโปรไฟล์...',
+                text: 'โปรดรอสักครู่',
+                icon: 'info',
+                allowOutsideClick: false,
+                showConfirmButton: false, // Hide confirm button
+                didOpen: () => {
+                    Swal.showLoading(); // Show loading spinner
+                }
+            });
+
             var urlperson = `https://script.google.com/macros/s/AKfycbyJkVKoVcJV28-1NitWY-WwST5AWHguNDO1aB-l-4ZCCYyNDuBRznMvCbyLxjLi2EJU5Q/exec`;
             var dataperson = `?id=${localStorage.getItem('uuid')}&pic=${yourpic}`;
             fetch(urlperson + dataperson)
@@ -661,17 +675,14 @@ function editpic() {
                     return response.json();
                 })
                 .then(data => {
-                    // Handle the data returned from the server
-                    console.log(data);
-
                     // Show a success message using SweetAlert
                     Swal.fire({
                         title: 'สำเร็จ!',
-                        text: 'การแก้ไขข้อมูลเสร็จสิ้น',
+                        text: 'การแก้ไขข้อมูลเสร็จสิ้น ระบบจะทำการรีเซ็ตอัตโนมัติ',
                         icon: 'success'
                     }).then(() => {
-                           localStorage.clear();
-                           location.reload();
+                        localStorage.clear();
+                        location.reload();
                     });
                 })
                 .catch(error => {
@@ -690,9 +701,21 @@ function editpic() {
 }
 
 
+
 function checkMap() {
     // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
     if (navigator.geolocation) {
+        // แสดงสถานะกำลังประมวลผล
+        Swal.fire({
+            title: 'กำลังประมวลผล...',
+            text: 'กำลังตรวจสอบตำแหน่งของคุณ กรุณารอสักครู่',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         // ขอค่าพิกัด
         navigator.geolocation.getCurrentPosition(showPosition, handleError);
     } else {
@@ -706,7 +729,10 @@ async function showPosition(position) {
     const longitude = position.coords.longitude;
     const destination = `${localStorage.getItem("oflat")},${localStorage.getItem("oflong")}`;
     const googleMapUrl = `https://www.google.co.th/maps/dir/${destination}/${latitude},${longitude}`;
-    
+
+    // ปิดสถานะกำลังประมวลผลเมื่อได้รับข้อมูล
+    Swal.close();
+
     // แสดงโมดัลเพื่อยืนยันการเปิด Google Maps
     Swal.fire({
         title: 'เปิด Google Maps หรือไม่?',
@@ -725,18 +751,39 @@ async function showPosition(position) {
 
 // ฟังก์ชันจัดการข้อผิดพลาด
 function handleError(error) {
+    Swal.close(); // ปิดสถานะกำลังประมวลผลในกรณีเกิดข้อผิดพลาด
     switch (error.code) {
         case error.PERMISSION_DENIED:
-            alert("ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่ง");
+            Swal.fire({
+                title: 'การเข้าถึงถูกปฏิเสธ',
+                text: 'ผู้ใช้ปฏิเสธการเข้าถึงตำแหน่งของคุณ',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.POSITION_UNAVAILABLE:
-            alert("ไม่สามารถรับตำแหน่งได้");
+            Swal.fire({
+                title: 'ตำแหน่งไม่พร้อมใช้งาน',
+                text: 'ไม่สามารถรับตำแหน่งได้',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.TIMEOUT:
-            alert("การขอข้อมูลใช้เวลานานเกินไป");
+            Swal.fire({
+                title: 'หมดเวลา',
+                text: 'การขอข้อมูลใช้เวลานานเกินไป',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
         case error.UNKNOWN_ERROR:
-            alert("เกิดข้อผิดพลาดที่ไม่รู้จัก");
+            Swal.fire({
+                title: 'ข้อผิดพลาดที่ไม่รู้จัก',
+                text: 'เกิดข้อผิดพลาดที่ไม่รู้จัก',
+                icon: 'error',
+                confirmButtonText: 'ตกลง'
+            });
             break;
     }
 }
