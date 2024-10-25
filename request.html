@@ -301,7 +301,17 @@
       document.getElementById("daytime").min = yesterdayFormatted + "08:30";
       document.getElementById("daytime").max = dateTime + "16:30";
 
+    // ดึงข้อมูลรูปภาพจาก localStorage
+    const avatarSrc = localStorage.getItem("upic");
 
+    // ตรวจสอบว่ามีข้อมูลรูปภาพใน localStorage หรือไม่
+    if (avatarSrc) {
+      // ตั้งค่าให้รูปภาพ avatar
+      document.getElementById("avatar").src = avatarSrc;
+    } else {
+      // กรณีที่ไม่มีรูปภาพใน localStorage
+      document.getElementById("avatar").src = "default-avatar.png"; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
+    }
 
     }
   </script>
