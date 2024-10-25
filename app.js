@@ -879,16 +879,33 @@ function handleError(error) {
 }
 
 // รับอ้างอิงถึง Collapsible menu
-var collapsibleMenu = document.getElementById('collapsibleNavbar');
+ var collapsibleMenu = document.getElementById('collapsibleNavbar');
+    var menuButton = document.querySelector('.navbar-toggler');
 
-// เพิ่ม Event Listener ให้กับเอกสาร
-document.addEventListener('click', function(event) {
-    // ตรวจสอบว่าคลิกไปที่ Collapsible menu หรือไม่
-    var isClickInsideMenu = collapsibleMenu.contains(event.target);
-
-    // หากไม่ได้คลิกที่ Collapsible menu ให้ซ่อนมัน
-    if (!isClickInsideMenu) {
-        collapsibleMenu.classList.remove('show'); // ซ่อน Collapsible menu
+    // ฟังก์ชันซ่อนเมนู
+    function hideMenu() {
+        $(collapsibleMenu).collapse('hide');
     }
-});
 
+    // ซ่อนเมนูเมื่อคลิกนอกเมนู
+    window.onclick = function(event) {
+        if (!menuButton.contains(event.target) && !collapsibleMenu.contains(event.target)) {
+            hideMenu();
+        }
+    };
+
+    // ตั้งค่าตัวจับเวลาซ่อนเมนูหลังจาก 5 วินาที
+    var menuTimeout;
+    function resetMenuTimeout() {
+        clearTimeout(menuTimeout);
+        menuTimeout = setTimeout(hideMenu, 5000); // ซ่อนเมนูหลัง 5 วินาที
+    }
+
+    // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่ปุ่มหรือตัวเมนู
+    menuButton.onclick = function() {
+        resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อคลิกปุ่ม
+    };
+
+    collapsibleMenu.onclick = function() {
+        resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
+    };
