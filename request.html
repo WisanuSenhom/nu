@@ -13,7 +13,11 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- css -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="loading.css" />
   <title>บันทึกคำขอลงเวลาปฏิบัติงาน</title>
 </head>
 
@@ -25,38 +29,59 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Avatar Image -->
+    <a class="navbar-brand" href="javascript:void(0);" onclick="editpic()">
+      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="ลงเวลา" id="avatar"
+        class="d-inline-block align-top" />
+    </a>
+
     <!-- Collapsible menu -->
-<div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
-        <!-- <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="window.open('register.html', '_blank');">- สมัครสมาชิก / Register Now</a>
-        </li>   -->
-<!--         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="window.open('request.html', '_blank');">- ส่งคำขอ / Submit Request</a>
-        </li>   -->
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="checkMap()">- ตรวจสอบพิกัด / Check Location</a>
-        </li>    
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">- รายงานและการจัดการ / Reports & Management</a>
+         <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="checkMap()">
+            <i class="fas fa-map-marker-alt"></i> ตรวจสอบพิกัด
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">- ขอ Line Token / Generate Line Token</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="checktoday()">
+            <i class="fas fa-clock"></i> ตรวจสอบการลงเวลา
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">- ระบบ 5ส. / 5S System</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
+            <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">- ข้อมูลส่วนตัว / My Profile</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">
+            <i class="fab fa-line"></i> ออก Line Token
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="editpic()">- อัปเดตโปรไฟล์ / Update Profile Picture</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">
+            <i class="fas fa-folder"></i> งาน 5ส.
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">- บันทึกการเปลี่ยนแปลง / Change Logs</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">
+            <i class="fas fa-user"></i> ข้อมูลส่วนตัว
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">- รีเซ็ตข้อมูลระบบ / Reset System Data</a>
+          <a class="nav-link" href="javascript:void(0);" onclick="editpic()">
+            <i class="fas fa-image"></i> อัปเดตโปรไฟล์
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">
+            <i class="fas fa-history"></i> บันทึกการเปลี่ยนแปลง
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">
+            <i class="fas fa-sync-alt"></i> รีเซ็ตข้อมูลระบบ
+          </a>
         </li>
       </ul>
     </div>
