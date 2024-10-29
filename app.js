@@ -656,7 +656,7 @@ function checkinfo() {
     if (formattedToday === dateCheck && !dateCheckout || formattedToday === dateCheck && formattedToday !== dateCheckout) {
         // Case: User has checked in but not yet checked out
         Swal.fire({
-            title: 'การลงเวลาปฏิบัติงาน',
+            title: 'การลงเวลามาปฏิบัติงาน',
             html: 'ท่านได้ลงเวลาปฏิบัติงานในวันที่ <strong>' + dateCheck + '</strong> เวลา <strong>' + timeCheck + ' น.</strong> เรียบร้อยแล้ว',
             icon: 'info',
             confirmButtonText: 'ตกลง',
@@ -679,6 +679,19 @@ function checkinfo() {
                 content: 'text-muted'
             }
         });
+    } else if (formattedToday != dateCheck && formattedToday === dateCheckout || !dateCheck && formattedToday === dateCheckout ){
+                // Case: User has checked in and out
+                Swal.fire({
+                    title: 'การลงเวลาปฏิบัติงาน',
+                    html: 'ท่านไม่ได้ลงบันทึกเวลาเข้ามาทำงานในวันที่ <strong>'+dateCheckout+'</strong> ระบบได้ส่งคำขอการบันทึกเวลาเข้ามาทำงานให้ท่านแล้ว โดยท่านได้ลงบันทึกเวลาเลิกงานเรียบร้อยแล้วในเวลา <strong>' + timeCheckout + ' น.</strong>',
+                    icon: 'warning',
+                    confirmButtonText: 'ตกลง',
+                    showCloseButton: true,
+                    customClass: {
+                        title: 'text-warning',
+                        content: 'text-muted'
+                    }
+                });
     }
 }
 
@@ -877,6 +890,186 @@ function handleError(error) {
             break;
     }
 }
+
+// ยกเลิกการลงเวลาวันนี้
+async function canceltoday() {
+    const { value: accept } = await Swal.fire({
+        title: "หากยกเลิกข้อมูลแล้วไม่สามารถเรียกคืนข้อมูลได้",
+        input: "checkbox",
+        showCancelButton: true,
+        inputValue: 0,
+        inputPlaceholder: `ข้าพเจ้ายอมรับและดำเนินการ ยกเลิกการลงเวลาปฏิบัติงานในวันนี้`,
+        confirmButtonText: `Continue&nbsp;<i class="fa fa-arrow-right"></i>`,
+        inputValidator: (result) => {
+            return !result && "กรุณา ติ๊ก ยอมรับหากต้องการดำเนินการ";
+        },
+    });
+
+    if (accept) {
+        // Function to handle CAPTCHA verification
+        const handleCaptchaVerification = async () => {
+            generateCaptcha();
+            const captchaResult = await Swal.fire({
+                title: `กรอกรหัสยืนยัน ในการยกเลิกการลงเวลาท่านของ`,
+                showCancelButton: true,
+                confirmButtonText: `ยืนยัน&nbsp;<i class="fa-solid fa-trash"></i>`,
+                html: `<canvas id="captchaPopupCanvas" width="200" height="50"></canvas><br>
+                        <input type="text" id="captchaInput" class="swal2-input" placeholder="Enter the code here">`,
+                didOpen: () => {
+                    drawCaptcha("captchaPopupCanvas");
+                },
+                preConfirm: () => {
+                    const userInput = document.getElementById("captchaInput").value.toUpperCase();
+                    if (!userInput) {
+                        Swal.showValidationMessage("กรุณากรอกรหัสยืนยัน");
+                        return false;
+                    }
+                    return userInput;
+                },
+                showDenyButton: true,
+                denyButtonText: `ขอรหัสใหม่`,
+                denyButtonColor: "#039be5"
+            });
+
+            return captchaResult;
+        };
+
+        let captchaResult = await handleCaptchaVerification();
+        while (captchaResult.isDenied) {
+            // If user requests new captcha
+            captchaResult = await handleCaptchaVerification();
+        }
+
+        if (captchaResult.isConfirmed && captchaResult.value === captchaText) {
+            // Show loading status
+            Swal.fire({
+                title: 'กำลังโหลดข้อมูล...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbyq0lc6EUpmCWS5LB30Yv2M7exyHR6IEf7PeerHLPApFtIPQiRCep9XtDSX4yHAjYvB-w/exec';
+            const qdata = `?refid=${localStorage.getItem("refid")}&db1=${localStorage.getItem("db1")}&name=${localStorage.getItem("name")}&token=${localStorage.getItem("token")}&userid=${localStorage.getItem("userid")}`;
+
+            try {
+                const response = await fetch(gasUrl + qdata);
+
+                // ตรวจสอบสถานะ HTTP ก่อนแปลงเป็น JSON
+                if (!response.ok) {
+                    const errorResponse = await response.json(); // ดึง JSON ที่ตอบกลับ
+                    console.error('Error fetching data:', errorResponse);
+                    
+                    // แสดงข้อความผิดพลาดจากการตอบกลับ
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ข้อผิดพลาด',
+                        text: errorResponse.message || 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้',
+                        confirmButtonText: 'ตกลง',
+                        showCloseButton: true,
+                        customClass: {
+                            title: 'text-error',
+                            content: 'text-muted'
+                        }
+                    });
+                    return; // หยุดการทำงานเมื่อเกิดข้อผิดพลาด
+                }
+
+                const data = await response.json();
+          
+                Swal.close(); // Close loading
+
+                const status = data.status; 
+                const message = data.message;
+
+                if (status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'การดำเนินการยกเลิกลงเวลาในวันนี้',
+                        text: message,
+                        confirmButtonText: 'ตกลง',
+                        showCloseButton: true,
+                        customClass: {
+                            title: 'text-success',
+                            content: 'text-muted'
+                        }
+                    });
+                } else if (status === 'warning') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'การดำเนินการยกเลิกลงเวลาในวันนี้',
+                        text: message,
+                        confirmButtonText: 'ตกลง',
+                        showCloseButton: true,
+                        customClass: {
+                            title: 'text-error',
+                            content: 'text-muted'
+                        }
+                    });
+                } else if (status === 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ผิดพลาด',
+                        text: message,
+                        confirmButtonText: 'ตกลง',
+                        showCloseButton: true,
+                        customClass: {
+                            title: 'text-error',
+                            content: 'text-muted'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.close();
+                console.error('Error fetching data:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ข้อผิดพลาด',
+                    text: 'ไม่สามารถยกเลิกการลงเวลาในวันนี้ได้ กรุณาลองใหม่อีกครั้ง',
+                    confirmButtonText: 'ตกลง',
+                    showCloseButton: true,
+                    customClass: {
+                        title: 'text-error',
+                        content: 'text-muted'
+                    }
+                });
+            }
+        }
+    }
+}
+
+// Captcha
+
+let captchaText = "";
+
+function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+function generateCaptcha() {
+    // Generate a random string
+    captchaText = Math.random().toString(36).substring(2, 8).toUpperCase();
+    // console.log('Generated CAPTCHA:', captchaText); // Log CAPTCHA text
+}
+
+function drawCaptcha(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = "30px Arial";
+    for (let i = 0; i < captchaText.length; i++) {
+        ctx.fillStyle = getRandomColor();
+        ctx.fillText(captchaText[i], 30 * i + 10, 35);
+    }
+}
+
 
 // รับอ้างอิงถึง Collapsible menu
  var collapsibleMenu = document.getElementById('collapsibleNavbar');
