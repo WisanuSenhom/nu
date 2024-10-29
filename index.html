@@ -54,6 +54,11 @@
             <i class="fas fa-clock"></i> ตรวจสอบการลงเวลา
           </a>
         </li>
+           <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="canceltoday()">
+            <i class="fas fa-xmark"></i> ยกเลิกการลงเวลาในวันนี้
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
             <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
@@ -235,7 +240,7 @@
       let formattedToday = today.toLocaleDateString("th-TH");
 
       // ตรวจสอบวันที่วันนี้กับวันที่ที่เก็บใน localStorage
-      if (formattedToday === localStorage.getItem("datecheck")) {
+      if (formattedToday === localStorage.getItem("datecheck") || formattedToday === localStorage.getItem("datecheckout")) {   
         // ถ้าวันที่ตรงกัน แสดง creqElement
         creqElement.classList.remove("invisible");
       } else {
