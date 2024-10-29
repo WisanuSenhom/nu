@@ -536,7 +536,7 @@ async function checktoday(){
             console.error('Error fetching data:', error);
             // Handle fetch errors here
         });
-        hideLoading();  
+        // hideLoading();  
 }
 
 
