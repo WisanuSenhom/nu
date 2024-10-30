@@ -12,9 +12,9 @@ Swal.fire({
     cancelButtonText: 'ดำเนินการ',
     customClass: {
         confirmButton: "btn btn-success",
-    cancelButton: "btn btn-danger",
-        title: 'text-error'
-         }
+        cancelButton: "btn btn-danger",
+        title: "text-error"
+    }
 }).then((result) => {
     if (result.isConfirmed) {
         window.location.href = 'about:blank';
@@ -22,6 +22,7 @@ Swal.fire({
         Swal.fire('การดำเนินการถูกเปิดใช้งาน', '', 'info');
     }
 });
+
 
 }
     const uuid = localStorage.getItem('uuid');
