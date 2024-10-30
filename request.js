@@ -789,7 +789,6 @@ function handleError(error) {
 }
 
 // ยกเลิกการลงเวลาวันนี้
-// ยกเลิกการลงเวลาวันนี้
 async function canceltoday() {
     const { value: accept } = await Swal.fire({
         title: "หากยกเลิกข้อมูลแล้วไม่สามารถเรียกคืนข้อมูลได้",
@@ -851,7 +850,7 @@ async function canceltoday() {
         if (captchaResult.isConfirmed && captchaResult.value === captchaText) {
             // Show loading status
             Swal.fire({
-                title: 'กำลังโหลดข้อมูล...',
+                title: 'กำลังดำเนินการ...',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -894,13 +893,28 @@ async function canceltoday() {
                 if (status === 'success') {
                     Swal.fire({
                         icon: 'success',
-                        title: 'การดำเนินการยกเลิกลงเวลาในวันนี้',
+                        title: 'สำเร็จ! ยกเลิกลงเวลาในวันนี้แล้ว',
                         text: message,
                         confirmButtonText: 'ตกลง',
                         showCloseButton: true,
+                        allowOutsideClick: false,
                         customClass: {
                             title: 'text-success',
                             content: 'text-muted'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            localStorage.setItem("datecheckout", "");
+                            localStorage.setItem("datecheck", "");
+                            try {
+                                liff.closeWindow();
+                            } catch (error) {
+                                console.error("Failed to close window, refreshing...");
+                                // ใช้ timeout เพื่อหน่วงเวลารีเฟรชหน้าเว็บ
+                                setTimeout(() => {
+                                    location.reload();  // รีเฟรชหน้าเว็บหาก liff.closeWindow() ไม่ทำงาน
+                                }, 500);  // หน่วงเวลา 500 มิลลิวินาที (ปรับได้ตามต้องการ)
+                            }
                         }
                     });
                 } else if (status === 'warning') {
@@ -1012,3 +1026,4 @@ menuButton.onclick = function() {
 collapsibleMenu.onclick = function() {
     resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
 };
+
