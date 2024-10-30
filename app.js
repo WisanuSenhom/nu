@@ -16,6 +16,7 @@ if (isWindows || isMacOS) {
     text: 'คลิก "ตกลง" เพื่อปิด หรือ "ยกเลิก" เพื่อดำเนินการ (แนะนำให้ใช้สมาร์ทโฟน ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของพิกัด)',
     icon: 'warning',
     showCancelButton: true,
+    allowOutsideClick: false,
     confirmButtonText: 'ตกลง',
     cancelButtonText: 'ยกเลิก',
 }).then((result) => {
@@ -743,7 +744,7 @@ function editpic() {
         return; // Exit the function to prevent further execution
     }    
     Swal.fire({
-        title: 'ยืนยันการแก้ไข.!',
+        title: 'แก้ไขรูปภาพประจำตัวของคุณ.!',
 
         imageUrl: yourpic,
         imageWidth: 200,
@@ -751,6 +752,7 @@ function editpic() {
         imageAlt: "Custom image",
 
         showCancelButton: true,
+        allowOutsideClick: false,
         confirmButtonColor: '#007bff',
         cancelButtonColor: '#d33',
         confirmButtonText: 'ตกลง',
@@ -784,7 +786,8 @@ function editpic() {
                     Swal.fire({
                         title: 'สำเร็จ!',
                         text: 'การแก้ไขข้อมูลเสร็จสิ้น ระบบจะทำการรีเซ็ตอัตโนมัติ',
-                        icon: 'success'
+                        icon: 'success',
+                        allowOutsideClick: false
                     }).then(() => {
                         localStorage.clear();
                         location.reload();
