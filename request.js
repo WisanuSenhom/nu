@@ -3,13 +3,16 @@ document.addEventListener("DOMContentLoaded", function () {
 var isWindows = /Windows/i.test(navigator.userAgent);
 var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
 if (isWindows || isMacOS) {
- Swal.fire({
-    title: 'อุปกรณ์เครื่องนี้ไม่ใช่สมาร์ทโฟน(Android,iPhone)',
-    text: 'คลิก "ตกลง" เพื่อปิด หรือ "ยกเลิก" เพื่อดำเนินการ (แนะนำให้ใช้สมาร์ทโฟน ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของพิกัด)',
+Swal.fire({
+    title: 'ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)',
+    text: 'กรุณาคลิก "ปิด" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'ตกลง',
-    cancelButtonText: 'ยกเลิก',
+    confirmButtonText: 'ปิด',
+    cancelButtonText: 'ดำเนินการ',
+    customClass: {
+        confirmButton: 'confirm-button-class', // ตั้งชื่อ class สำหรับปุ่ม ปิด
+         }
 }).then((result) => {
     if (result.isConfirmed) {
         window.location.href = 'about:blank';
@@ -17,6 +20,7 @@ if (isWindows || isMacOS) {
         Swal.fire('การดำเนินการถูกเปิดใช้งาน', '', 'info');
     }
 });
+
 }
     const uuid = localStorage.getItem('uuid');
     const boss = localStorage.getItem('boss');
