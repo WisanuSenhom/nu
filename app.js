@@ -892,6 +892,7 @@ function handleError(error) {
 }
 
 // ยกเลิกการลงเวลาวันนี้
+// ยกเลิกการลงเวลาวันนี้
 async function canceltoday() {
     const { value: accept } = await Swal.fire({
         title: "หากยกเลิกข้อมูลแล้วไม่สามารถเรียกคืนข้อมูลได้",
@@ -909,36 +910,46 @@ async function canceltoday() {
         // Function to handle CAPTCHA verification
         const handleCaptchaVerification = async () => {
             generateCaptcha();
-            const captchaResult = await Swal.fire({
-                title: `กรอกรหัสยืนยัน ในการยกเลิกการลงเวลาท่านของ`,
-                showCancelButton: true,
-                confirmButtonText: `ยืนยัน&nbsp;<i class="fa-solid fa-trash"></i>`,
-                html: `<canvas id="captchaPopupCanvas" width="200" height="50"></canvas><br>
-                        <input type="text" id="captchaInput" class="swal2-input" placeholder="Enter the code here">`,
-                didOpen: () => {
-                    drawCaptcha("captchaPopupCanvas");
-                },
-                preConfirm: () => {
-                    const userInput = document.getElementById("captchaInput").value.toUpperCase();
-                    if (!userInput) {
-                        Swal.showValidationMessage("กรุณากรอกรหัสยืนยัน");
-                        return false;
-                    }
-                    return userInput;
-                },
-                showDenyButton: true,
-                denyButtonText: `ขอรหัสใหม่`,
-                denyButtonColor: "#039be5"
-            });
+            let captchaResult;
+
+            do {
+                captchaResult = await Swal.fire({
+                    title: `กรอกรหัสยืนยัน ในการยกเลิกการลงเวลาท่านของ`,
+                    showCancelButton: true,
+                    confirmButtonText: `ยืนยัน&nbsp;<i class="fa-solid fa-trash"></i>`,
+                    html: `<canvas id="captchaPopupCanvas" width="200" height="50"></canvas><br>
+                            <input type="text" id="captchaInput" class="swal2-input" placeholder="Enter the code here">`,
+                    didOpen: () => {
+                        drawCaptcha("captchaPopupCanvas");
+                    },
+                    preConfirm: () => {
+                        const userInput = document.getElementById("captchaInput").value.toUpperCase();
+                        if (!userInput) {
+                            Swal.showValidationMessage("กรุณากรอกรหัสยืนยัน");
+                            return false;
+                        } else if (userInput !== captchaText) {
+                            Swal.showValidationMessage("รหัสยืนยันไม่ถูกต้อง กรุณาลองอีกครั้ง");
+                            generateCaptcha(); // Generate a new captcha if incorrect
+                            drawCaptcha("captchaPopupCanvas");
+                            return false;
+                        }
+                        return userInput;
+                    },
+                    showDenyButton: true,
+                    denyButtonText: `ขอรหัสใหม่`,
+                    denyButtonColor: "#039be5"
+                });
+
+                // Check if user requested a new CAPTCHA
+                if (captchaResult.isDenied) {
+                    generateCaptcha();
+                }
+            } while (!captchaResult.isConfirmed); // Repeat if CAPTCHA is not confirmed
 
             return captchaResult;
         };
 
-        let captchaResult = await handleCaptchaVerification();
-        while (captchaResult.isDenied) {
-            // If user requests new captcha
-            captchaResult = await handleCaptchaVerification();
-        }
+        const captchaResult = await handleCaptchaVerification();
 
         if (captchaResult.isConfirmed && captchaResult.value === captchaText) {
             // Show loading status
@@ -1039,66 +1050,68 @@ async function canceltoday() {
     }
 }
 
+
 // Captcha
 
 let captchaText = "";
 
 function getRandomColor() {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
 
 function generateCaptcha() {
-    // Generate a random string
-    captchaText = Math.random().toString(36).substring(2, 8).toUpperCase();
-    // console.log('Generated CAPTCHA:', captchaText); // Log CAPTCHA text
+  captchaText = Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
 function drawCaptcha(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.font = "30px Arial";
-    for (let i = 0; i < captchaText.length; i++) {
-        ctx.fillStyle = getRandomColor();
-        ctx.fillText(captchaText[i], 30 * i + 10, 35);
-    }
+  ctx.font = "30px Arial";
+  for (let i = 0; i < captchaText.length; i++) {
+    ctx.fillStyle = getRandomColor();
+    ctx.fillText(captchaText[i], 30 * i + 10, 35);
+  }
 }
 
 
+
+
+
 // รับอ้างอิงถึง Collapsible menu
- var collapsibleMenu = document.getElementById('collapsibleNavbar');
-    var menuButton = document.querySelector('.navbar-toggler');
+var collapsibleMenu = document.getElementById('collapsibleNavbar');
+var menuButton = document.querySelector('.navbar-toggler');
 
-    // ฟังก์ชันซ่อนเมนู
-    function hideMenu() {
-        $(collapsibleMenu).collapse('hide');
+// ฟังก์ชันซ่อนเมนู
+function hideMenu() {
+    $(collapsibleMenu).collapse('hide');
+}
+
+// ซ่อนเมนูเมื่อคลิกนอกเมนู
+window.onclick = function(event) {
+    if (!menuButton.contains(event.target) && !collapsibleMenu.contains(event.target)) {
+        hideMenu();
     }
+};
 
-    // ซ่อนเมนูเมื่อคลิกนอกเมนู
-    window.onclick = function(event) {
-        if (!menuButton.contains(event.target) && !collapsibleMenu.contains(event.target)) {
-            hideMenu();
-        }
-    };
+// ตั้งค่าตัวจับเวลาซ่อนเมนูหลังจาก 10 วินาที
+var menuTimeout;
+function resetMenuTimeout() {
+    clearTimeout(menuTimeout);
+    menuTimeout = setTimeout(hideMenu, 10000); // ซ่อนเมนูหลัง 10 วินาที
+}
 
-    // ตั้งค่าตัวจับเวลาซ่อนเมนูหลังจาก 5 วินาที
-    var menuTimeout;
-    function resetMenuTimeout() {
-        clearTimeout(menuTimeout);
-        menuTimeout = setTimeout(hideMenu, 5000); // ซ่อนเมนูหลัง 5 วินาที
-    }
+// รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่ปุ่มหรือตัวเมนู
+menuButton.onclick = function() {
+    resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อคลิกปุ่ม
+};
 
-    // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่ปุ่มหรือตัวเมนู
-    menuButton.onclick = function() {
-        resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อคลิกปุ่ม
-    };
-
-    collapsibleMenu.onclick = function() {
-        resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
-    };
+collapsibleMenu.onclick = function() {
+    resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
+};
