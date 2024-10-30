@@ -198,6 +198,14 @@ function checkin() {
                 location.reload();
             });
             return;
+        }else if (nte ==='ระบบขัดข้อง'){
+            Swal.fire({
+                title: 'กรุณาติดต่อผู้พัฒนา',
+                html: 'ท่านได้ระบุเหตุผลว่า "ระบบขัดข้อง" กรุณาแจ้งผู้พัฒนาเพื่อให้ดำเนินการแก้ไขปัญหาโดยเร็วที่สุด ขออภัยในความไม่สะดวก',
+                icon: 'warning',
+                allowOutsideClick: false,
+                confirmButtonText: 'ตกลง'
+            });    
         }
         // เลือก id "latlong"
              var latlongElement = document.getElementById('latlong');
