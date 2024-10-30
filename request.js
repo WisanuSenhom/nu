@@ -4,7 +4,7 @@ var isWindows = /Windows/i.test(navigator.userAgent);
 var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
 if (isWindows || isMacOS) {
 Swal.fire({
-    title: 'ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)',
+    title: '<span class="text-error">ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)</span>',
     text: 'กรุณาคลิก "ตกลง" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
     icon: 'warning',
     showCancelButton: true,
@@ -12,8 +12,7 @@ Swal.fire({
     cancelButtonText: 'ดำเนินการ',
     customClass: {
         confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger",
-        title: "text-error"
+        cancelButton: "btn btn-danger"
     }
 }).then((result) => {
     if (result.isConfirmed) {
@@ -22,7 +21,6 @@ Swal.fire({
         Swal.fire('การดำเนินการถูกเปิดใช้งาน', '', 'info');
     }
 });
-
 
 }
     const uuid = localStorage.getItem('uuid');
