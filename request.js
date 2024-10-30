@@ -5,13 +5,15 @@ var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
 if (isWindows || isMacOS) {
 Swal.fire({
     title: 'ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)',
-    text: 'กรุณาคลิก "ปิด" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
+    text: 'กรุณาคลิก "ตกลง" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'ปิด',
+    confirmButtonText: 'ตกลง',
     cancelButtonText: 'ดำเนินการ',
     customClass: {
-        confirmButton: 'confirm-button-class', // ตั้งชื่อ class สำหรับปุ่ม ปิด
+        confirmButton: "btn btn-success",
+    cancelButton: "btn btn-danger"
+        title: 'text-error'
          }
 }).then((result) => {
     if (result.isConfirmed) {
