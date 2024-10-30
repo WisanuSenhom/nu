@@ -12,7 +12,7 @@ Swal.fire({
     cancelButtonText: 'ดำเนินการ',
     customClass: {
         confirmButton: "btn btn-success",
-    cancelButton: "btn btn-danger"
+    cancelButton: "btn btn-danger",
         title: 'text-error'
          }
 }).then((result) => {
