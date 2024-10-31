@@ -152,6 +152,7 @@ function checkin() {
     async function showPositionin(position) {
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
+        const secureCode = await generateSecureCode();
         const uuid = localStorage.getItem('uuid');
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
@@ -183,7 +184,7 @@ function checkin() {
         // แสดงค่าใน element
         latlongElement.innerHTML = 'พิกัดปัจจุบันของคุณ:<br>ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude + '<br><br>กรุณารอสักครู่ ระบบกำลังประมวลผลข้อมูล...';
 
-        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&datecheckx=${new Date().toDateString()}`)
+        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&secureCode=${secureCode}`)
 
             .then(response => response.json())
             .then(data => {
@@ -289,7 +290,7 @@ function checkout() {
     async function showPositionin(position) {
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
-
+const secureCode = await generateSecureCode();
         const uuid = localStorage.getItem('uuid');
         const cidhash = localStorage.getItem("cidhash");
         const userid = localStorage.getItem("userid");
@@ -319,7 +320,7 @@ function checkout() {
         // แสดงค่าใน element
         latlongElement.innerHTML = 'ละติจูด: ' + latitude + '<br>ลองจิจูด: ' + longitude + '<br><br>กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล';
 
-        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&datecheckx=${new Date().toDateString()}`)
+        await fetch(`https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}`)
 
             .then(response => response.json())
             .then(data => {
@@ -1138,3 +1139,23 @@ menuButton.onclick = function() {
 collapsibleMenu.onclick = function() {
     resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
 };
+
+async function generateSecureCode() {
+    const date = new Date();
+    const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+    const secretKey = 'YOUR_SECRET_KEY';
+
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(secretKey),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+    );
+    const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data));
+    const code = Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+    return code;
+}
