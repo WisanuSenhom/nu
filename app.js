@@ -1143,7 +1143,7 @@ collapsibleMenu.onclick = function() {
 async function generateSecureCode() {
     const date = new Date();
     const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
-    const secretKey = 'YOUR_SECRET_KEY';
+    const secretKey = 'WISANU_SENHOM';
 
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
