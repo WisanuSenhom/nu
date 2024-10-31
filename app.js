@@ -18,6 +18,7 @@ Swal.fire({
     showCancelButton: true,
     confirmButtonText: 'ตกลง',
     cancelButtonText: 'ดำเนินการ',
+    allowOutsideClick: false,
     customClass: {
         confirmButton: "btn btn-success",
         cancelButton: "btn btn-danger"
