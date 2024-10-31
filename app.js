@@ -196,7 +196,8 @@ function checkin() {
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
-                        text: text
+                        text: text,
+                        allowOutsideClick: false
                     }).then((result) => {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
@@ -332,7 +333,8 @@ function checkout() {
                         confirmButtonColor: '#1e90ff',
                         icon: iconx,
                         title: header,
-                        text: text
+                        text: text,
+                        allowOutsideClick: false
                     }).then((result) => {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
