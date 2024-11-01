@@ -1150,6 +1150,7 @@ async function canceltoday() {
         captchaResult = await Swal.fire({
             title: `กรอกรหัสยืนยันในการยกเลิกการลงเวลาของท่าน`,
             showCancelButton: true,
+          allowOutsideClick: false,
             confirmButtonText: `ยืนยัน&nbsp;<i class="fa-solid fa-trash"></i>`,
             html: `<canvas id="captchaPopupCanvas" width="200" height="50"></canvas><br>
                               <input type="text" id="captchaInput" class="swal2-input" placeholder="Enter the code here">`,
