@@ -20,9 +20,10 @@ Swal.fire({
     cancelButtonText: 'ดำเนินการ',
     allowOutsideClick: false,
     customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger"
-    }
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
 }).then((result) => {
     if (result.isConfirmed) {
         window.location.href = 'about:blank';
@@ -131,6 +132,11 @@ function checkin() {
         confirmButtonText: 'ยืนยัน',
         cancelButtonText: 'ยกเลิก',
         allowOutsideClick: false,
+            customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
     }).then((result) => {
         if (result.isConfirmed) {
             // เริ่มต้น ลงเวลา
@@ -199,7 +205,13 @@ function checkin() {
                         icon: iconx,
                         title: header,
                         text: text,
-                        allowOutsideClick: false
+                           confirmButtonText: 'ตกลง',
+                        allowOutsideClick: false,
+                               customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
                     }).then((result) => {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
@@ -269,6 +281,11 @@ function checkout() {
         confirmButtonText: 'ยืนยัน',
         cancelButtonText: 'ยกเลิก',
            allowOutsideClick: false,
+        customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
     }).then((result) => {
         if (result.isConfirmed) {
             // เริ่มต้น ลงเวลา
@@ -336,7 +353,13 @@ const secureCode = await generateSecureCode();
                         icon: iconx,
                         title: header,
                         text: text,
-                        allowOutsideClick: false
+                        confirmButtonText: 'ตกลง',
+                        allowOutsideClick: false,
+                            customClass: {
+            confirmButton: "btn btn-success",
+            cancelButton: "btn btn-danger"
+          },
+          buttonsStyling: false
                     }).then((result) => {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                         if (result.isConfirmed) {
