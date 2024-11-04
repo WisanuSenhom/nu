@@ -47,6 +47,7 @@ async function getmember(yourid,yourpic){
       localStorage.setItem("docno", user.docno);
       localStorage.setItem("upic", user.upic);
       localStorage.setItem("refid", user.refid);
+      localStorage.setItem("rank", user.rank);
 
             Swal.fire({
                 confirmButtonColor: '#0ef',
