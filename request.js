@@ -608,27 +608,48 @@ function checkinfo() {
 }
 
 function aboutme() {
-    var yourpic = localStorage.getItem("upic");
-    Swal.fire({
-        imageUrl: yourpic,
-        imageWidth: 200,
-        imageHeight: 200,
-        imageAlt: "Custom image",
-        title: 'ข้อมูลของฉัน',
-        html: 
-            'รหัส : <strong>' + localStorage.getItem("refid") + '</strong><br>' +
-            'ชื่อ : <strong>' + localStorage.getItem("name") + '</strong><br>' +
-            'ตำแหน่ง : <strong>' + localStorage.getItem("job") + '</strong><br>' +
-            'หน่วยงาน : <strong>' + localStorage.getItem("office") + '</strong><br>' +
-            'สังกัด : <strong>' + localStorage.getItem("mainsub") + '</strong><br>',
-        icon: 'info',
-        confirmButtonText: 'ยืนยัน',
-        showCloseButton: true,
-        customClass: {
-            title: 'text-primary',  // Adds a primary color to the title
-            content: 'text-dark'   // Makes the content more prominent
-        }
-    });
+  var yourpic = localStorage.getItem("upic");
+  Swal.fire({
+    imageUrl: yourpic,
+    imageWidth: 200,
+    imageHeight: 200,
+    imageAlt: "Custom image",
+    title: "ข้อมูลของฉัน",
+    html:
+      "รหัส : <strong>" +
+      localStorage.getItem("refid") +
+      "</strong><br>" +
+      "ชื่อ : <strong>" +
+      localStorage.getItem("name") +
+      "</strong><br>" +
+      "ตำแหน่ง : <strong>" +
+      localStorage.getItem("job") +
+      "</strong><br>" +
+      "ประเภท : <strong>" +
+      localStorage.getItem("rank") +
+      "</strong><br>" +
+      "หน่วยงาน : <strong>" +
+      localStorage.getItem("office") +
+      "</strong><br>" +
+      "สังกัด : <strong>" +
+      localStorage.getItem("mainsub") +
+      "</strong><br>",
+    icon: "info",
+    confirmButtonText: "ตกลง",
+    showCloseButton: true,
+    confirmButtonColor: "#008000",
+    customClass: {
+      title: "text-primary", // Adds a primary color to the title
+      content: "text-dark", // Makes the content more prominent
+    },
+    showDenyButton: true,
+    denyButtonText: "แก้ไข",
+    denyButtonColor: "#007bff",
+  }).then((result) => {
+    if (result.isDenied) {
+      window.location.href = "https://wisanusenhom.github.io/sekatime/setting.html";
+    }
+  });
 }
 
 function editpic() {
