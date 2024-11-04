@@ -809,6 +809,9 @@ function aboutme() {
       "ตำแหน่ง : <strong>" +
       localStorage.getItem("job") +
       "</strong><br>" +
+      "ประเภท : <strong>" +
+      localStorage.getItem("rank") +
+      "</strong><br>" +
       "หน่วยงาน : <strong>" +
       localStorage.getItem("office") +
       "</strong><br>" +
@@ -816,13 +819,20 @@ function aboutme() {
       localStorage.getItem("mainsub") +
       "</strong><br>",
     icon: "info",
-    confirmButtonText: "ยืนยัน",
+    confirmButtonText: "ตกลง",
     showCloseButton: true,
     confirmButtonColor: "#008000",
     customClass: {
       title: "text-primary", // Adds a primary color to the title
       content: "text-dark", // Makes the content more prominent
     },
+    showDenyButton: true,
+    denyButtonText: "แก้ไข",
+    denyButtonColor: "#007bff",
+  }).then((result) => {
+    if (result.isDenied) {
+      window.location.href = "https://wisanusenhom.github.io/sekatime/setting.html";
+    }
   });
 }
 
