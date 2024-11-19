@@ -16,7 +16,10 @@ function getchatID(){
               title: "text-info",
               content: "text-muted",
             },
-            html: `Chat.ID:<strong> ${chatId} </strong>`,
+            html: `<i class="fa-brands fa-telegram"></i> Chat.ID:<strong> ${chatId} </strong>`,
+            footer: `<a href="https://t.me/setlanguage/thaith" target="_blank">
+            <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
+          </a>`,
           }).then((result) => {
             if (result.isConfirmed) {
               getLatestUpdate();
@@ -67,8 +70,11 @@ function getLatestUpdate() {
             title: "text-info",
             content: "text-muted",
           },
-          html: `<strong>Name:</strong> ${fname} ${lname}<br>
-            <strong>Username:</strong> ${usName}`,
+          html: `Name:<strong> ${fname} ${lname}</strong><br>
+            Username:<strong> ${usName}</strong>`,
+            footer: `<a href="https://t.me/setlanguage/thaith" target="_blank">
+            <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
+          </a>`,
         }).then((result) => {
           if (result.isConfirmed) {
             // ส่งข้อมูล API
