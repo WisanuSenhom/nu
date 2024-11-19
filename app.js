@@ -1,41 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   showLoading();
-  // แจ้งการปรับปรุง
-  //   Swal.fire({
-  //   icon: 'warning',
-  //   title: 'แจ้งการปรับปรุง!',
-  //   html: 'ในวันเสาร์ ที่ 4 พ.ย. 2566 เวลา 20.00 - 23.00 น. <br>1. ปรับปรุงเลขที่สมาชิกสำหรับจัดทำรหัสอ้างอิง<br>2. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหลังบ้านทั้งหมด <br>3. ปรับปรุงเงื่อนไงสำหรับแต่ละฟังก์ชั่น ระบบหน้าบ้านทั้งหมด <br>4. หากหลังปรังปรุงแล้วใช้งานไม่ได้ โปรด Clear Local Storage ในหน้า Login! ให้ทำการลงเวลาใหม่อีกครั้ง',
-  //   // footer: '<a href="">Why do I have this issue?</a>'
-  // })
-  // ตรวจระบบ
-  var isWindows = /Windows/i.test(navigator.userAgent);
-  var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
-  if (isWindows || isMacOS) {
-    Swal.fire({
-      title:
-        '<span class="text-error">ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)</span>',
-      text: 'กรุณาคลิก "ตกลง" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "ตกลง",
-      cancelButtonText: "ดำเนินการ",
-      allowOutsideClick: false,
-      confirmButtonColor: "#008000",
-      cancelButtonColor: "#bb2124",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location.href = "about:blank";
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire("การดำเนินการถูกเปิดใช้งาน", "", "info");
-      }
-    });
-  }
-  // ตรวจสอบว่ามีค่า user ใน Local Storage หรือไม่
-  const token = localStorage.getItem("token");
-  if (!token) {
-    createtoken();
-  }
-
+  // const token = localStorage.getItem("token");
+  // if (!token) {
+  //   createtoken();
+  // }
   const uuid = localStorage.getItem("uuid");
   if (uuid) {
     // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
@@ -182,6 +150,7 @@ function checkin() {
         const boss = localStorage.getItem("boss");
         const ceo = localStorage.getItem("ceo");
         const refid = localStorage.getItem("refid");
+        const chatId  = localStorage.getItem("chatId");
 
         let typea = document.querySelector("#typea").value;
         let nte = document.querySelector("#nte").value;
@@ -203,7 +172,7 @@ function checkin() {
           "<br><br>กรุณารอสักครู่ ระบบกำลังประมวลผลข้อมูล...";
 
         await fetch(
-          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&secureCode=${secureCode}`
+          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&secureCode=${secureCode}&chatId=${chatId}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -337,6 +306,7 @@ cancelButtonColor: '#6F7378'
         const boss = localStorage.getItem("boss");
         const ceo = localStorage.getItem("ceo");
         const refid = localStorage.getItem("refid");
+        const chatId  = localStorage.getItem("chatId");
 
         let typea = document.querySelector("#typea").value;
         let nte = document.querySelector("#nte").value;
@@ -356,7 +326,7 @@ cancelButtonColor: '#6F7378'
           "<br><br>กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล";
 
         await fetch(
-          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}`
+          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -379,7 +349,7 @@ cancelButtonColor: '#6F7378'
                 // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
                 if (result.isConfirmed) {
                   // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                  if (iconx === "success") {
+                  if (iconx === "info" ) {
                     const cktoday = new Date();
                     const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
                     const hours = cktoday
@@ -395,6 +365,25 @@ cancelButtonColor: '#6F7378'
                       .toString()
                       .padStart(2, "0");
                     const ckfdtime = `${hours}:${minutes}:${seconds}`;
+                    localStorage.setItem("datecheckout", ckfd);
+                    localStorage.setItem("datetimecheckout", ckfdtime);
+                  } else if (iconx === "success" ) {
+                    const cktoday = new Date();
+                    const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
+                    const hours = cktoday
+                      .getHours()
+                      .toString()
+                      .padStart(2, "0");
+                    const minutes = cktoday
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, "0");
+                    const seconds = cktoday
+                      .getSeconds()
+                      .toString()
+                      .padStart(2, "0");
+                    const ckfdtime = `${hours}:${minutes}:${seconds}`;
+                    localStorage.setItem("datecheck", ckfd);
                     localStorage.setItem("datecheckout", ckfd);
                     localStorage.setItem("datetimecheckout", ckfdtime);
                   }
@@ -836,6 +825,64 @@ function aboutme() {
   });
 }
 
+
+function showUserData(readOnly = true) {
+  var yourpic = localStorage.getItem("upic");
+  var refid = localStorage.getItem("refid") || "";
+  var name = localStorage.getItem("name") || "";
+  var job = localStorage.getItem("job") || "";
+  var office = localStorage.getItem("office") || "";
+  var mainsub = localStorage.getItem("mainsub") || "";
+  var rank = localStorage.getItem("rank") || "";
+
+  let contentHtml = `
+    รหัส : <strong>${readOnly ? refid : `<input id="refid" value="${refid}">`}</strong><br>
+    ชื่อ : <strong>${readOnly ? name : `<input id="name" value="${name}">`}</strong><br>
+    ตำแหน่ง : <strong>${readOnly ? job : `<input id="job" value="${job}">`}</strong><br>
+    ระดับ : <strong>${readOnly ? rank : `<input id="rank" value="${rank}">`}</strong><br>
+    หน่วยงาน : <strong>${readOnly ? office : `<input id="office" value="${office}">`}</strong><br>
+    สังกัด : <strong>${readOnly ? mainsub : `<input id="mainsub" value="${mainsub}">`}</strong><br>
+  `;
+
+  Swal.fire({
+    imageUrl: yourpic,
+    imageWidth: 200,
+    imageHeight: 200,
+    imageAlt: "Custom image",
+    title: "ข้อมูลของฉัน",
+    html: contentHtml,
+    icon: "info",
+    confirmButtonText: readOnly ? "แก้ไข" : "บันทึก",
+    showCloseButton: true,
+    confirmButtonColor: readOnly ? "#008000" : "#1E90FF",
+    customClass: {
+      title: "text-primary",
+      content: "text-dark",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      if (readOnly) {
+        // Switch to edit mode
+        showUserData(false);
+      } else {
+        // Save the updated values back to localStorage
+        localStorage.setItem("refid", document.getElementById("refid").value);
+        localStorage.setItem("name", document.getElementById("name").value);
+        localStorage.setItem("job", document.getElementById("job").value);
+        localStorage.setItem("rank", document.getElementById("rank").value);
+        localStorage.setItem("office", document.getElementById("office").value);
+        localStorage.setItem("mainsub", document.getElementById("mainsub").value);
+
+        // Switch back to read-only mode
+        showUserData(true);
+      }
+    }
+  });
+}
+
+
+
+
 function editpic() {
   var yourpic = localStorage.getItem("yourpic");
   if (!yourpic || yourpic.trim() === "") {
@@ -1160,7 +1207,6 @@ async function canceltoday() {
         captchaResult = await Swal.fire({
             title: `กรอกรหัสยืนยันในการยกเลิกการลงเวลาของท่าน`,
             showCancelButton: true,
-          allowOutsideClick: false,
             confirmButtonText: `ยืนยัน&nbsp;<i class="fa-solid fa-trash"></i>`,
             html: `<canvas id="captchaPopupCanvas" width="200" height="50"></canvas><br>
                               <input type="text" id="captchaInput" class="swal2-input" placeholder="Enter the code here">`,
