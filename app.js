@@ -367,7 +367,7 @@ cancelButtonColor: '#6F7378'
                     const ckfdtime = `${hours}:${minutes}:${seconds}`;
                     localStorage.setItem("datecheckout", ckfd);
                     localStorage.setItem("datetimecheckout", ckfdtime);
-                  } else if (iconx === "success" ) {
+                  } else if (iconx === "success" || iconx === "warning"  ) {
                     const cktoday = new Date();
                     const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
                     const hours = cktoday
