@@ -63,6 +63,11 @@
           <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
             <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
           </a>
+          <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="getchatID()">
+            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
+          </a>
+        </li>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">
@@ -260,6 +265,7 @@
         if (formattedToday === localStorage.getItem("datecheckout")) {
           coutElement.classList.add("invisible"); // ซ่อนปุ่ม check-out
         } else {
+          creqElement.classList.add("invisible"); // ซ่อนปุ่ม info
           coutElement.classList.remove("invisible"); // แสดงปุ่ม check-out
         }
       }
@@ -285,6 +291,7 @@
   </script>
 
   <script src="app.js"></script>
+   <script src="telegm.js"></script>
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
