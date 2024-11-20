@@ -100,8 +100,15 @@ async function main() {
 //main();
 
 // telegram api
-
 function getLatestUpdate() {
+  Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "API not found",
+        });
+}
+
+function cgetLatestUpdate() {
   const botToken = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
   const url = `https://api.telegram.org/bot${botToken}/getUpdates`;
 
