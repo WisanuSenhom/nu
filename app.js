@@ -1,16 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
   showLoading();
-  // const token = localStorage.getItem("token");
-  // if (!token) {
-  //   createtoken();
-  // }
+
   // ฺBUG LOGIN ON 2024-11-20 user = U46c24622beca6cb3c352b202fadeecd0
 const userid = localStorage.getItem("userid");
 if (userid === 'U46c24622beca6cb3c352b202fadeecd0'){
   localStorage.clear();
 }
   // END BUG
-  
+
+  // const token = localStorage.getItem("token");
+  // if (!token) {
+  //   createtoken();
+  // }
   const uuid = localStorage.getItem("uuid");
   if (uuid) {
     // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
@@ -244,19 +245,52 @@ function checkin() {
       function showError(error) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            alert("ผู้ใช้ปฏิเสธการให้สิทธิ์ในการรับค่าพิกัด");
+            Swal.fire({
+              icon: 'error',
+              title: 'การขออนุญาตถูกปฏิเสธ',
+              text: 'ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.POSITION_UNAVAILABLE:
-            alert("ข้อมูลตำแหน่งไม่พร้อมใช้งาน");
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่สามารถเข้าถึงข้อมูลตำแหน่งได้',
+              text: 'ขออภัย, ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.TIMEOUT:
-            alert("การร้องขอค่าพิกัดใช้เวลานานเกินไป");
+            Swal.fire({
+              icon: 'error',
+              title: 'หมดเวลาในการขอข้อมูล',
+              text: 'การร้องขอค่าพิกัดใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.UNKNOWN_ERROR:
-            alert("เกิดข้อผิดพลาดที่ไม่รู้จัก");
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาดที่ไม่คาดคิด',
+              text: 'เกิดข้อผิดพลาดบางอย่างที่เราไม่สามารถระบุได้ ขอโทษในความไม่สะดวก กรุณาลองใหม่อีกครั้ง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
         }
-      }
+      } 
+      
       // ฟังก์ชั่นลงเวลา
     } else if (result.dismiss === Swal.DismissReason.cancel) {
       Swal.fire("การลงเวลาถูกยกเลิก", "", "info");
@@ -418,19 +452,52 @@ cancelButtonColor: '#6F7378'
       function showError(error) {
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            alert("ผู้ใช้ปฏิเสธการให้สิทธิ์ในการรับค่าพิกัด");
+            Swal.fire({
+              icon: 'error',
+              title: 'การขออนุญาตถูกปฏิเสธ',
+              text: 'ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.POSITION_UNAVAILABLE:
-            alert("ข้อมูลตำแหน่งไม่พร้อมใช้งาน");
+            Swal.fire({
+              icon: 'error',
+              title: 'ไม่สามารถเข้าถึงข้อมูลตำแหน่งได้',
+              text: 'ขออภัย, ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.TIMEOUT:
-            alert("การร้องขอค่าพิกัดใช้เวลานานเกินไป");
+            Swal.fire({
+              icon: 'error',
+              title: 'หมดเวลาในการขอข้อมูล',
+              text: 'การร้องขอค่าพิกัดใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
           case error.UNKNOWN_ERROR:
-            alert("เกิดข้อผิดพลาดที่ไม่รู้จัก");
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาดที่ไม่คาดคิด',
+              text: 'เกิดข้อผิดพลาดบางอย่างที่เราไม่สามารถระบุได้ ขอโทษในความไม่สะดวก กรุณาลองใหม่อีกครั้ง',
+            }).then((result) => {
+              if (result.isConfirmed) {
+                location.reload(); // Refresh the page if the user clicks OK
+              }
+            });
             break;
         }
-      }
+      }     
+      
 
       // ฟังก์ชั่นลงเวลา
     } else if (result.dismiss === Swal.DismissReason.cancel) {
