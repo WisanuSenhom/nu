@@ -117,7 +117,7 @@ async function main() {
    await liff.init({ liffId: "1654797991-pr0xKPxW" });
 //  await liff.init({ liffId: "1654797991-Xmxp3Gpj" });
   if (liff.isLoggedIn()) {
-   // getProfile();
+    getProfile();
   } else {
     liff.login();
   }
