@@ -25,11 +25,13 @@ async function getmember(yourid, yourpic, profile) {
       cancelButtonText: "ยกเลิก", // กำหนดชื่อปุ่มยกเลิก
       showDenyButton: true, // แสดงปุ่ม Deny
       denyButtonText: "สมัครสมาชิกใหม่", // กำหนดชื่อปุ่ม Deny
+      confirmButtonColor: "#008000",
+      cancelButtonColor: '#0073E6'
     }).then((result) => {
       // ตรวจสอบผลการตอบสนองจากผู้ใช้
       if (result.isConfirmed) {
         // หากกดปุ่มยืนยัน
-        main();
+        getProfile();
       } else if (result.isDenied) {
         // หากกดปุ่ม Deny
         // console.log("Deny");
@@ -115,11 +117,12 @@ async function main() {
    await liff.init({ liffId: "1654797991-pr0xKPxW" });
 //  await liff.init({ liffId: "1654797991-Xmxp3Gpj" });
   if (liff.isLoggedIn()) {
-    getProfile();
+   // getProfile();
   } else {
     liff.login();
   }
 }
+main();
 
 // Telegram Login
 
