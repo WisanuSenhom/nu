@@ -112,8 +112,8 @@ function hideLoading() {
 // Line Login
 async function main() {
   hideLoading();
-  // await liff.init({ liffId: "1654797991-pr0xKPxW" });
-  await liff.init({ liffId: "1654797991-Xmxp3Gpj" });
+   await liff.init({ liffId: "1654797991-pr0xKPxW" });
+//  await liff.init({ liffId: "1654797991-Xmxp3Gpj" });
   if (liff.isLoggedIn()) {
     getProfile();
   } else {
