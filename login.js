@@ -122,7 +122,7 @@ async function main() {
     liff.login();
   }
 }
-main();
+// main();
 
 // Telegram Login
 
