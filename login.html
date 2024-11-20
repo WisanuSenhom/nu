@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
      <link rel="stylesheet" href="style.css">
 	   <link rel="stylesheet" href="loading.css">
+       <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
     <title>ลงชื่อเข้าใช้งาน</title>
   </head>
   <body>
@@ -23,11 +26,11 @@
       
        </div>
 		
-              <button id="cin" type="button" class="btn btn-success" onclick="main()" >LINE Login</button>
+              <button id="cin" type="button" class="btn btn-success" onclick="main()" > <i class="fab fa-line"></i> เข้าสู่ระบบด้วยไลน์ (LINE)</button>
        
-              <button id="clearLocalStorageBtn" type="button" class="btn btn-primary" onclick="getLatestUpdate()">Telegram Login</button>
+              <button id="clearLocalStorageBtn" type="button" class="btn btn-primary" onclick="telegramLogin()"><i class="fab fa-telegram"></i> เข้าสู่ระบบด้วย Telegram</button>
 
-              <button id="clearLocalStorageBtn" type="button" class="btn btn-danger" onclick="clearLocal()">Clear Local Storage</button>
+              <button id="clearLocalStorageBtn" type="button" class="btn btn-danger" onclick="clearLocal()"><i class="fa-regular fa-circle-xmark"></i> ลบข้อมูลใน Local Storage</button>
          
               <div  style="text-align: center;">
            
