@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // if (!token) {
   //   createtoken();
   // }
+  // ฺBUG LOGIN ON 2024-11-20 user = U46c24622beca6cb3c352b202fadeecd0
+const userid = localStorage.getItem("userid");
+if (userid === 'U46c24622beca6cb3c352b202fadeecd0'){
+  localStorage.clear();
+}
+  // END BUG
+  
   const uuid = localStorage.getItem("uuid");
   if (uuid) {
     // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
