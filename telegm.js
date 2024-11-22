@@ -135,7 +135,7 @@ const botId = "7733040493"; // Bot ID from @BotFather
 
 function getLatestUpdate() {
   // const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${window.location.origin}&embed=1`;
-  const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=isanusenhom.github.io/authen.html&embed=1`;
+  const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=https://wisanusenhom.github.io/nu/authen.html&embed=1`;
   window.open(authUrl, "_self"); // Open Telegram login page
 
 }
