@@ -1,5 +1,3 @@
-// telegram api
-
 function getchatID() {
   const chatId = localStorage.getItem("chatId");
   if (chatId) {
