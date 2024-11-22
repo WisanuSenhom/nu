@@ -547,6 +547,10 @@ async function checktoday(){
                 var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \n ลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`; // Assuming you want the first 'intime' value
 
                 // Set the text content of the element with the fetched data
+                const cktoday = new Date();
+                const ckfd = cktoday.toLocaleDateString("th-TH"); 
+                localStorage.setItem("datecheck", ckfd);
+                
                 utimelineElement.innerText = timelineData;
             } else {
                 var timelineData = `วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน`;
