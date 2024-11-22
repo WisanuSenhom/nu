@@ -16,7 +16,7 @@ function getchatID() {
         title: "text-info",
         content: "text-muted",
       },
-      html: `<i class="fa-brands fa-telegram"></i> Chat.ID:<strong> ${chatId} </strong>`,
+      html: `<i class="fa-brands fa-telegram"></i> Telegram_ID:<strong> ${chatId} </strong>`,
       footer: `<a href="https://t.me/setlanguage/thaith" target="_blank">
             <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
           </a>`,
@@ -30,70 +30,6 @@ function getchatID() {
   }
 }
 
-// function getLatestUpdate() {
-//   const botToken = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
-//   const url = `https://api.telegram.org/bot${botToken}/getUpdates`;
-
-//   fetch(url)
-//     .then((response) => {
-//       if (response.status === 404) {
-//         Swal.fire({
-//           icon: "error",
-//           title: "Error",
-//           text: "API not found (404).",
-//         });
-//         throw new Error("API not found (404).");
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       // Check if we have any updates
-//       if (data.result && data.result.length > 0) {
-//         // Get the latest update (last message)
-//         const latestUpdate = data.result[data.result.length - 1];
-
-//         // Extract the message and chat ID from the latest update
-//         const chatId = latestUpdate.message.chat.id;
-//         const usName = latestUpdate.message.chat.username;
-//         const fname = latestUpdate.message.chat.first_name;
-//         const lname = latestUpdate.message.chat.last_name;
-
-//         Swal.fire({
-//           icon: "info",
-//           title: "ข้อมูลของคุณใน Telegram",
-//           allowOutsideClick: false,
-//           confirmButtonText: "ดำเนินการต่อ",
-//           showCloseButton: true,
-//           confirmButtonColor: "#24A1DE",
-//           customClass: {
-//             title: "text-info",
-//             content: "text-muted",
-//           },
-//           html: `Name:<strong> ${fname} ${lname}</strong><br>
-//             Username:<strong> ${usName}</strong>`,
-//           footer: `<a href="https://t.me/setlanguage/thaith" target="_blank">
-//             <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
-//           </a>`,
-//         }).then((result) => {
-//           if (result.isConfirmed) {
-//             // ส่งข้อมูล API
-
-//             updateChatId(chatId, usName);
-//           }
-//         });
-//       } else {
-//         showNoMessageAlert();
-//       }
-//     })
-//     .catch((error) => {
-//       // console.error("Error fetching updates:", error);
-//       Swal.fire({
-//         icon: "error",
-//         title: "Fetch Error",
-//         text: "Error fetching updates. Please try again.",
-//       });
-//     });
-// }
 
 function sendMessageToTelegram(chatId) {
   const message = "การเชื่อมต่อสำเร็จแล้ว";
@@ -117,18 +53,6 @@ function updateChatId(chatId, usName) {
     showNoMessageAlert();
     return; // Exit the function to prevent further execution
   }
-  Swal.fire({
-    title: "เชื่อมต่อกับ Telegram",
-    html: "กรุณากด <strong>ตกลง</strong> ",
-    showCancelButton: true,
-    allowOutsideClick: false,
-    confirmButtonColor: "#008000",
-    cancelButtonColor: "#6F7378",
-    confirmButtonText: "ตกลง",
-    cancelButtonText: "ยกเลิก",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Show loading status
       Swal.fire({
         title: "กำลังเชื่อมต่อกับ Telegram...",
         text: "โปรดรอสักครู่",
@@ -177,8 +101,6 @@ function updateChatId(chatId, usName) {
           });
         });
     }
-  });
-}
 
 function showNoMessageAlert() {
   const telegramqr =
@@ -206,18 +128,21 @@ function showNoMessageAlert() {
   });
 }
 
+// telegram login
+
 const botUsername = "TimestampNotifybot"; // Bot username
 const botId = "7733040493"; // Bot ID from @BotFather
 
 function getLatestUpdate() {
   // const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${window.location.origin}&embed=1`;
-  const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=https://wisanusenhom.github.io/nu&embed=1`;
+  const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=isanusenhom.github.io/authen.html&embed=1`;
   window.open(authUrl, "_self"); // Open Telegram login page
+
 }
 
 window.addEventListener("load", handleTelegramCallback);
-
-async function handleTelegramCallback() {
+ 
+async function handleTelegramCallback(){
   const urlHash = window.location.hash; // ดึงข้อมูลจาก fragment (หลัง #)
   // console.log("URL Hash:", urlHash); // พิมพ์ข้อมูลที่ดึงจาก fragment
 
@@ -237,8 +162,8 @@ async function handleTelegramCallback() {
       // console.log("Telegram User Data:", user);
 
       const result = await Swal.fire({
-        title: `ยินดีต้อนรับ, ${first_name} ${last_name}`,
-        text: `คุณต้องการดำเนินการต่อด้วยบัญชีนี้หรือไม่?`,
+        title: `ยินดีต้อนรับ \n ${first_name} ${last_name}`,
+        text: `คุณต้องการดำเนินการต่อด้วยบัญชี ${username} หรือไม่?`,
         imageUrl: photo_url,
         imageWidth: 100,
         imageHeight: 100,
@@ -264,19 +189,18 @@ async function handleTelegramCallback() {
       }
       window.location.hash = '';
     } catch (error) {
-    //  showNoMessageAlert();
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "Error parsing Telegram data.",
-      //   text: error.message,
-      //   confirmButtonColor: "#0ef",
-      // });
+      Swal.fire({
+        icon: "error",
+        title: "Error parsing Telegram data.",
+        text: error.message,
+        confirmButtonColor: "#0ef",
+      });
     }
   } else {
-    // Swal.fire({
-    //     icon: "error",
-    //     title: "Failed to log in via Telegram.",
-    //     confirmButtonColor: "#0ef",
-    // });
+    Swal.fire({
+        icon: "info",
+        title: "กรุณาเข้าสู่ระบบด้วย Telegram",
+        confirmButtonColor: "#0ef",
+    });
   }
 }
