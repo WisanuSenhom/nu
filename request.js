@@ -1,29 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
-// ตรวจระบบ
-var isWindows = /Windows/i.test(navigator.userAgent);
-var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
-if (isWindows || isMacOS) {
-Swal.fire({
-    title: '<span class="text-error">ขออภัย อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน (Android, iPhone)</span>',
-    text: 'กรุณาคลิก "ตกลง" เพื่อปิดหน้าต่างนี้ หรือ "ดำเนินการ" เพื่อทำงานต่อ (แนะนำให้ใช้สมาร์ทโฟนเพื่อเพิ่มความแม่นยำในการระบุพิกัดเวลาทำงาน)',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'ตกลง',
-    cancelButtonText: 'ดำเนินการ',
-    allowOutsideClick: false,
-    customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger"
-    }
-}).then((result) => {
-    if (result.isConfirmed) {
-        window.location.href = 'about:blank';
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire('การดำเนินการถูกเปิดใช้งาน', '', 'info');
-    }
-});
+// ตรวจสอบระบบปฏิบัติการ
+// var isWindows = /Windows/i.test(navigator.userAgent);
+// var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
+var isAndroid = /Android/i.test(navigator.userAgent);
+var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+if (!(isAndroid || isIOS)) { // ถ้าไม่ใช่ Android หรือ iOS
+    Swal.fire({
+        title: 'อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน',
+        text: 'กรุณาใช้สมาร์ทโฟน (Android หรือ iPhone) ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของตำแหน่งพิกัด',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ออกจากระบบ',
+        cancelButtonText: 'ดำเนินการต่อ',
+        confirmButtonColor: "#22BB33",
+        cancelButtonColor: "#FF0505",
+        allowOutsideClick: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // หากกดปุ่ม "ออกจากระบบ"
+            window.location.href = 'about:blank';
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // หากกดปุ่ม "ดำเนินการต่อ"
+            Swal.fire({
+                title: 'การใช้งานได้รับการอนุญาต',
+                text: 'คุณสามารถดำเนินการต่อบนอุปกรณ์นี้ได้',
+                icon: 'info',
+                confirmButtonColor: "#24A1DE",
+            });
+        }
+    });
 }
+    // check uuid
     const uuid = localStorage.getItem('uuid');
     const boss = localStorage.getItem('boss');
 
