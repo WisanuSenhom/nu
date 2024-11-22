@@ -189,10 +189,12 @@ async function handleTelegramCallback(){
         localStorage.setItem("chatId", id);
         updateChatId(id, username);
       } else {
-        Swal.fire({
+       Swal.fire({
           icon: "info",
           title: "การดำเนินการถูกยกเลิก",
           confirmButtonColor: "#0ef",
+        }).then(() => {
+          window.location.href = "index.html";
         });
       }
       window.location.hash = '';
