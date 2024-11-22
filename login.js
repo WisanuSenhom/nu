@@ -157,7 +157,7 @@ async function handleTelegramCallback() {
       // console.log("Telegram User Data:", user);
 
       const result = await Swal.fire({
-        title: `ยินดีต้อนรับคุณ : , ${first_name} ${last_name}`,
+        title: `ยินดีต้อนรับ \n , ${first_name} ${last_name}`,
         text: `คุณต้องการดำเนินการต่อด้วยบัญชีนี้หรือไม่?`,
         imageUrl: photo_url,
         imageWidth: 100,
