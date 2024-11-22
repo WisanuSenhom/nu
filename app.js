@@ -1,13 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   showLoading();
-
-  // ฺBUG LOGIN ON 2024-11-20 user = U46c24622beca6cb3c352b202fadeecd0
-const userid = localStorage.getItem("userid");
-if (userid === 'U46c24622beca6cb3c352b202fadeecd0'){
-  localStorage.clear();
-}
-  // END BUG
-
   // const token = localStorage.getItem("token");
   // if (!token) {
   //   createtoken();
