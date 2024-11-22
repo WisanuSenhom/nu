@@ -191,10 +191,10 @@ async function handleTelegramCallback(){
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Error parsing Telegram data.",
+        title: "เกิดข้อผิดพลาดในการประมวลผลข้อมูลจาก Telegram กรุณาลองใหม่อีกครั้ง",
         text: error.message,
         confirmButtonColor: "#0ef",
-      });
+    });
     }
   } else {
     Swal.fire({
