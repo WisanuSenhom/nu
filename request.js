@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-      // ฺBUG LOGIN ON 2024-11-20 user = U46c24622beca6cb3c352b202fadeecd0
-const userid = localStorage.getItem("userid");
-if (userid === 'U46c24622beca6cb3c352b202fadeecd0'){
-  localStorage.clear();
-}
-  // END BUG
 // ตรวจระบบ
 var isWindows = /Windows/i.test(navigator.userAgent);
 var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
