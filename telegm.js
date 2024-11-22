@@ -1,5 +1,3 @@
-// telegram api
-
 function getchatID() {
   const chatId = localStorage.getItem("chatId");
   if (chatId) {
@@ -16,20 +14,22 @@ function getchatID() {
         title: "text-info",
         content: "text-muted",
       },
-      html: `<i class="fa-brands fa-telegram"></i> Telegram_ID:<strong> ${chatId} </strong>`,
+      html: `<i class="fa-brands fa-telegram"></i> Telegram_ID : <strong> ${chatId} </strong>`,
       footer: `<a href="https://t.me/setlanguage/thaith" target="_blank">
             <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
           </a>`,
     }).then((result) => {
       if (result.isConfirmed) {
         getLatestUpdate();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // เมื่อกดปุ่มยกเลิก ให้เปลี่ยนหน้าไปยัง index.html
+        window.location.href = "index.html";
       }
     });
   } else {
     getLatestUpdate();
   }
 }
-
 
 function sendMessageToTelegram(chatId) {
   const message = "การเชื่อมต่อสำเร็จแล้ว";
@@ -39,13 +39,20 @@ function sendMessageToTelegram(chatId) {
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
-      //  // console.log(data);
+      const status = data.ok ? 'สำเร็จ' : 'ข้อผิดพลาด';
+      const text = data.ok ? 'ส่งข้อความสำเร็จ!' : `เกิดข้อผิดพลาด: ${data.description}`;
+      Swal.fire({ icon: data.ok ? 'success' : 'error', title: status, text }).then(() => window.location.href = "index.html");
     })
-    .catch((error) => {
-      // console.error("Error sending message:", error);
-      alert("Error sending message. Please try again.");
+    .catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อผิดพลาด',
+        text: 'เกิดข้อผิดพลาดในการส่งข้อความ กรุณาลองใหม่อีกครั้ง'
+      }).then(() => window.location.href = "index.html");
     });
 }
+
+
 
 // อัพเดพข้อมูลลง sheet
 function updateChatId(chatId, usName) {
@@ -86,6 +93,7 @@ function updateChatId(chatId, usName) {
           }).then(() => {
             localStorage.setItem("chatId ", chatId);
             sendMessageToTelegram(chatId);
+            window.location.href = "index.html";
           });
         })
         .catch((error) => {
