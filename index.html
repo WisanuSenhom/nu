@@ -15,6 +15,8 @@
     integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- Mini Apps -->
+  <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
   <!-- css -->
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loading.css" />
@@ -39,14 +41,13 @@
     <!-- Collapsible menu -->
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav">
+        <!-- หัวข้อ: การใช้งานหลัก -->
         <li class="nav-item">
-          <a class="nav-link" href="request.html" >
-            <i class="fas fa-paper-plane"></i> ส่งคำขอ
-          </a>
+          <span class="navbar-text font-weight-bold">การใช้งานหลัก</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="checkMap()">
-            <i class="fas fa-map-marker-alt"></i> ตรวจสอบพิกัด
+          <a class="nav-link" href="request.html">
+            <i class="fas fa-paper-plane"></i> ส่งคำขอ
           </a>
         </li>
         <li class="nav-item">
@@ -54,24 +55,24 @@
             <i class="fas fa-clock"></i> ตรวจสอบการลงเวลา
           </a>
         </li>
-           <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="canceltoday()">
             <i class="fas fa-xmark"></i> ยกเลิกการลงเวลาในวันนี้
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
-            <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
-          </a>
-          <li class="nav-item">
-          <a class="nav-link" href="authen.html">
-            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
+          <a class="nav-link" href="javascript:void(0);" onclick="checkMap()">
+            <i class="fas fa-map-marker-alt"></i> ตรวจสอบพิกัด
           </a>
         </li>
+    
+        <!-- หัวข้อ: การจัดการและรายงาน -->
+        <li class="nav-item mt-3">
+          <span class="navbar-text font-weight-bold">รายงานและการจัดการ</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">
-            <i class="fab fa-line"></i> ออก Line Token
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
+            <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
           </a>
         </li>
         <li class="nav-item">
@@ -79,6 +80,22 @@
             <i class="fas fa-folder"></i> งาน 5ส.
           </a>
         </li>
+
+    
+        <!-- หัวข้อ: การตั้งค่าและข้อมูลส่วนตัว -->
+        <li class="nav-item mt-3">
+          <span class="navbar-text font-weight-bold">การตั้งค่าและข้อมูลส่วนตัว</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="authen.html">
+            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
+          </a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">
+            <i class="fab fa-line"></i> ออก Line Token
+          </a>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">
             <i class="fas fa-user"></i> ข้อมูลส่วนตัว
@@ -89,18 +106,24 @@
             <i class="fas fa-image"></i> อัปเดตโปรไฟล์
           </a>
         </li>
+    
+        <!-- หัวข้อ: ออกจากระบบ -->
+        <li class="nav-item mt-3">
+          <span class="navbar-text font-weight-bold">การปรับปรุง/ออกจากระบบ</span>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">
-            <i class="fas fa-history"></i> บันทึกการเปลี่ยนแปลง
+            <i class="fas fa-history"></i> บันทึกการปรับปรุง
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">
-            <i class="fas fa-sync-alt"></i> รีเซ็ตข้อมูลระบบ
+            <i class="fas fa-sync-alt"></i> ออกจากระบบ
           </a>
         </li>
       </ul>
     </div>
+    
   </nav>
   <!-- end nav -->
 
@@ -279,6 +302,7 @@
 
     // ดึงข้อมูลรูปภาพจาก localStorage
     const avatarSrc = localStorage.getItem("upic");
+    const avatarSrcx = localStorage.getItem("yourpic");
 
     // ตรวจสอบว่ามีข้อมูลรูปภาพใน localStorage หรือไม่
     if (avatarSrc) {
@@ -286,15 +310,16 @@
       document.getElementById("avatar").src = avatarSrc;
     } else {
       // กรณีที่ไม่มีรูปภาพใน localStorage
-      document.getElementById("avatar").src = "default-avatar.png"; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
+      document.getElementById("avatar").src = avatarSrcx; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
     }
   </script>
 
   <script src="app.js"></script>
-
+  <script src="checkin.js"></script>
+  
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <!-- <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script> -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
     crossorigin="anonymous"></script>
@@ -304,11 +329,14 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
     integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
     crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-borderless/borderless.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.min.js"></script>
+
   <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async"
     defer="defer"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+
+  
 </body>
 
 </html>
