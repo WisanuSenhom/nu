@@ -1,538 +1,117 @@
 document.addEventListener("DOMContentLoaded", function () {
   showLoading();
-  
-// ตรวจสอบระบบปฏิบัติการ
-// var isWindows = /Windows/i.test(navigator.userAgent);
-// var isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
-var isAndroid = /Android/i.test(navigator.userAgent);
-var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-if (!(isAndroid || isIOS)) { // ถ้าไม่ใช่ Android หรือ iOS
-    Swal.fire({
-        title: 'อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน',
-        text: 'กรุณาใช้สมาร์ทโฟน (Android หรือ iPhone) ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของตำแหน่งพิกัด',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'ออกจากระบบ',
-        cancelButtonText: 'ดำเนินการต่อ',
-        confirmButtonColor: "#22BB33",
-        cancelButtonColor: "#FF0505",
-        allowOutsideClick: false,
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // หากกดปุ่ม "ออกจากระบบ"
-            window.location.href = 'about:blank';
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // หากกดปุ่ม "ดำเนินการต่อ"
-            Swal.fire({
-                title: 'การใช้งานได้รับการอนุญาต',
-                text: 'คุณสามารถดำเนินการต่อบนอุปกรณ์นี้ได้',
-                icon: 'info',
-                confirmButtonColor: "#24A1DE",
-            });
-        }
-    });
-}
-  // check uuid
+  // Check operating system
+  const isWindows = /Windows/i.test(navigator.userAgent);
+  const isMacOS = /Macintosh|MacIntel|MacPPC|Mac68K/i.test(navigator.userAgent);
+
+  if (isWindows || isMacOS) {
+      Swal.fire({
+          title: 'อุปกรณ์นี้ไม่ใช่สมาร์ทโฟน',
+          text: 'กรุณาใช้สมาร์ทโฟน (Android หรือ iPhone) ในการลงเวลาปฏิบัติงาน เพื่อความแม่นยำของตำแหน่งพิกัด',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'ออกจากระบบ',
+          cancelButtonText: 'ดำเนินการต่อ',
+          confirmButtonColor: "#22BB33",
+          cancelButtonColor: "#FF0505",
+          allowOutsideClick: false,
+      }).then((result) => {
+          if (result.isConfirmed) {
+            localStorage.clear();
+              window.location.href = 'about:blank'; // Exit system
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+              Swal.fire({
+                  title: 'การใช้งานได้รับการอนุญาต',
+                  text: 'คุณสามารถดำเนินการต่อบนอุปกรณ์นี้ได้',
+                  icon: 'info',
+                  confirmButtonColor: "#24A1DE",
+              });
+          }
+      });
+  }
+
+  // Check for UUID in localStorage
   const uuid = localStorage.getItem("uuid");
-  if (uuid) {
-    // หากมีค่า user ใน Local Storage ให้ทำตามการกระทำที่คุณต้องการ
-    updateUser(uuid);
-    // ตัวอย่าง: สามารถเรียก API อื่น ๆ หรือนำผู้ใช้ไปยังหน้าที่ต้องการ
-  } else if (!uuid) {
-    // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
-    console.log("User is not logged in. Redirecting to login page.");
-    window.location.href = "login.html"; // แทน 'login.html' ด้วยหน้า login ของคุณ
+  if (!uuid) {
+      console.log("User is not logged in. Redirecting to login page.");
+      window.location.href = "login.html";
+      return;
+  }
+
+  // Update user information
+  updateUser(uuid);
+
+  // Geolocation logic
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+      const earthRadius = 6371; // Earth's radius in kilometers
+      const radLat1 = (Math.PI * lat1) / 180;
+      const radLon1 = (Math.PI * lon1) / 180;
+      const radLat2 = (Math.PI * lat2) / 180;
+      const radLon2 = (Math.PI * lon2) / 180;
+      const latDiff = radLat2 - radLat1;
+      const lonDiff = radLon2 - radLon1;
+      const a = Math.sin(latDiff / 2) ** 2 +
+                Math.cos(radLat1) * Math.cos(radLat2) *
+                Math.sin(lonDiff / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return earthRadius * c; // Distance in kilometers
+  };
+
+  const displayDistance = (distance) => {
+      let xdistance = distance.toFixed(2);
+      let unit = 'กม.';
+      if (xdistance < 1) {
+          xdistance = (xdistance * 1000).toFixed(0);
+          unit = 'ม.';
+      }
+
+      const dispDistanceElement = document.getElementById('dispDistance');
+      dispDistanceElement.textContent = `${localStorage.getItem("office")} : ${xdistance} ${unit}`;
+
+      dispDistanceElement.style.color = parseFloat(distance) > 30 ? 'red' : ''; // Highlight if distance > 30km
+  };
+
+  const dispDistanceElement = document.getElementById('dispDistance');
+  const isTelegram = /Telegram/i.test(navigator.userAgent);
+
+  if (!isTelegram) {
+      navigator.geolocation.getCurrentPosition(
+          (position) => {
+              const currentLat = position.coords.latitude;
+              const currentLon = position.coords.longitude;
+              const targetLat = parseFloat(localStorage.getItem('oflat'));
+              const targetLon = parseFloat(localStorage.getItem('oflong'));
+
+              if (isNaN(targetLat) || isNaN(targetLon)) {
+                  console.error("Target coordinates are not set.");
+                  dispDistanceElement.textContent = 'ข้อมูลพิกัดสำนักงานไม่ถูกต้อง';
+                  dispDistanceElement.style.color = 'red';
+                  return;
+              }
+
+              const distance = calculateDistance(currentLat, currentLon, targetLat, targetLon);
+              displayDistance(distance);
+          },
+          (error) => {
+              console.error('Error getting geolocation:', error);
+              dispDistanceElement.textContent = 'โปรดกด "Allow" เมื่อทำการลงเวลา';
+              dispDistanceElement.style.color = 'red';
+          }
+      );
   } else {
-    // หากไม่มีค่า user ใน Local Storage ให้กลับไปที่หน้า login
-    console.log("User is not logged in. Redirecting to login page.");
-    window.location.href = "login.html"; // แทน 'login.html' ด้วยหน้า login ของคุณ
+      console.log('The application is running in Telegram, so the distance function will not be called.');
+      dispDistanceElement.textContent = '';
+      dispDistanceElement.style.color = '';
   }
 });
 
-// จากพี่ดำรงศักดิ์ สสจ.บึงกาฬ
-// Function to calculate distance between two points using the Haversine formula
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  const earthRadius = 6371; // Earth's radius in kilometers
-
-  // Convert latitude and longitude from degrees to radians
-  const radLat1 = (Math.PI * lat1) / 180;
-  const radLon1 = (Math.PI * lon1) / 180;
-  const radLat2 = (Math.PI * lat2) / 180;
-  const radLon2 = (Math.PI * lon2) / 180;
-
-  // Calculate the differences between the latitudes and longitudes
-  const latDiff = radLat2 - radLat1;
-  const lonDiff = radLon2 - radLon1;
-
-  // Calculate the distance using the Haversine formula
-  const a =
-    Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
-    Math.cos(radLat1) *
-      Math.cos(radLat2) *
-      Math.sin(lonDiff / 2) *
-      Math.sin(lonDiff / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = earthRadius * c; // Distance in kilometers
-
-  return distance;
-}
-
-// Function to display distance on the HTML element
-function displayDistance(distance) {
-  let xdistance = distance.toFixed(2);
-  let unit = "กม.";
-
-  if (xdistance < 1) {
-    xdistance = (xdistance * 1000).toFixed(0);
-    unit = "ม.";
-  }
-
-  const dispDistanceElement = document.getElementById("dispDistance");
-
-  dispDistanceElement.textContent = `${localStorage.getItem(
-    "office"
-  )} : ${xdistance} ${unit}`;
-
-  // Check if xdistance is greater than 1
-  if (parseFloat(distance) > 10) {
-    // Set the text color to red
-    dispDistanceElement.style.color = "red";
-  } else {
-    // Reset the text color to its default
-    dispDistanceElement.style.color = ""; // or you can use 'black' or any other color you prefer
-  }
-}
-
-// Get the user's current geolocation
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const currentLat = position.coords.latitude;
-    const currentLon = position.coords.longitude;
-
-    // Replace these with the latitude and longitude of your target location
-    const targetLat = localStorage.getItem("oflat");
-    const targetLon = localStorage.getItem("oflong");
-
-    // const targetLat = 18.3747422;
-    // const targetLon = 103.6442384;
-
-    const distance = calculateDistance(
-      currentLat,
-      currentLon,
-      targetLat,
-      targetLon
-    );
-    displayDistance(distance);
-  },
-  (error) => {
-    console.error("Error getting geolocation:", error);
-  }
-);
-// สิ้นสุด
-
-function checkin() {
-  Swal.fire({
-    title: "คุณต้องการลงเวลาปฏิบัติงานหรือไม่?",
-    text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลามาปฏิบัติงาน',
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "ยืนยัน",
-    cancelButtonText: "ยกเลิก",
-    allowOutsideClick: false,
-    confirmButtonColor: "#008000",
-    cancelButtonColor: '#6F7378'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // เริ่มต้น ลงเวลา
-
-      // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
-      if (navigator.geolocation) {
-        // ขอค่าพิกัด
-        navigator.geolocation.getCurrentPosition(showPositionin, showError);
-      } else {
-        alert("เบราว์เซอร์ไม่รองรับ Geolocation");
-      }
-      // กำหนดตัวแปรที่จะใช้เก็บ elements
-      const loadingModal = document.getElementById("loadingModal");
-
-      // แสดง loading modal
-      loadingModal.style.display = "block";
-
-      // เมื่อได้รับค่าพิกัด
-      async function showPositionin(position) {
-        let latitude = position.coords.latitude;
-        let longitude = position.coords.longitude;
-        const secureCode = await generateSecureCode();
-        const uuid = localStorage.getItem("uuid");
-        const cidhash = localStorage.getItem("cidhash");
-        const userid = localStorage.getItem("userid");
-        const name = localStorage.getItem("name");
-        //  const positionx = localStorage.getItem("positionx");
-        const mainsub = localStorage.getItem("mainsub");
-        const office = localStorage.getItem("office");
-        const latx = localStorage.getItem("oflat");
-        const longx = localStorage.getItem("oflong");
-        const db1 = localStorage.getItem("db1");
-        const token = localStorage.getItem("token");
-        //   const status = localStorage.getItem("status");
-        //   const role = localStorage.getItem("role");
-        const boss = localStorage.getItem("boss");
-        const ceo = localStorage.getItem("ceo");
-        const refid = localStorage.getItem("refid");
-        const chatId  = localStorage.getItem("chatId");
-
-        let typea = document.querySelector("#typea").value;
-        let nte = document.querySelector("#nte").value;
-
-        let todays = new Date();
-        todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
-        let todayx = todays.toLocaleTimeString("th-TH");
-
-        //   console.log(typea);
-        // เลือก id "latlong"
-        var latlongElement = document.getElementById("latlong");
-
-        // แสดงค่าใน element
-        latlongElement.innerHTML =
-          "พิกัดปัจจุบันของคุณ:<br>ละติจูด: " +
-          latitude +
-          "<br>ลองจิจูด: " +
-          longitude +
-          "<br><br>กรุณารอสักครู่ ระบบกำลังประมวลผลข้อมูล...";
-
-        await fetch(
-          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=In&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&secureCode=${secureCode}&chatId=${chatId}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            loadingModal.style.display = "none";
-            // เพิ่ม option สำหรับแต่ละ subcategory
-            data.res.forEach((datas) => {
-              let iconx = datas.icon;
-              let header = datas.header;
-              let text = datas.text;
-              Swal.fire({
-                confirmButtonColor: "#1e90ff",
-                icon: iconx,
-                title: header,
-                text: text,
-                confirmButtonText: "ตกลง",
-                allowOutsideClick: false,
-                confirmButtonColor: "#008000"       
-              }).then((result) => {
-                // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
-                if (result.isConfirmed) {
-                  // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                  if (iconx === "success") {
-                    const cktoday = new Date();
-                    const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
-                    const hours = cktoday
-                      .getHours()
-                      .toString()
-                      .padStart(2, "0");
-                    const minutes = cktoday
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0");
-                    const seconds = cktoday
-                      .getSeconds()
-                      .toString()
-                      .padStart(2, "0");
-                    const ckfdtime = `${hours}:${minutes}:${seconds}`;
-                    localStorage.setItem("datecheck", ckfd);
-                    localStorage.setItem("datetimecheck", ckfdtime);
-                  }
-
-                  try {
-                    liff.closeWindow();
-                  } catch (error) {
-                    console.error("Failed to close window, refreshing...");
-                    location.reload(); // รีเฟรชหน้า
-                  }
-
-                  // Use a timeout to refresh the page after trying to close the window
-                  setTimeout(() => {
-                    location.reload(); // Refresh if liff.closeWindow() does not work
-                  }, 500); // Adjust the delay time as needed (500ms in this case)
-                }
-              });
-
-              // ---
-            });
-          });
-      }
-
-      // กรณีเกิดข้อผิดพลาดในการรับค่าพิกัด
-      function showError(error) {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            Swal.fire({
-              icon: 'error',
-              title: 'การขออนุญาตถูกปฏิเสธ',
-              text: 'ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.POSITION_UNAVAILABLE:
-            Swal.fire({
-              icon: 'error',
-              title: 'ไม่สามารถเข้าถึงข้อมูลตำแหน่งได้',
-              text: 'ขออภัย, ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.TIMEOUT:
-            Swal.fire({
-              icon: 'error',
-              title: 'หมดเวลาในการขอข้อมูล',
-              text: 'การร้องขอค่าพิกัดใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.UNKNOWN_ERROR:
-            Swal.fire({
-              icon: 'error',
-              title: 'เกิดข้อผิดพลาดที่ไม่คาดคิด',
-              text: 'เกิดข้อผิดพลาดบางอย่างที่เราไม่สามารถระบุได้ ขอโทษในความไม่สะดวก กรุณาลองใหม่อีกครั้ง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-        }
-      } 
-      
-      // ฟังก์ชั่นลงเวลา
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire("การลงเวลาถูกยกเลิก", "", "info");
-    }
-  });
-}
-
-function checkout() {
-  Swal.fire({
-    title: "คุณต้องการลงเวลากลับหรือไม่?",
-    text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลากลับ',
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "ยืนยัน",
-    cancelButtonText: "ยกเลิก",
-    allowOutsideClick: false,
-    confirmButtonColor: "#008000",
-cancelButtonColor: '#6F7378'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // เริ่มต้น ลงเวลา
-
-      // ตรวจสอบว่าเบราว์เซอร์รองรับ Geolocation หรือไม่
-      if (navigator.geolocation) {
-        // ขอค่าพิกัด
-        navigator.geolocation.getCurrentPosition(showPositionin, showError);
-      } else {
-        alert("เบราว์เซอร์ไม่รองรับ Geolocation");
-      }
-      // กำหนดตัวแปรที่จะใช้เก็บ elements
-      const loadingModal = document.getElementById("loadingModal");
-
-      // แสดง loading modal
-      loadingModal.style.display = "block";
-
-      // เมื่อได้รับค่าพิกัด
-      async function showPositionin(position) {
-        let latitude = position.coords.latitude;
-        let longitude = position.coords.longitude;
-        const secureCode = await generateSecureCode();
-        const uuid = localStorage.getItem("uuid");
-        const cidhash = localStorage.getItem("cidhash");
-        const userid = localStorage.getItem("userid");
-        const name = localStorage.getItem("name");
-        //  const positionx = localStorage.getItem("positionx");
-        const mainsub = localStorage.getItem("mainsub");
-        const office = localStorage.getItem("office");
-        const latx = localStorage.getItem("oflat");
-        const longx = localStorage.getItem("oflong");
-        const db1 = localStorage.getItem("db1");
-        const token = localStorage.getItem("token");
-        const docno = localStorage.getItem("docno");
-        const job = localStorage.getItem("job");
-        const boss = localStorage.getItem("boss");
-        const ceo = localStorage.getItem("ceo");
-        const refid = localStorage.getItem("refid");
-        const chatId  = localStorage.getItem("chatId");
-
-        let typea = document.querySelector("#typea").value;
-        let nte = document.querySelector("#nte").value;
-        let todays = new Date();
-        todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
-        let todayx = todays.toLocaleTimeString("th-TH");
-        //      console.log(typea);
-        // เลือก id "latlong"
-        var latlongElement = document.getElementById("latlong");
-
-        // แสดงค่าใน element
-        latlongElement.innerHTML =
-          "ละติจูด: " +
-          latitude +
-          "<br>ลองจิจูด: " +
-          longitude +
-          "<br><br>กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล";
-
-        await fetch(
-          `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            loadingModal.style.display = "none";
-            // เพิ่ม option สำหรับแต่ละ subcategory
-            data.res.forEach((datas) => {
-              let iconx = datas.icon;
-              let header = datas.header;
-              let text = datas.text;
-              // เพิ่มการตรวจสอบการลงเวลากลับ
-              Swal.fire({
-                confirmButtonColor: "#1e90ff",
-                icon: iconx,
-                title: header,
-                text: text,
-                confirmButtonText: "ตกลง",
-                allowOutsideClick: false,
-                confirmButtonColor: "#008000"
-              }).then((result) => {
-                // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
-                if (result.isConfirmed) {
-                  // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                  if (iconx === "info" ) {
-                    const cktoday = new Date();
-                    const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
-                    const hours = cktoday
-                      .getHours()
-                      .toString()
-                      .padStart(2, "0");
-                    const minutes = cktoday
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0");
-                    const seconds = cktoday
-                      .getSeconds()
-                      .toString()
-                      .padStart(2, "0");
-                    const ckfdtime = `${hours}:${minutes}:${seconds}`;
-                    localStorage.setItem("datecheckout", ckfd);
-                    localStorage.setItem("datetimecheckout", ckfdtime);
-                  } else if (iconx === "success" || iconx === "warning"  ) {
-                    const cktoday = new Date();
-                    const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
-                    const hours = cktoday
-                      .getHours()
-                      .toString()
-                      .padStart(2, "0");
-                    const minutes = cktoday
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0");
-                    const seconds = cktoday
-                      .getSeconds()
-                      .toString()
-                      .padStart(2, "0");
-                    const ckfdtime = `${hours}:${minutes}:${seconds}`;
-                    localStorage.setItem("datecheck", ckfd);
-                    localStorage.setItem("datecheckout", ckfd);
-                    localStorage.setItem("datetimecheckout", ckfdtime);
-                  }
-
-                  try {
-                    liff.closeWindow();
-                  } catch (error) {
-                    console.error("Failed to close window, refreshing...");
-                    location.reload(); // รีเฟรชหน้า
-                  }
-
-                  // Use a timeout to refresh the page after trying to close the window
-                  setTimeout(() => {
-                    location.reload(); // Refresh if liff.closeWindow() does not work
-                  }, 500); // Adjust the delay time as needed (500ms in this case)
-                }
-              });
-
-              // --- สิ้นสุดการตรวจสอบ
-            });
-          });
-      }
-
-      // กรณีเกิดข้อผิดพลาดในการรับค่าพิกัด
-      function showError(error) {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            Swal.fire({
-              icon: 'error',
-              title: 'การขออนุญาตถูกปฏิเสธ',
-              text: 'ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.POSITION_UNAVAILABLE:
-            Swal.fire({
-              icon: 'error',
-              title: 'ไม่สามารถเข้าถึงข้อมูลตำแหน่งได้',
-              text: 'ขออภัย, ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.TIMEOUT:
-            Swal.fire({
-              icon: 'error',
-              title: 'หมดเวลาในการขอข้อมูล',
-              text: 'การร้องขอค่าพิกัดใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-          case error.UNKNOWN_ERROR:
-            Swal.fire({
-              icon: 'error',
-              title: 'เกิดข้อผิดพลาดที่ไม่คาดคิด',
-              text: 'เกิดข้อผิดพลาดบางอย่างที่เราไม่สามารถระบุได้ ขอโทษในความไม่สะดวก กรุณาลองใหม่อีกครั้ง',
-            }).then((result) => {
-              if (result.isConfirmed) {
-                location.reload(); // Refresh the page if the user clicks OK
-              }
-            });
-            break;
-        }
-      }     
-      
-
-      // ฟังก์ชั่นลงเวลา
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      Swal.fire("การลงเวลาถูกยกเลิก", "", "info");
-    }
-  });
-}
 
 function clearLocal() {
   // เรียกใช้ localStorage.clear() เพื่อลบข้อมูลทั้งหมดใน Local Storage
   Swal.fire({
     title: "ยืนยันการดำเนินการ",
-    text: 'กด "ตกลง" เพื่อดำเนินการ รีเช็ต เพื่อรับค่าใหม่',
+    text: 'กด "ตกลง" เพื่อดำเนินการออกจากระบบ',
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "ตกลง",
@@ -545,7 +124,7 @@ cancelButtonColor: '#6F7378'
       Swal.fire({
         confirmButtonColor: "#0ef",
         icon: "success",
-        title: "รีเซ็ตข้อมูลสำเร็จ",
+        title: "ออกจากระบบสำเร็จ",
         confirmButtonColor: "#008000"
       }).then((result) => {
         if (result.isConfirmed) {
@@ -711,7 +290,9 @@ async function checktoday() {
       if (data.cc && data.cc.length > 0) {
         // Assuming the server response has a property named 'cc' and 'intime'
         var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \nลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`;
-
+        const cktoday = new Date();
+        const ckfd = cktoday.toLocaleDateString("th-TH"); 
+        localStorage.setItem("datecheck", ckfd);
         // แสดงข้อมูลที่ดึงมาใน Swal
         Swal.fire({
           icon: "success",
@@ -750,15 +331,6 @@ async function checktoday() {
     });
 }
 
-function showLoading() {
-  var overlay = document.getElementById("loadingOverlay");
-  overlay.style.display = "flex";
-}
-
-function hideLoading() {
-  var overlay = document.getElementById("loadingOverlay");
-  overlay.style.display = "none";
-}
 
 function openWebToken() {
   Swal.fire({
@@ -922,64 +494,6 @@ function aboutme() {
     }
   });
 }
-
-
-function showUserData(readOnly = true) {
-  var yourpic = localStorage.getItem("upic");
-  var refid = localStorage.getItem("refid") || "";
-  var name = localStorage.getItem("name") || "";
-  var job = localStorage.getItem("job") || "";
-  var office = localStorage.getItem("office") || "";
-  var mainsub = localStorage.getItem("mainsub") || "";
-  var rank = localStorage.getItem("rank") || "";
-
-  let contentHtml = `
-    รหัส : <strong>${readOnly ? refid : `<input id="refid" value="${refid}">`}</strong><br>
-    ชื่อ : <strong>${readOnly ? name : `<input id="name" value="${name}">`}</strong><br>
-    ตำแหน่ง : <strong>${readOnly ? job : `<input id="job" value="${job}">`}</strong><br>
-    ระดับ : <strong>${readOnly ? rank : `<input id="rank" value="${rank}">`}</strong><br>
-    หน่วยงาน : <strong>${readOnly ? office : `<input id="office" value="${office}">`}</strong><br>
-    สังกัด : <strong>${readOnly ? mainsub : `<input id="mainsub" value="${mainsub}">`}</strong><br>
-  `;
-
-  Swal.fire({
-    imageUrl: yourpic,
-    imageWidth: 200,
-    imageHeight: 200,
-    imageAlt: "Custom image",
-    title: "ข้อมูลของฉัน",
-    html: contentHtml,
-    icon: "info",
-    confirmButtonText: readOnly ? "แก้ไข" : "บันทึก",
-    showCloseButton: true,
-    confirmButtonColor: readOnly ? "#008000" : "#1E90FF",
-    customClass: {
-      title: "text-primary",
-      content: "text-dark",
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if (readOnly) {
-        // Switch to edit mode
-        showUserData(false);
-      } else {
-        // Save the updated values back to localStorage
-        localStorage.setItem("refid", document.getElementById("refid").value);
-        localStorage.setItem("name", document.getElementById("name").value);
-        localStorage.setItem("job", document.getElementById("job").value);
-        localStorage.setItem("rank", document.getElementById("rank").value);
-        localStorage.setItem("office", document.getElementById("office").value);
-        localStorage.setItem("mainsub", document.getElementById("mainsub").value);
-
-        // Switch back to read-only mode
-        showUserData(true);
-      }
-    }
-  });
-}
-
-
-
 
 function editpic() {
   var yourpic = localStorage.getItem("yourpic");
@@ -1161,7 +675,6 @@ function handleError(error) {
   }
 }
 
-// ยกเลิกการลงเวลาวันนี้
 // ยกเลิกการลงเวลาวันนี้
 async function canceltoday() {
     const { value: accept } = await Swal.fire({
@@ -1397,7 +910,7 @@ window.onclick = function (event) {
 var menuTimeout;
 function resetMenuTimeout() {
   clearTimeout(menuTimeout);
-  menuTimeout = setTimeout(hideMenu, 10000); // ซ่อนเมนูหลัง 10 วินาที
+  menuTimeout = setTimeout(hideMenu, 20000); // ซ่อนเมนูหลัง 20 วินาที
 }
 
 // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่ปุ่มหรือตัวเมนู
@@ -1409,22 +922,3 @@ collapsibleMenu.onclick = function () {
   resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
 };
 
-async function generateSecureCode() {
-  const date = new Date();
-  const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
-  const secretKey = "Impermanent_Suffering_Egolessness";
-
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secretKey),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
-  const code = Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return code;
-}
