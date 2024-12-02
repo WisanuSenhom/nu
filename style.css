@@ -232,7 +232,7 @@ h4 {
   flex-direction: column; /* จัดเรียงเมนูในแนวตั้ง */
   justify-content: flex-start;
   margin-left: 2%; /* เยื้องข้อความเล็กน้อยไปทางขวา */
-  max-height: auto; /* จำกัดความสูงสูงสุดของเมนู */
+  max-height: 560px; /* จำกัดความสูงสูงสุดของเมนู */
   overflow-y: auto; /* เพิ่ม Scroll Bar แนวตั้งเมื่อเกินพื้นที่ */
   width: auto;
   scrollbar-width: thin; /* สำหรับเบราว์เซอร์ที่รองรับ */
