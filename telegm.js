@@ -142,6 +142,13 @@ const botUsername = "TimestampNotifybot"; // Bot username
 const botId = "7733040493"; // Bot ID from @BotFather
 
 function getLatestUpdate() {
+  Swal.fire({
+    title: "กำลังเข้าสู่ระบบเทเลแกรม...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
   // const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${window.location.origin}&embed=1`;
   const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=https://wisanusenhom.github.io/nu/authen.html&embed=1`;
   window.open(authUrl, "_self"); // Open Telegram login page
@@ -189,7 +196,7 @@ async function handleTelegramCallback(){
         localStorage.setItem("chatId", id);
         updateChatId(id, username);
       } else {
-       Swal.fire({
+        Swal.fire({
           icon: "info",
           title: "การดำเนินการถูกยกเลิก",
           confirmButtonColor: "#0ef",
@@ -213,4 +220,9 @@ async function handleTelegramCallback(){
         confirmButtonColor: "#0ef",
     });
   }
+}
+
+function coseWindow() {
+  // Redirect to index.html
+  window.location.href = 'index.html';
 }
