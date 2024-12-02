@@ -1,3 +1,12 @@
+document.addEventListener("DOMContentLoaded", function () { 
+const uuid = localStorage.getItem("uuid");
+  if (!uuid) {
+      console.log("User is not logged in. Redirecting to login page.");
+      window.location.href = "login.html";
+      return;
+  }
+});
+
 function getchatID() {
   const chatId = localStorage.getItem("chatId");
   if (chatId) {
