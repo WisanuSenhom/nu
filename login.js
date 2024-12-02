@@ -210,7 +210,7 @@ async function getmember(yourid, yourpic, profile, useapp) {
     const records = await fetch(gas);
     const data = await records.json();
 
-    if (!data.user) {
+  if (data.user.length === 0)  {
       // กรณีไม่พบข้อมูลผู้ใช้
       localStorage.removeItem("chatId");
       let headertext, bodytext;
