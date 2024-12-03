@@ -95,7 +95,7 @@ function showError(error) {
 }
 
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
-async function processCheckinOrCheckout(ctype) {
+async function processCheckinOrCheckout(ctype,latitude,longitude) {
   const loadingModal = document.getElementById("loadingModal");
   loadingModal.style.display = "block"; // แสดง modal ตอนกำลังทำงาน
 
@@ -118,11 +118,11 @@ async function processCheckinOrCheckout(ctype) {
     const refid = localStorage.getItem("refid");
     const chatId = localStorage.getItem("chatId");
 
-    const location = await getLocation(); // ดึงตำแหน่งของผู้ใช้
-    const latitude = location.latitude; // ตรวจสอบค่า latitude
-    const longitude = location.longitude; // ตรวจสอบค่า longitude
+    if (!refid || !cidhash || !userid || !name ) {
+      throw new Error("ไม่พบข้อมูลที่จำเป็นในการลงเวลา กรุณาลองใหม่หรือลงชื่อออกแล้วเข้าสู่ระบบใหม่");
+    }
 
-    const secureCode = await generateSecureCode(); // สร้างรหัสปลอดภัย
+    const secureCode = await generateSecureCode(); 
     let typea = document.querySelector("#typea").value;
     let nte = document.querySelector("#nte").value;
     let todays = new Date();
@@ -215,10 +215,12 @@ async function processCheckinOrCheckout(ctype) {
 }
 
 // ฟังก์ชันสำหรับการลงเวลาเข้า
+
 async function checkin() {
   Swal.fire({
     title: "คุณต้องการลงเวลาปฏิบัติงานหรือไม่?",
-    text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลามาปฏิบัติงาน',
+    html: '<div id="map"></div>',
+    width: 600,
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "ยืนยัน",
@@ -226,28 +228,124 @@ async function checkin() {
     allowOutsideClick: false,
     confirmButtonColor: "#008000",
     cancelButtonColor: "#6F7378",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      processCheckinOrCheckout("In"); // เรียกฟังก์ชันการลงเวลาปฏิบัติงาน
-    }
+    customClass: {
+      title: "text-success",
+      content: "text-muted",
+    },
+    didOpen: async () => {
+      // ดึงตำแหน่งของผู้ใช้
+      const location = await getLocation();
+      const lat = location.latitude; // ตรวจสอบค่า latitude
+      const lon = location.longitude; // ตรวจสอบค่า longitude
+
+      // สร้างแผนที่ใน Swal เมื่อแสดงผล
+      let map = L.map("map").setView([lat, lon], 13); // กำหนดตำแหน่งเริ่มต้น
+
+      // เพิ่มฐานแผนที่ (OpenStreetMap)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '',
+      }).addTo(map);
+
+       // กำหนดตำแหน่งปลายทางที่ต้องการ 
+       let destinationLat = parseFloat(localStorage.getItem('oflat'));
+       let destinationLon = parseFloat(localStorage.getItem('oflong'));
+
+      // เพิ่มวงกลมที่ตำแหน่ง
+      L.circle([lat, lon], {
+        color: "green",
+        fillColor: "#0f0",
+        fillOpacity: 0.5,
+        radius: 500,
+      }).addTo(map);
+
+      // เพิ่มเครื่องหมายที่ตำแหน่งปลายทาง
+      L.marker([destinationLat, destinationLon])
+        .addTo(map)
+        .bindPopup("หน่วยงาน")
+        .openPopup();
+
+      // เพิ่มเครื่องหมายที่ตำแหน่งของผู้ใช้
+      L.marker([lat, lon]).addTo(map).bindPopup("ตำแหน่งของคุณ").openPopup();
+
+      // เพิ่มเส้นทาง (Polyline) จากตำแหน่งผู้ใช้ไปยังปลายทาง
+      let latlngs = [
+        [lat, lon], // จุดเริ่มต้น
+        [destinationLat, destinationLon], // จุดปลายทาง
+      ];
+      L.polyline(latlngs, { color: "blue" }).addTo(map);
+
+      // เรียกฟังก์ชันการลงเวลากลับเมื่อผู้ใช้ยืนยัน
+      Swal.getConfirmButton().addEventListener('click', () => {
+        processCheckinOrCheckout("In", lat, lon);  // เพิ่มการลงเวลากลับที่นี่
+      });
+    },
   });
 }
 
-// ฟังก์ชันสำหรับการลงเวลากลับ
 async function checkout() {
   Swal.fire({
     title: "คุณต้องการลงเวลากลับหรือไม่?",
-    text: 'กรุณากด "ยืนยัน" เพื่อดำเนินการลงเวลากลับ',
+    html: '<div id="map"></div>',
+    width: 600,
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "ยืนยัน",
     cancelButtonText: "ยกเลิก",
     allowOutsideClick: false,
-    confirmButtonColor: "#FF6347",
+    confirmButtonColor: "#b0120a",
     cancelButtonColor: "#6F7378",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      processCheckinOrCheckout("Out"); // เรียกฟังก์ชันการลงเวลากลับ
-    }
+    customClass: {
+      title: "text-danger",
+      content: "text-muted",
+    },
+    didOpen: async () => {
+      // ดึงตำแหน่งของผู้ใช้
+      const location = await getLocation();
+      const lat = location.latitude; // ตรวจสอบค่า latitude
+      const lon = location.longitude; // ตรวจสอบค่า longitude
+
+      // สร้างแผนที่ใน Swal เมื่อแสดงผล
+      let map = L.map("map").setView([lat, lon], 13); // กำหนดตำแหน่งเริ่มต้น
+
+      // เพิ่มฐานแผนที่ (OpenStreetMap)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '',
+      }).addTo(map);
+
+      // กำหนดตำแหน่งปลายทางที่ต้องการ 
+      let destinationLat = parseFloat(localStorage.getItem('oflat'));
+      let destinationLon = parseFloat(localStorage.getItem('oflong'));
+
+      // เพิ่มวงกลมที่ตำแหน่ง
+      L.circle([lat, lon], {
+        color: "green",
+        fillColor: "#0f0",
+        fillOpacity: 0.5,
+        radius: 500,
+      }).addTo(map);
+
+      // เพิ่มเครื่องหมายที่ตำแหน่งปลายทาง
+      L.marker([destinationLat, destinationLon])
+        .addTo(map)
+        .bindPopup("หน่วยงาน")
+        .openPopup();
+
+      // เพิ่มเครื่องหมายที่ตำแหน่งของผู้ใช้
+      L.marker([lat, lon]).addTo(map).bindPopup("ตำแหน่งของคุณ").openPopup();
+
+      // เพิ่มเส้นทาง (Polyline) จากตำแหน่งผู้ใช้ไปยังปลายทาง
+      let latlngs = [
+        [lat, lon], // จุดเริ่มต้น
+        [destinationLat, destinationLon], // จุดปลายทาง
+      ];
+      L.polyline(latlngs, { color: "blue" }).addTo(map);
+
+      // เรียกฟังก์ชันการลงเวลากลับเมื่อผู้ใช้ยืนยัน
+      Swal.getConfirmButton().addEventListener('click', () => {
+        processCheckinOrCheckout("Out", lat, lon);  // เพิ่มการลงเวลากลับที่นี่
+      });
+    },
   });
 }
