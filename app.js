@@ -887,38 +887,67 @@ async function canceltoday() {
   }
   
 
-// รับอ้างอิงถึง Collapsible menu
+// รับอ้างอิงถึงเมนูที่ต้องควบคุม
 var collapsibleMenu = document.getElementById("collapsibleNavbar");
+var avatarMenu = document.getElementById("avatarMenu");
+var allMenus = [collapsibleMenu, avatarMenu]; // เพิ่มเมนูที่คุณต้องการจัดการ
 var menuButton = document.querySelector(".navbar-toggler");
+var avatarButton = document.getElementById("avatar");
 
-// ฟังก์ชันซ่อนเมนู
-function hideMenu() {
-  $(collapsibleMenu).collapse("hide");
+// ฟังก์ชันซ่อนเมนูทั้งหมด
+function hideAllMenus() {
+  allMenus.forEach(function (menu) {
+    $(menu).collapse("hide");
+  });
 }
+
+// ฟังก์ชันแสดงเมนูปัจจุบัน
+function showMenu(menu) {
+  hideAllMenus(); // ซ่อนเมนูก่อนหน้า
+  $(menu).collapse("show"); // แสดงเมนูที่เลือก
+}
+
+// จัดการการคลิกที่แต่ละปุ่ม
+menuButton.onclick = function () {
+  if ($(collapsibleMenu).hasClass("show")) {
+    hideAllMenus(); // ซ่อนถ้าเมนูกำลังแสดงอยู่
+  } else {
+    showMenu(collapsibleMenu); // แสดงเมนู collapsibleNavbar
+  }
+};
+
+avatarButton.onclick = function () {
+  if ($(avatarMenu).hasClass("show")) {
+    hideAllMenus(); // ซ่อนถ้าเมนูกำลังแสดงอยู่
+  } else {
+    showMenu(avatarMenu); // แสดงเมนู avatarMenu
+  }
+};
 
 // ซ่อนเมนูเมื่อคลิกนอกเมนู
 window.onclick = function (event) {
   if (
     !menuButton.contains(event.target) &&
-    !collapsibleMenu.contains(event.target)
+    !collapsibleMenu.contains(event.target) &&
+    !avatarButton.contains(event.target) &&
+    !avatarMenu.contains(event.target)
   ) {
-    hideMenu();
+    hideAllMenus();
   }
 };
 
-// ตั้งค่าตัวจับเวลาซ่อนเมนูหลังจาก 10 วินาที
+// ตั้งค่าตัวจับเวลาซ่อนเมนูหลังจาก 20 วินาที
 var menuTimeout;
 function resetMenuTimeout() {
   clearTimeout(menuTimeout);
-  menuTimeout = setTimeout(hideMenu, 20000); // ซ่อนเมนูหลัง 20 วินาที
+  menuTimeout = setTimeout(hideAllMenus, 20000); // ซ่อนเมนูทั้งหมดหลัง 20 วินาที
 }
 
 // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่ปุ่มหรือตัวเมนู
-menuButton.onclick = function () {
-  resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อคลิกปุ่ม
-};
-
 collapsibleMenu.onclick = function () {
-  resetMenuTimeout(); // รีเซ็ตตัวจับเวลาเมื่อมีการคลิกที่เมนู
+  resetMenuTimeout();
 };
 
+avatarMenu.onclick = function () {
+  resetMenuTimeout();
+};
