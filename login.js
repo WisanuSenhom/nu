@@ -151,7 +151,7 @@ async function handleTelegramCallback() {
 
       if (result.isConfirmed) {
         // หากผู้ใช้กดยืนยัน ให้ดำเนินการกับข้อมูล user
-        localStorage.setItem("chatId", id);
+        // localStorage.setItem("chatId", id);
         await getmember(id, photo_url,username,"telegram");        
       } else {
         Swal.fire({
@@ -212,7 +212,7 @@ async function getmember(yourid, yourpic, profile, useapp) {
 
   if (data.user.length === 0)  {
       // กรณีไม่พบข้อมูลผู้ใช้
-      localStorage.removeItem("chatId");
+      // localStorage.removeItem("chatId");
       let headertext, bodytext;
       if (useapp === "line") {
         headertext = "ไม่พบข้อมูลของคุณในระบบ";
