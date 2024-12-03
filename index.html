@@ -25,7 +25,7 @@
 </head>
 
 <body>
-  <!-- start nav -->
+ <!-- start nav -->
   <nav class="navbar navbar-expand-xs navbar-dark fixed-top">
     <!-- Button to trigger collapsible menu -->
     <button type="button" class="navbar-toggler mr-auto" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -33,7 +33,7 @@
     </button>
 
     <!-- Avatar Image -->
-    <a class="navbar-brand" href="javascript:void(0);" onclick="editpic()">
+    <a class="navbar-brand"  data-toggle="collapse" data-target="#avatarMenu" >
       <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="ลงเวลา" id="avatar"
         class="d-inline-block align-top" />
     </a>
@@ -82,7 +82,22 @@
         </li>
 
     
-        <!-- หัวข้อ: การตั้งค่าและข้อมูลส่วนตัว -->
+        <!-- หัวข้อ: การเชื่อมต่อ -->
+        <li class="nav-item mt-3">
+          <span class="navbar-text font-weight-bold">การเชื่อมต่อ</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="authen.html">
+            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Avatar menu -->
+    <div class="collapse navbar-collapse" id="avatarMenu">
+      <ul class="navbar-nav">
+       <!-- หัวข้อ: การตั้งค่าและข้อมูลส่วนตัว -->
         <li class="nav-item mt-3">
           <span class="navbar-text font-weight-bold">การตั้งค่าและข้อมูลส่วนตัว</span>
         </li>
