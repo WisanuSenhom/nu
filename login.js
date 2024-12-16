@@ -53,7 +53,7 @@ async function getProfile() {
 
     Swal.fire({
       title: `ยินดีต้อนรับคุณ\n${displayName}`,
-      html: `สถานะ : ${yourstatus}<br><br><strong>คุณต้องเข้าสู่ระบบด้วยบัญชีไลน์นี้หรือไม่?</strong>`,
+      html: `สถานะ : ${yourstatus}<br><br><strong>คุณต้องการเข้าสู่ระบบด้วยบัญชีไลน์นี้หรือไม่?</strong>`,
       imageUrl: yourpic,
       imageWidth: 150,
       imageHeight: 150,
