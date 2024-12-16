@@ -224,9 +224,14 @@ async function handleTelegramCallback(){
     }
   } else {
     Swal.fire({
-        icon: "info",
-        title: "กรุณาเข้าสู่ระบบด้วย Telegram",
-        confirmButtonColor: "#0ef",
+      icon: "info",
+      html: 'กรุณาเข้าสู่ระบบด้วย <i class="fa-brands fa-telegram"></i> Telegram',
+      confirmButtonColor: "#24A1DE",
+      footer: `<a href="javascript:void(0);" onclick="checkAppTelegram()" style="color: lightblue;">
+                 ตรวจสอบการติดตั้ง Telegram 
+                </a>`,
+    }).then(() => {
+      getchatID();
     });
   }
 }
@@ -234,4 +239,36 @@ async function handleTelegramCallback(){
 function coseWindow() {
   // Redirect to index.html
   window.location.href = 'index.html';
+}
+
+// ck tlg
+function checkAppTelegram() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const telegramUrl = 'tg://resolve?domain=telegram';
+  const downloadUrl = /android/.test(userAgent)
+      ? 'https://play.google.com/store/apps/details?id=org.telegram.messenger'
+      : /iphone|ipad|ipod/.test(userAgent)
+      ? 'https://apps.apple.com/app/telegram-messenger/id686449807'
+      : 'https://desktop.telegram.org/';
+
+  const timeout = setTimeout(() => {
+      Swal.fire({
+          icon: 'warning',
+          html: '<i class="fa-brands fa-telegram"></i> Telegram ไม่ได้ติดตั้ง',
+          text: 'กรุณาดาวน์โหลดแอพ Telegram เพื่อใช้งาน',
+          confirmButtonText: 'ดาวน์โหลด',
+          confirmButtonColor: "#24A1DE",
+      }).then(() => window.location.href = downloadUrl);
+  }, 500);
+
+  // ตรวจสอบการติดตั้ง
+  const iframe = document.createElement('iframe');
+  iframe.src = telegramUrl;
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  window.addEventListener('blur', () => {
+      clearTimeout(timeout);
+      getchatID(); // เรียกเมื่อ Telegram ถูกติดตั้ง
+  });
 }
