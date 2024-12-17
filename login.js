@@ -137,12 +137,13 @@ async function handleTelegramCallback() {
       }
       window.location.hash = "";
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error parsing Telegram data.",
-        text: error.message,
-        confirmButtonColor: "#0ef",
-      });
+      main();
+      // Swal.fire({
+      //   icon: "error",
+      //   title: "Error parsing Telegram data.",
+      //   text: error.message,
+      //   confirmButtonColor: "#0ef",
+      // });
     }
   }
 }
