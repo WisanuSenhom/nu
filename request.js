@@ -86,10 +86,10 @@ async function displayBossNotAssignedError() {
     
             // Show Swal modal for user selection
             const { value: selectedValue } = await Swal.fire({
-                title: `ท่านยังไม่ได้กำหนดผู้บังคับบัญชา`,
+                title: `กำหนดผู้บังคับบัญชาของท่าน`,
                 input: "select",
                 inputOptions: options,
-                inputPlaceholder: "โปรดเลือกรายการเพื่อกำหนดผู้บังคับบัญชาของท่าน",
+                inputPlaceholder: "โปรดเลือกรายการ",
                 allowOutsideClick: false,
                 inputValidator: (value) => {
                     return new Promise((resolve) => {
