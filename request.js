@@ -54,21 +54,108 @@ if (!(isAndroid || isIOS)) { // ถ้าไม่ใช่ Android หรือ
         // Boss is not assigned
         displayBossNotAssignedError();
     }
-
-    function displayBossNotAssignedError() {
-       localStorage.clear();
-        // Show SweetAlert error message for unassigned boss
-        Swal.fire({
-            title: "ไม่พบการกำหนดหัวหน้า หรือ ผอ. ของท่าน",
-            text: "โปรดกำหนดหรือแจ้งผู้แดระบบในหน่วยงานของท่านกำหนดให้ หากกำหนดแล้ว ให้กด Reset หน้าลงเวลา.",
-            icon: "error",
-            confirmButtonText: "OK"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "https://wisanusenhom.github.io/sekatime/user.html"; // Replace with your desired page URL
+async function displayBossNotAssignedError() {
+        const refid = localStorage.getItem('refid');
+        const mainsub = localStorage.getItem('mainsub');  
+        try {
+            // แสดงสถานะกำลังดำเนินการก่อนเรียก API
+            Swal.fire({
+                title: 'กำลังโหลดข้อมูล...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+    
+            // Fetch options from API
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbzlanx_NXl5qy1mlvQP6oMl6zElUxDJ9nLUiZEqIHO0RKP7OcxkHKo5n_XUb-5UEHRN/exec?xmain=${mainsub}&updateby=${localStorage.getItem("name")}`);
+    
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
             }
-        });
-    }
+    
+            const data = await response.json();
+            Swal.close(); // ปิดสถานะกำลังดำเนินการเมื่อโหลดสำเร็จ
+    
+            // Extract value and label from the fetched data
+            const options = {};
+            data.role.forEach(itemx => {
+                options[itemx.id] = itemx.name;
+            });
+    
+            // Show Swal modal for user selection
+            const { value: selectedValue } = await Swal.fire({
+                title: `ท่านยังไม่ได้กำหนดผู้บังคับบัญชา`,
+                input: "select",
+                inputOptions: options,
+                inputPlaceholder: "โปรดเลือกรายการเพื่อกำหนดผู้บังคับบัญชาของท่าน",
+                allowOutsideClick: false,
+                inputValidator: (value) => {
+                    return new Promise((resolve) => {
+                        if (value) {
+                            // แสดงสถานะกำลังดำเนินการก่อนเรียก API แก้ไขข้อมูล
+                            Swal.fire({
+                                title: 'กำลังบันทึกข้อมูล...',
+                                text: 'กรุณารอสักครู่',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+    
+                            // Make API call to update selected data
+                            fetch(`https://script.google.com/macros/s/AKfycbycQZ5goIDuxiTSnaA6NTGGY5sgmKfVgDAt1wDDXqxn6sGRfDnYODVHJH67BQd_TvADbw/exec?id=${refid}&sts=${value}&updateby=${localStorage.getItem("name")}`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(() => {
+                                    Swal.close(); // ปิดสถานะกำลังดำเนินการเมื่อบันทึกสำเร็จ
+    
+                                    // บันทึก boss ลงใน localStorage
+                                    localStorage.setItem('boss', value);
+    
+                                    // Success notification
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Successful',
+                                        text: 'การแก้ไขข้อมูลสำเร็จ.',
+                                        allowOutsideClick: false,
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                    resolve();
+                                })
+                                .catch(error => {
+                                    Swal.close(); // ปิดสถานะกำลังดำเนินการเมื่อเกิดข้อผิดพลาด
+    
+                                    // Error notification
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `เกิดข้อผิดพลาด: ${error.message}`
+                                    });
+                                    resolve();
+                                });
+                        } else {
+                            resolve("กรุณาเลือกหัวหน้า");
+                        }
+                    });
+                }
+            });
+        } catch (error) {
+            Swal.close(); // ปิดสถานะกำลังดำเนินการเมื่อเกิดข้อผิดพลาด
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `เกิดข้อผิดพลาด: ${error.message}`
+            });
+        }
+    }  
+   
 });
 
 // จากพี่ดำรงศักดิ์ สสจ.บึงกาฬ
