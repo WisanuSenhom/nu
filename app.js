@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           (error) => {
               console.error('Error getting geolocation:', error);
-              dispDistanceElement.textContent = 'โปรดกด "Allow" เมื่อทำการลงเวลา';
+              dispDistanceElement.textContent = 'กรุณาเปิดตำแหน่งของอุปกรณ์';
               dispDistanceElement.style.color = 'red';
           }
       );
