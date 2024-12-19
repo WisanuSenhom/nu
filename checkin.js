@@ -287,31 +287,31 @@ async function checkin() {
         )
         .openPopup();
 
-      // Function to calculate AQI from PM2.5
+     // Function to calculate AQI from PM2.5
       function calculateAQI(pm25) {
         if (pm25 <= 25) {
           return {
             aqi: Math.round((25 / 25) * pm25),
             level: "ดีมาก",
-            color: "#1E90FF",
+            color: "#007FFE",
           }; // ฟ้า
         } else if (pm25 <= 37) {
           return {
             aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
             level: "ดี",
-            color: "#00FF00",
+            color: "#008000",
           }; // เขียว
         } else if (pm25 <= 50) {
           return {
             aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
             level: "ปานกลาง",
-            color: "#FFFF00",
+            color: "#C09200",
           }; // เหลือง
         } else if (pm25 <= 90) {
           return {
             aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
             level: "มีผลกระทบต่อสุขภาพ",
-            color: "#FFA500",
+            color: "#E2543C",
           }; // ส้ม
         } else {
           return {
@@ -468,25 +468,25 @@ async function checkout() {
           return {
             aqi: Math.round((25 / 25) * pm25),
             level: "ดีมาก",
-            color: "#1E90FF",
+            color: "#007FFE",
           }; // ฟ้า
         } else if (pm25 <= 37) {
           return {
             aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
             level: "ดี",
-            color: "#00FF00",
+            color: "#008000",
           }; // เขียว
         } else if (pm25 <= 50) {
           return {
             aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
             level: "ปานกลาง",
-            color: "#FFFF00",
+            color: "#C09200",
           }; // เหลือง
         } else if (pm25 <= 90) {
           return {
             aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
             level: "มีผลกระทบต่อสุขภาพ",
-            color: "#FFA500",
+            color: "#E2543C",
           }; // ส้ม
         } else {
           return {
