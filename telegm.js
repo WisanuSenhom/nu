@@ -223,12 +223,15 @@ async function handleTelegramCallback(){
     });
     }
   } else {
-    Swal.fire({
+Swal.fire({
       icon: "info",
       html: 'กรุณาเข้าสู่ระบบด้วย <i class="fa-brands fa-telegram"></i> Telegram',
       confirmButtonColor: "#24A1DE",
       footer: `<a href="javascript:void(0);" onclick="checkAppTelegram()" style="color: lightblue;">
                  ตรวจสอบการติดตั้ง Telegram 
+                </a><br>
+                <a href="https://youtube.com/shorts/U1Eto_Sl2FE?feature=share" style="color: lightblue;">
+                 วิดิโอการเชื่อมต่อ Telegram กับ ระบบลงเวลา
                 </a>`,
     }).then(() => {
       getchatID();
