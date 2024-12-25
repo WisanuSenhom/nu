@@ -634,11 +634,35 @@ async function checktoday(){
                 var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \n ลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`; // Assuming you want the first 'intime' value
 
                 // Set the text content of the element with the fetched data
+                 utimelineElement.innerText = timelineData;
+
                 const cktoday = new Date();
                 const ckfd = cktoday.toLocaleDateString("th-TH"); 
                 localStorage.setItem("datecheck", ckfd);
+                localStorage.setItem("datetimecheck", data.cc[0].intime);
+                Swal.fire({
+                    title: 'พบการลงเวลาในวันนี้',
+                    html: `คุณได้ลงเวลาปฏิบัติงานในวันนี้แล้ว <br> หากต้องการยื่นคำขอใหม่ <br> โปรดกด "ดำเนินการ" <br> หรือกด "ปิด" หากไม่ต้องการดำเนินการต่อ`,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'ปิด',
+                    cancelButtonText: 'ดำเนินการ',
+                    confirmButtonColor: "#FF0505", 
+                    cancelButtonColor: "#22BB33",
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                       window.location.href = 'index.html'; 
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        // Swal.fire({
+                        //     title: 'การใช้งานได้รับการอนุญาต',
+                        //     text: 'คุณสามารถดำเนินการต่อบนอุปกรณ์นี้ได้',
+                        //     icon: 'info',
+                        //     confirmButtonColor: "#24A1DE",
+                        // });
+                    }
+                });
                 
-                utimelineElement.innerText = timelineData;
             } else {
                 var timelineData = `วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน`;
                 utimelineElement.innerText = timelineData;
