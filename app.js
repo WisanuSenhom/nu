@@ -293,6 +293,7 @@ async function checktoday() {
         const cktoday = new Date();
         const ckfd = cktoday.toLocaleDateString("th-TH"); 
         localStorage.setItem("datecheck", ckfd);
+        localStorage.setItem("datetimecheck", data.cc[0].intime);
         // แสดงข้อมูลที่ดึงมาใน Swal
         Swal.fire({
           icon: "success",
