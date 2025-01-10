@@ -156,42 +156,51 @@ document.addEventListener("click", (e) => {
     otherInput.style.display = select.value !== "ปกติ" ? "block" : "none";
   }
 
-  // Time-based button visibility
-  function toggleButtonsByTime() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes();
+ // Time-based button visibility
+    function toggleButtonsByTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
 
-    const startBtn = document.getElementById("startBtn");
-    const statusBtn = document.getElementById("statusBtn");
-    const endBtn = document.getElementById("endBtn");
+      const startBtn = document.getElementById("startBtn");
+      const statusBtn = document.getElementById("statusBtn");
+      const endBtn = document.getElementById("endBtn");
 
-    if ((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) {
-      // Show "Start" button, hide others
-      startBtn.style.display = "inline-block";
-      statusBtn.style.display = "none";
-      endBtn.style.display = "none";
-    } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
-      // Show "Status" button, hide others
-      startBtn.style.display = "none";
-      statusBtn.style.display = "inline-block";
-      endBtn.style.display = "none";
-      let formattedToday = now.toLocaleDateString("th-TH");
+      if ((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) {
+        // Show "Start" button, hide others
+        startBtn.style.display = "inline-block";
+        statusBtn.style.display = "none";
+        endBtn.style.display = "none";
+      } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
+        // Show "Status" button, hide others
+        startBtn.style.display = "none";
+        statusBtn.style.display = "inline-block";
+        endBtn.style.display = "none";
+
+        let formattedToday = now.toLocaleDateString("th-TH");
         if (formattedToday !== localStorage.getItem("datecheck")) {
           window.location.href = "request.html"; // redirect ไปยัง 'request.html'
         }
-    } else {
-      // Show "End" button, hide others
-      startBtn.style.display = "none";
-      statusBtn.style.display = "none";
-      endBtn.style.display = "inline-block";
-    }
+      } else {
+        // Show "End" button, hide others
+        startBtn.style.display = "none";
+        statusBtn.style.display = "none";
+        endBtn.style.display = "inline-block";
+        
+        let formattedToday = now.toLocaleDateString("th-TH");
+        if(formattedToday === localStorage.getItem("datecheckout")) {   
+          // Show "Status" button, hide others
+        startBtn.style.display = "none";
+        statusBtn.style.display = "inline-block";
+        endBtn.style.display = "none";
+        }
+      }
       // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
-     let day = now.getDay();
+      let day = now.getDay();
       if (day === 0 || day === 6) {
         typeaElement.value = "วันหยุด"; // ตั้งค่าเป็นวันหยุด
       }
-  }
+    }
 
   // Initialize time-based buttons
   toggleButtonsByTime();
