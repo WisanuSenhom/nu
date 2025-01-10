@@ -1,45 +1,19 @@
-// ฟังก์ชันสำหรับสร้างรหัส Secure โดยใช้ HMAC-SHA-256
-async function generateSecureCode() {
-  const date = new Date();
-  const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
-  const secretKey = "Impermanent_Suffering_Egolessness";
-
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secretKey),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
-  const code = Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return code;
-}
-
-// ฟังก์ชันที่ใช้ในการแสดงและซ่อน Loading Modal
-function showLoading() {
-  var overlay = document.getElementById("loadingOverlay");
-  overlay.style.display = "flex"; // แสดง loading overlay
-}
-
-function hideLoading() {
-  var overlay = document.getElementById("loadingOverlay");
-  overlay.style.display = "none"; // ซ่อน loading overlay
-}
-
+let map;
 // ฟังก์ชันที่ใช้ในการดึงตำแหน่งจาก Geolocation API
-function getLocation() {
+async function getLocation() {
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => resolve(position.coords), // ส่งตำแหน่งจาก Geolocation
-        (error) => showError(error) // เรียกฟังก์ชัน showError เมื่อเกิดข้อผิดพลาด
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => showError(error)
       );
     } else {
-      reject("เบราว์เซอร์ไม่รองรับ Geolocation");
+      reject(new Error("Geolocation is not supported by this browser."));
     }
   });
 }
@@ -94,10 +68,341 @@ function showError(error) {
   }
 }
 
+async function initializeMap(
+  lat,
+  lon,
+  destinationLat,
+  destinationLon,
+  officer
+) {
+  // สร้างแผนที่ใหม่
+  map = L.map("map").setView([lat, lon], 13);
+
+  // เพิ่มแผนที่พื้นฐาน (OpenStreetMap)
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "",
+  }).addTo(map);
+
+  const userLatLng = L.latLng(lat, lon);
+  const destinationLatLng = L.latLng(destinationLat, destinationLon);
+
+  // คำนวณระยะทาง
+  const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
+  const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
+
+  // เพิ่มวงกลมแสดงรัศมี
+  L.circle([destinationLat, destinationLon], {
+    color: "green",
+    fillColor: "#0f0",
+    fillOpacity: 0.2,
+    radius: 10000,
+  })
+    .addTo(map)
+    .bindPopup("รัศมี 10 กิโลเมตร จากหน่วยงานของคุณ");
+
+  // เพิ่ม Marker แสดงตำแหน่งปลายทาง
+  L.marker([destinationLat, destinationLon])
+    .addTo(map)
+    .bindPopup(`${officer}`)
+    .openPopup();
+
+  // เพิ่ม Marker แสดงตำแหน่งผู้ใช้
+  L.marker([lat, lon])
+    .addTo(map)
+    .bindPopup(
+      `<b>ตำแหน่งของคุณ</b><br>ระยะห่างจากปลายทาง: ${distanceInKilometers} กิโลเมตร`
+    )
+    .openPopup();
+
+  // เพิ่มเส้นเชื่อมระหว่างตำแหน่งผู้ใช้และปลายทาง
+  const latlngs = [
+    [lat, lon],
+    [destinationLat, destinationLon],
+  ];
+  L.polyline(latlngs, { color: "blue" }).addTo(map);
+  function calculateAQI(pm25) {
+    if (pm25 <= 25) {
+      return {
+        aqi: Math.round((25 / 25) * pm25),
+        level: "ดีมาก",
+        color: "#007FFE",
+      }; // ฟ้า
+    } else if (pm25 <= 37) {
+      return {
+        aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
+        level: "ดี",
+        color: "#008000",
+      }; // เขียว
+    } else if (pm25 <= 50) {
+      return {
+        aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
+        level: "ปานกลาง",
+        color: "#C09200",
+      }; // เหลือง
+    } else if (pm25 <= 90) {
+      return {
+        aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
+        level: "มีผลกระทบต่อสุขภาพ",
+        color: "#E2543C",
+      }; // ส้ม
+    } else {
+      return {
+        aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201),
+        level: "อันตราย",
+        color: "#FF0000",
+      }; // แดง
+    }
+  }
+
+  function getTemperatureLevel(temp) {
+    if (temp >= 45) {
+      return { level: "ร้อนจัดมาก", color: "#8B0000" }; // Very Extremely Hot (แดงเข้มมาก)
+    } else if (temp >= 40) {
+      return { level: "ร้อนจัด", color: "#B22222" }; // Very Hot (แดงเข้ม)
+    } else if (temp >= 37) {
+      return { level: "ร้อนมาก", color: "#FF4500" }; // Extremely Hot (แดงส้มเข้ม)
+    } else if (temp >= 35) {
+      return { level: "ร้อน", color: "#FF8C00" }; // Hot (ส้มเข้ม)
+    } else if (temp >= 30) {
+      return { level: "ค่อนข้างร้อน", color: "#FFA500" }; // Warm (ส้ม)
+    } else if (temp >= 23) {
+      return { level: "ปกติ", color: "#228B22" }; // Normal (เขียวเข้ม)
+    } else if (temp >= 20) {
+      return { level: "เย็นสบาย", color: "#32CD32" }; // Pleasantly Cool (เขียวสด)
+    } else if (temp >= 18) {
+      return { level: "เย็น", color: "#1E90FF" }; // Cool (ฟ้าเข้ม)
+    } else if (temp >= 16) {
+      return { level: "ค่อนข้างหนาว", color: "#4682B4" }; // Moderately Cold (ฟ้าเข้มขึ้น)
+    } else if (temp >= 8) {
+      return { level: "หนาว", color: "#00008B" }; // Cold (น้ำเงินเข้ม)
+    } else if (temp >= 5) {
+      return { level: "หนาวจัด", color: "#800080" }; // Very Cold (ม่วงเข้ม)
+    } else {
+      return { level: "หนาวจัดมาก", color: "#4B0082" }; // Extremely Cold (ม่วงน้ำเงินเข้มมาก)
+    }
+  }
+
+  try {
+    const apiKey = "639b4c8c49d8ae3d835971a444856be5";
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=th`;
+    const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
+    // Fetch weather data
+    const weatherResponse = await fetch(weatherUrl);
+    const weatherData = await weatherResponse.json();
+
+    // Fetch air quality data
+    const airQualityResponse = await fetch(airQualityUrl);
+    const airQualityData = await airQualityResponse.json();
+
+    const weatherDescription = weatherData.weather[0].description;
+    const weatherIcon = weatherData.weather[0].icon;
+    const weatherTemp = weatherData.main.temp;
+    const weatherName = weatherData.name;
+    const weatherImageUrl = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
+
+    const pm25 = airQualityData.list[0].components.pm2_5;
+    const { aqi, level: aqiLevel, color: aqiColor } = calculateAQI(pm25);
+    const { level: tempLevel, color: tempColor } =
+      getTemperatureLevel(weatherTemp);
+
+    const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
+    
+
+    // Add weather, AQI, and PM2.5 information in user location popup
+    L.marker([lat, lon])
+      .addTo(map)
+      .bindPopup(
+        ` 
+        <div style="
+        background-color: #f8f6f6;
+        color: #333;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        font-family: 'Arial', sans-serif;
+        font-size: 14px;
+        max-width: 400px;
+        margin: 20px auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <b>ตำแหน่งของคุณ</b><br>
+        <a href="${googleMapUrl}" target="_blank" style="color: #1e90ff; text-decoration: none;">${lat}, ${lon}</a><br>
+        <span style="font-size: 12px; color: #666;">ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร</span><br>
+        <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 40px; height: 40px; margin: 0.1px 0;"><br>
+        <span style="font-size: 14px;">${weatherName}, อุณหภูมิ: ${weatherTemp}°C</span> 
+        <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
+        <span style="font-size: 12px; color: #666;">สภาพอากาศ: ${weatherDescription}</span><br>
+        <span style="font-size: 12px; color: #666;">PM2.5: ${pm25} µg/m³</span><br>
+        AQI: <span style="color: ${aqiColor}; font-size: 14px;"><b>${aqi} (${aqiLevel})</b></span>
+    </div>
+    
+`
+      )
+      .openPopup();
+  } catch (error) {
+    console.error("Error fetching weather or air quality data: ", error);
+  }
+}
+
+async function checkonmap() {
+  const mapContainer = document.getElementById("map");
+  mapContainer.innerHTML = ""; // เคลียร์เนื้อหาของ div ก่อนเริ่ม
+
+  // แสดงข้อความโหลด
+  const loadingText = document.createElement("p");
+  loadingText.textContent = "กำลังโหลดแผนที่...";
+  loadingText.style.textAlign = "center";
+  mapContainer.appendChild(loadingText);
+
+  try {
+    const location = await getLocation();
+    const lat = location.latitude;
+    const lon = location.longitude;
+
+    const destinationLat = parseFloat(localStorage.getItem("oflat") ); 
+    const destinationLon = parseFloat(localStorage.getItem("oflong")); 
+    const officer = localStorage.getItem("office") || "หน่วยงาน";
+
+    // เรียกฟังก์ชัน initializeMap
+    initializeMap(lat, lon, destinationLat, destinationLon, officer);
+    displayLatLon(lat, lon);
+  } catch (error) {
+    console.error("Error displaying map: ", error);
+    mapContainer.innerHTML = `<p style="text-align: center; color: red;">ไม่สามารถโหลดแผนที่ได้: ${error.message}</p>`;
+  }
+}
+
+function refreshMap() {
+  if (map) {
+    map.remove(); // ลบแผนที่เก่า
+  }
+  checkonmap(); // เรียกฟังก์ชัน checkonmap เพื่อโหลดแผนที่ใหม่
+}
+
+// เรียกฟังก์ชัน checkonmap ครั้งแรก
+checkonmap();
+
+function displayLatLon(lat, lon) {
+  // Set the values to the hidden input fields
+  document.getElementById("llat").value = lat;
+  document.getElementById("llon").value = lon;
+}
+
+
+async function checkin() {
+  let latitude = document.querySelector("#llat").value;
+  let longitude = document.querySelector("#llon").value;
+
+  if (!latitude || !longitude) {
+    Swal.fire({
+      icon: "warning",
+      title: "ข้อมูลไม่ครบถ้วน รับค่าพิกัดไม่ได้",
+      text: "กรุณาเปิดใช้งานตำแหน่งที่ตั้งเพื่อบันทึกเวลาการปฏิบัติงาน",
+      confirmButtonText: "ตกลง",
+      allowOutsideClick: false,
+      customClass: {
+        title: "text-warning",
+        content: "text-muted",
+        confirmButton: "btn btn-warning",
+      },
+    });
+    return; // ออกจากฟังก์ชันหากไม่มีค่าที่จำเป็น
+  }
+
+  Swal.fire({
+    title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
+    html: 'กรุณากดยืนยันเพื่อดำเนินการ',
+    showCancelButton: true,
+    confirmButtonText: "ยืนยัน",
+    cancelButtonText: "ยกเลิก",
+    allowOutsideClick: false,
+    // confirmButtonColor: "#008000",
+    cancelButtonColor: "#6F7378",
+    customClass: {
+      title: "text-success", 
+      content: "text-muted",
+      confirmButton: "btn btn-success",
+    // cancelButton: "btn btn-danger"
+    },
+    didOpen: async () => {
+      // Handle confirmation click to process check-in
+      Swal.getConfirmButton().addEventListener("click", async () => {
+        // Send latitude and longitude to process the check-in
+        await processCheckinOrCheckout("In", latitude, longitude);
+      });
+    },
+  });
+}
+
+async function checkout() {
+  let latitude = document.querySelector("#llat").value;
+  let longitude = document.querySelector("#llon").value;
+
+  if (!latitude || !longitude) {
+    Swal.fire({
+      icon: "warning",
+      title: "ข้อมูลไม่ครบถ้วน รับค่าพิกัดไม่ได้",
+      text: "กรุณาเปิดใช้งานตำแหน่งที่ตั้งเพื่อบันทึกเวลาการปฏิบัติงาน",
+      confirmButtonText: "ตกลง",
+      allowOutsideClick: false,
+      customClass: {
+        title: "text-warning",
+        content: "text-muted",
+        confirmButton: "btn btn-warning",
+      },
+    });
+    return; // ออกจากฟังก์ชันหากไม่มีค่าที่จำเป็น
+  }
+
+  Swal.fire({
+    title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
+html: 'กรุณากดยืนยันเพื่อดำเนินการ',
+showCancelButton: true,
+confirmButtonText: "ยืนยัน",
+cancelButtonText: "ยกเลิก",
+    allowOutsideClick: false,
+    // confirmButtonColor: "#008000",
+    cancelButtonColor: "#6F7378",
+    customClass: {
+      title: "text-danger", 
+      content: "text-muted",
+      confirmButton: "btn btn-danger",
+    // cancelButton: "btn btn-danger"
+    },
+    didOpen: async () => {
+      // Handle confirmation click to process check-in
+      Swal.getConfirmButton().addEventListener("click", async () => {
+        // Send latitude and longitude to process the check-in
+        await processCheckinOrCheckout("Out", latitude, longitude);
+      });
+    },
+  });
+}
+
+
+async function generateSecureCode() {
+  const date = new Date();
+  const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+  const secretKey = "Impermanent_Suffering_Egolessness";
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secretKey),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
+  const code = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return code;
+}
+
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
 async function processCheckinOrCheckout(ctype, latitude, longitude) {
-  const loadingModal = document.getElementById("loadingModal");
-  loadingModal.style.display = "block"; // แสดง modal ตอนกำลังทำงาน
 
   try {
     // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
@@ -126,22 +431,19 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
 
     const secureCode = await generateSecureCode();
     let typea = document.querySelector("#typea").value;
-    let nte = document.querySelector("#nte").value;
+    let nte = document.querySelector("#otherDetails").value;
     let todays = new Date();
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
 
-    // เลือก id "latlong"
-    var latlongElement = document.getElementById("latlong");
-
-    // แสดงค่าใน element
-    latlongElement.innerHTML =
-      "ละติจูด: " +
-      latitude +
-      "<br>ลองจิจูด: " +
-      longitude +
-      "<br><br>กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล";
-
+      Swal.fire({
+        title: "กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      
     const response = await fetch(
       `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
     );
@@ -155,17 +457,30 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
 
     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
     data.res.forEach((datas) => {
+        // ปิดการแสดงสถานะการโหลด
+        Swal.close();
+
       let iconx = datas.icon;
       let header = datas.header;
       let text = datas.text;
 
       Swal.fire({
-        confirmButtonColor: "#1e90ff",
         icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
-        title: header,
-        text: data.message || text, // ข้อความที่ได้รับจาก API หรือจากแต่ละ entry
-        confirmButtonText: "ตกลง",
-        allowOutsideClick: false,
+  title: header,
+  text: data.message || text, // ข้อความที่ได้รับจาก API หรือจากแต่ละ entry
+  confirmButtonText: "ตกลง",
+  allowOutsideClick: false,
+  customClass: {
+    title: iconx === "success" ? "text-success" : 
+           iconx === "error" ? "text-danger" : 
+           iconx === "warning" ? "text-warning" : 
+           "text-info", // Default to "text-info" for other cases
+    content: "text-muted",
+    confirmButton: iconx === "success" ? "btn btn-success" : 
+                   iconx === "error" ? "btn btn-danger" : 
+                   iconx === "warning" ? "btn btn-warning" : 
+                   "btn btn-info", // Default to "btn btn-info" for other cases
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           const cktoday = new Date();
@@ -211,790 +526,85 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
       confirmButtonText: "ตกลง",
     });
   } finally {
-    // ซ่อน loading modal เมื่อเสร็จสิ้น
-    loadingModal.style.display = "none";
+    // ดำเนินการเมื่อเสร็จสิ้น
   }
 }
 
-// ฟังก์ชันสำหรับการลงเวลาเข้า
 
-// async function checkin() {
-//   Swal.fire({
-//     title: "คุณต้องการลงเวลาปฏิบัติงานหรือไม่?",
-//     html: '<div id="map"></div>',
-//     width: 600,
-//     icon: "question",
-//     showCancelButton: true,
-//     confirmButtonText: "ยืนยัน",
-//     cancelButtonText: "ยกเลิก",
-//     allowOutsideClick: false,
-//     confirmButtonColor: "#008000",
-//     cancelButtonColor: "#6F7378",
-//     customClass: {
-//       title: "text-success",
-//       content: "text-muted",
-//     },
-//     didOpen: async () => {
-//       // ดึงตำแหน่งของผู้ใช้
-//       const location = await getLocation();
-//       const lat = location.latitude; // ตรวจสอบค่า latitude
-//       const lon = location.longitude; // ตรวจสอบค่า longitude
 
-//       // สร้างแผนที่ใน Swal เมื่อแสดงผล
-//       let map = L.map("map").setView([lat, lon], 13); // กำหนดตำแหน่งเริ่มต้น
-
-//       // เพิ่มฐานแผนที่ (OpenStreetMap)
-//       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-//         attribution: "",
-//       }).addTo(map);
-
-//       // กำหนดตำแหน่งปลายทางที่ต้องการ
-//       let destinationLat = parseFloat(localStorage.getItem("oflat"));
-//       let destinationLon = parseFloat(localStorage.getItem("oflong"));
-
-//       // เพิ่มวงกลมที่ตำแหน่ง
-//       L.circle([lat, lon], {
-//         color: "green",
-//         fillColor: "#0f0",
-//         fillOpacity: 0.5,
-//         radius: 500,
-//       }).addTo(map);
-
-//       // เพิ่มเครื่องหมายที่ตำแหน่งปลายทาง
-//       L.marker([destinationLat, destinationLon])
-//         .addTo(map)
-//         .bindPopup("หน่วยงาน")
-//         .openPopup();
-
-//       // เพิ่มเครื่องหมายที่ตำแหน่งของผู้ใช้
-//       L.marker([lat, lon]).addTo(map).bindPopup("ตำแหน่งของคุณ").openPopup();
-
-//       // เพิ่มเส้นทาง (Polyline) จากตำแหน่งผู้ใช้ไปยังปลายทาง
-//       let latlngs = [
-//         [lat, lon], // จุดเริ่มต้น
-//         [destinationLat, destinationLon], // จุดปลายทาง
-//       ];
-//       L.polyline(latlngs, { color: "blue" }).addTo(map);
-
-//       // เรียกฟังก์ชันการลงเวลากลับเมื่อผู้ใช้ยืนยัน
-//       Swal.getConfirmButton().addEventListener("click", () => {
-//         processCheckinOrCheckout("In", lat, lon); // เพิ่มการลงเวลากลับที่นี่
-//       });
-//     },
-//   });
-// }
-
-// async function checkout() {
-//   Swal.fire({
-//     title: "คุณต้องการลงเวลากลับหรือไม่?",
-//     html: '<div id="map" ></div>',
-//     // width: 600,
-//     // icon: "question",
-//     showCancelButton: true,
-//     confirmButtonText: "ยืนยัน",
-//     cancelButtonText: "ยกเลิก",
-//     denyButtonText: "ตำแหน่งปัจจุบัน", // Add the deny button text
-//     allowOutsideClick: false,
-//     confirmButtonColor: "#b0120a",
-//     cancelButtonColor: "#6F7378",
-//     customClass: {
-//       title: "text-danger",
-//       content: "text-muted",
-//     },
-//     didOpen: async () => {
-//       // Get user location
-//       const location = await getLocation();
-//       const lat = location.latitude;
-//       const lon = location.longitude;
-
-//       // Create map in Swal
-//       let map = L.map("map").setView([lat, lon], 13);
-
-//       // Add base map (OpenStreetMap)
-//       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-//         maxZoom: 19,
-//         attribution: "",
-//       }).addTo(map);
-
-//       // Destination location
-//       const destinationLat = parseFloat(localStorage.getItem("oflat"));
-//       const destinationLon = parseFloat(localStorage.getItem("oflong"));
-//       const officer = localStorage.getItem("office");
-
-//       const userLatLng = L.latLng(lat, lon);
-//       const destinationLatLng = L.latLng(destinationLat, destinationLon);
-
-//       // Calculate distance
-//       const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
-//       const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
-
-//       // Add circle at destination location
-//       L.circle([destinationLat, destinationLon], {
-//         color: "green",
-//         fillColor: "#0f0",
-//         fillOpacity: 0.2,
-//         radius: 10000,
-//       })
-//         .addTo(map)
-//         .bindPopup("รัศมี 10 กิโลเมตร จากหน่วยงานของคุณ");
-
-//       // Add marker at destination location
-//       L.marker([destinationLat, destinationLon])
-//         .addTo(map)
-//         .bindPopup(`${officer}`)
-//         .openPopup();
-
-//       // Add marker at user location with distance info
-//       L.marker([lat, lon])
-//         .addTo(map)
-//         .bindPopup(
-//           `
-//           <b>ตำแหน่งของคุณ</b><br>
-//           ระยะห่างจากปลายทาง: ${distanceInKilometers} กิโลเมตร
-//         `
-//         )
-//         .openPopup();
-
-//       // Function to calculate AQI from PM2.5
-//       function calculateAQI(pm25) {
-//         if (pm25 <= 25) {
-//           return {
-//             aqi: Math.round((25 / 25) * pm25),
-//             level: "ดีมาก",
-//             color: "#1E90FF",
-//           }; // ฟ้า
-//         } else if (pm25 <= 37) {
-//           return {
-//             aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
-//             level: "ดี",
-//             color: "#00FF00",
-//           }; // เขียว
-//         } else if (pm25 <= 50) {
-//           return {
-//             aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
-//             level: "ปานกลาง",
-//             color: "#FFFF00",
-//           }; // เหลือง
-//         } else if (pm25 <= 90) {
-//           return {
-//             aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
-//             level: "มีผลกระทบต่อสุขภาพ",
-//             color: "#FFA500",
-//           }; // ส้ม
-//         } else {
-//           return {
-//             aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201),
-//             level: "อันตราย",
-//             color: "#FF0000",
-//           }; // แดง
-//         }
-//       }
-
-//       try {
-//         // Define API Keys and URLs
-//         const apiKey = "639b4c8c49d8ae3d835971a444856be5";
-//         const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=th`;
-//         const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
-//         // Fetch weather data
-//         const weatherResponse = await fetch(weatherUrl);
-//         const weatherData = await weatherResponse.json();
-
-//         // Fetch air quality data
-//         const airQualityResponse = await fetch(airQualityUrl);
-//         const airQualityData = await airQualityResponse.json();
-
-//         // Extract weather data
-//         const weatherDescription = weatherData.weather[0].description;
-//         const weatherIcon = weatherData.weather[0].icon;
-//         const weatherTemp = weatherData.main.temp;
-//         const weatherName = weatherData.name;
-//         const weatherImageUrl = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-
-//         // Extract PM2.5 data and calculate AQI
-//         const pm25 = airQualityData.list[0].components.pm2_5;
-//         const { aqi, level: aqiLevel, color: aqiColor } = calculateAQI(pm25);
-
-//         // Define Google Maps URL
-//         const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
-
-//         // Add weather, AQI, and PM2.5 information in user location popup
-//         L.marker([lat, lon])
-//           .addTo(map)
-//           .bindPopup(
-//             `
-//     <div style="background-color: lightblue; color: black; padding: 10px; border-radius: 8px; text-align: center;">
-//       <b>ตำแหน่งของคุณ</b><br>
-//       <a href="${googleMapUrl}" target="_blank">${lat},${lon}</a><br>
-//       ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร <br>
-//       <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 50px; height: 50px;"><br>
-//       ${weatherName} อุณหภูมิ: ${weatherTemp}°C <br>
-//       สภาพอากาศ: ${weatherDescription}<br>
-//       PM2.5: ${pm25} µg/m³ <br>
-//       AQI: <span style="color: ${aqiColor};"><b>${aqi} (${aqiLevel}) </b></span> <br>
-//     </div>
-//   `
-//           )
-//           .openPopup();
-//       } catch (error) {
-//         console.error("Error fetching weather or air quality data: ", error);
-//       }
-
-//       // Add polyline from user to destination
-//       let latlngs = [
-//         [lat, lon],
-//         [destinationLat, destinationLon],
-//       ];
-//       L.polyline(latlngs, { color: "blue" }).addTo(map);
-
-//       // Handle confirmation click to process checkout
-//       Swal.getConfirmButton().addEventListener("click", () => {
-//          processCheckinOrCheckout("Out", lat, lon);
-//       });
-//     },
-//   });
-// }
-async function checkin() {
-  Swal.fire({
-    title: "คุณต้องการลงเวลาปฏิบัติงานหรือไม่?",
-    html: '<div id="map"></div>',
-    showCancelButton: true,
-    confirmButtonText: "ยืนยัน",
-    cancelButtonText: "ยกเลิก",
-    allowOutsideClick: false,
-    confirmButtonColor: "#008000",
-    cancelButtonColor: "#6F7378",
-    customClass: {
-      title: "text-success",
-      content: "text-muted",
-    },
-    didOpen: async () => {
-      // Show progress bar during loading
-      Swal.showLoading();
-
-      // Get user location
-      const location = await getLocation();
-      const lat = location.latitude;
-      const lon = location.longitude;
-
-      // Create map in Swal
-      let map = L.map("map").setView([lat, lon], 13);
-
-      // Add base map (OpenStreetMap)
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "",
-      }).addTo(map);
-
-      // Destination location
-      const destinationLat = parseFloat(localStorage.getItem("oflat"));
-      const destinationLon = parseFloat(localStorage.getItem("oflong"));
-      const officer = localStorage.getItem("office");
-
-      const userLatLng = L.latLng(lat, lon);
-      const destinationLatLng = L.latLng(destinationLat, destinationLon);
-
-      // Calculate distance
-      const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
-      const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
-
-      // Add circle at destination location
-      L.circle([destinationLat, destinationLon], {
-        color: "green",
-        fillColor: "#0f0",
-        fillOpacity: 0.2,
-        radius: 10000,
-      })
-        .addTo(map)
-        .bindPopup("รัศมี 10 กิโลเมตร จากหน่วยงานของคุณ");
-
-      // Add marker at destination location
-      L.marker([destinationLat, destinationLon])
-        .addTo(map)
-        .bindPopup(`${officer}`)
-        .openPopup();
-
-      // Add marker at user location with distance info
-      L.marker([lat, lon])
-        .addTo(map)
-        .bindPopup(
-          `
-          <b>ตำแหน่งของคุณ</b><br>
-          ระยะห่างจากปลายทาง: ${distanceInKilometers} กิโลเมตร
-        `
-        )
-        .openPopup();
-
-        function calculateAQI(pm25) {
-          if (pm25 <= 25) {
-            return { aqi: Math.round((25 / 25) * pm25), level: "ดีมาก", color: "#007FFE" }; // ฟ้า
-          } else if (pm25 <= 37) {
-            return { aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26), level: "ดี", color: "#008000" }; // เขียว
-          } else if (pm25 <= 50) {
-            return { aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51), level: "ปานกลาง", color: "#C09200" }; // เหลือง
-          } else if (pm25 <= 90) {
-            return { aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101), level: "มีผลกระทบต่อสุขภาพ", color: "#E2543C" }; // ส้ม
-          } else {
-            return { aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201), level: "อันตราย", color: "#FF0000" }; // แดง
-          }
-        }
-        
-        function getTemperatureLevel(temp) {
-          if (temp >= 45) {
-            return { level: "ร้อนจัดมาก", color: "#8B0000" }; // Very Extremely Hot (แดงเข้มมาก)
-          } else if (temp >= 40) {
-            return { level: "ร้อนจัด", color: "#B22222" }; // Very Hot (แดงเข้ม)
-          } else if (temp >= 37) {
-            return { level: "ร้อนมาก", color: "#FF4500" }; // Extremely Hot (แดงส้มเข้ม)
-          } else if (temp >= 35) {
-            return { level: "ร้อน", color: "#FF8C00" }; // Hot (ส้มเข้ม)
-          } else if (temp >= 30) {
-            return { level: "ค่อนข้างร้อน", color: "#FFA500" }; // Warm (ส้ม)
-          } else if (temp >= 23) {
-            return { level: "ปกติ", color: "#228B22" }; // Normal (เขียวเข้ม)
-          } else if (temp >= 20) {
-            return { level: "เย็นสบาย", color: "#32CD32" }; // Pleasantly Cool (เขียวสด)
-          } else if (temp >= 18) {
-            return { level: "เย็น", color: "#1E90FF" }; // Cool (ฟ้าเข้ม)
-          } else if (temp >= 16) {
-            return { level: "ค่อนข้างหนาว", color: "#4682B4" }; // Moderately Cold (ฟ้าเข้มขึ้น)
-          } else if (temp >= 8) {
-            return { level: "หนาว", color: "#00008B" }; // Cold (น้ำเงินเข้ม)
-          } else if (temp >= 5) {
-            return { level: "หนาวจัด", color: "#800080" }; // Very Cold (ม่วงเข้ม)
-          } else {
-            return { level: "หนาวจัดมาก", color: "#4B0082" }; // Extremely Cold (ม่วงน้ำเงินเข้มมาก)
-          }
-        }
-        
-
-      try {
-        const apiKey = "639b4c8c49d8ae3d835971a444856be5";
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=th`;
-        const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
-        // Fetch weather data
-        const weatherResponse = await fetch(weatherUrl);
-        const weatherData = await weatherResponse.json();
-
-        // Fetch air quality data
-        const airQualityResponse = await fetch(airQualityUrl);
-        const airQualityData = await airQualityResponse.json();
-
-        const weatherDescription = weatherData.weather[0].description;
-        const weatherIcon = weatherData.weather[0].icon;
-        const weatherTemp = weatherData.main.temp;
-        const weatherName = weatherData.name;
-        const weatherImageUrl = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-
-        const pm25 = airQualityData.list[0].components.pm2_5;
-        const { aqi, level: aqiLevel, color: aqiColor } = calculateAQI(pm25);
-        const { level: tempLevel, color: tempColor } =
-          getTemperatureLevel(weatherTemp);
-
-        const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
-
-        // Add weather, AQI, and PM2.5 information in user location popup
-        L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup(
-            ` 
-            <div style="background-color: lightblue; color: black; padding: 10px; border-radius: 8px; text-align: center;">
-            <b>ตำแหน่งของคุณ</b><br>
-            <a href="${googleMapUrl}" target="_blank">${lat},${lon}</a><br>
-            ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร <br>
-            <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 50px; height: 50px;"><br>
-            ${weatherName} อุณหภูมิ: ${weatherTemp}°C <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
-            สภาพอากาศ: ${weatherDescription}<br>
-            PM2.5: ${pm25} µg/m³ <br>
-            AQI: <span style="color: ${aqiColor};"><b>${aqi} (${aqiLevel}) </b></span> <br>
-          </div>
-  `
-          )
-          .openPopup();
-      } catch (error) {
-        console.error("Error fetching weather or air quality data: ", error);
-      }
-
-      // Add polyline from user to destination
-      let latlngs = [
-        [lat, lon],
-        [destinationLat, destinationLon],
-      ];
-      L.polyline(latlngs, { color: "blue" }).addTo(map);
-
-      // Handle confirmation click to process checkout
-      Swal.getConfirmButton().addEventListener("click", () => {
-        processCheckinOrCheckout("In", lat, lon);
-      });
-
-      // Hide progress bar when loading is complete
-      Swal.hideLoading();
-    },
-  });
-}
-
-async function checkout() {
-  Swal.fire({
-    title: "คุณต้องการลงเวลากลับหรือไม่?",
-    html: '<div id="map"></div>',
-    showCancelButton: true,
-    confirmButtonText: "ยืนยัน",
-    cancelButtonText: "ยกเลิก",
-    denyButtonText: "ตำแหน่งปัจจุบัน", // Add the deny button text
-    allowOutsideClick: false,
-    confirmButtonColor: "#b0120a",
-    cancelButtonColor: "#6F7378",
-    customClass: {
-      title: "text-danger",
-      content: "text-muted",
-    },
-    didOpen: async () => {
-      // Show progress bar during loading
-      Swal.showLoading();
-
-      // Get user location
-      const location = await getLocation();
-      const lat = location.latitude;
-      const lon = location.longitude;
-
-      // Create map in Swal
-      let map = L.map("map").setView([lat, lon], 13);
-
-      // Add base map (OpenStreetMap)
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "",
-      }).addTo(map);
-
-      // Destination location
-      const destinationLat = parseFloat(localStorage.getItem("oflat"));
-      const destinationLon = parseFloat(localStorage.getItem("oflong"));
-      const officer = localStorage.getItem("office");
-
-      const userLatLng = L.latLng(lat, lon);
-      const destinationLatLng = L.latLng(destinationLat, destinationLon);
-
-      // Calculate distance
-      const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
-      const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
-
-      // Add circle at destination location
-      L.circle([destinationLat, destinationLon], {
-        color: "green",
-        fillColor: "#0f0",
-        fillOpacity: 0.2,
-        radius: 10000,
-      })
-        .addTo(map)
-        .bindPopup("รัศมี 10 กิโลเมตร จากหน่วยงานของคุณ");
-
-      // Add marker at destination location
-      L.marker([destinationLat, destinationLon])
-        .addTo(map)
-        .bindPopup(`${officer}`)
-        .openPopup();
-
-      // Add marker at user location with distance info
-      L.marker([lat, lon])
-        .addTo(map)
-        .bindPopup(
-          `
-          <b>ตำแหน่งของคุณ</b><br>
-          ระยะห่างจากปลายทาง: ${distanceInKilometers} กิโลเมตร
-        `
-        )
-        .openPopup();
-
-        function calculateAQI(pm25) {
-          if (pm25 <= 25) {
-            return { aqi: Math.round((25 / 25) * pm25), level: "ดีมาก", color: "#007FFE" }; // ฟ้า
-          } else if (pm25 <= 37) {
-            return { aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26), level: "ดี", color: "#008000" }; // เขียว
-          } else if (pm25 <= 50) {
-            return { aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51), level: "ปานกลาง", color: "#C09200" }; // เหลือง
-          } else if (pm25 <= 90) {
-            return { aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101), level: "มีผลกระทบต่อสุขภาพ", color: "#E2543C" }; // ส้ม
-          } else {
-            return { aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201), level: "อันตราย", color: "#FF0000" }; // แดง
-          }
-        }
-        
-
-        function getTemperatureLevel(temp) {
-          if (temp >= 45) {
-            return { level: "ร้อนจัดมาก", color: "#8B0000" }; // Very Extremely Hot (แดงเข้มมาก)
-          } else if (temp >= 40) {
-            return { level: "ร้อนจัด", color: "#B22222" }; // Very Hot (แดงเข้ม)
-          } else if (temp >= 37) {
-            return { level: "ร้อนมาก", color: "#FF4500" }; // Extremely Hot (แดงส้มเข้ม)
-          } else if (temp >= 35) {
-            return { level: "ร้อน", color: "#FF8C00" }; // Hot (ส้มเข้ม)
-          } else if (temp >= 30) {
-            return { level: "ค่อนข้างร้อน", color: "#FFA500" }; // Warm (ส้ม)
-          } else if (temp >= 23) {
-            return { level: "ปกติ", color: "#228B22" }; // Normal (เขียวเข้ม)
-          } else if (temp >= 20) {
-            return { level: "เย็นสบาย", color: "#32CD32" }; // Pleasantly Cool (เขียวสด)
-          } else if (temp >= 18) {
-            return { level: "เย็น", color: "#1E90FF" }; // Cool (ฟ้าเข้ม)
-          } else if (temp >= 16) {
-            return { level: "ค่อนข้างหนาว", color: "#4682B4" }; // Moderately Cold (ฟ้าเข้มขึ้น)
-          } else if (temp >= 8) {
-            return { level: "หนาว", color: "#00008B" }; // Cold (น้ำเงินเข้ม)
-          } else if (temp >= 5) {
-            return { level: "หนาวจัด", color: "#800080" }; // Very Cold (ม่วงเข้ม)
-          } else {
-            return { level: "หนาวจัดมาก", color: "#4B0082" }; // Extremely Cold (ม่วงน้ำเงินเข้มมาก)
-          }
-        }
-        
-
-      try {
-        const apiKey = "639b4c8c49d8ae3d835971a444856be5";
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=th`;
-        const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
-        // Fetch weather data
-        const weatherResponse = await fetch(weatherUrl);
-        const weatherData = await weatherResponse.json();
-
-        // Fetch air quality data
-        const airQualityResponse = await fetch(airQualityUrl);
-        const airQualityData = await airQualityResponse.json();
-
-        const weatherDescription = weatherData.weather[0].description;
-        const weatherIcon = weatherData.weather[0].icon;
-        const weatherTemp = weatherData.main.temp;
-        const weatherName = weatherData.name;
-        const weatherImageUrl = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-
-        const pm25 = airQualityData.list[0].components.pm2_5;
-        const { aqi, level: aqiLevel, color: aqiColor } = calculateAQI(pm25);
-        const { level: tempLevel, color: tempColor } =
-          getTemperatureLevel(weatherTemp);
-
-        const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
-
-        // Add weather, AQI, and PM2.5 information in user location popup
-        L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup(
-            ` 
-  <div style="background-color: lightblue; color: black; padding: 10px; border-radius: 8px; text-align: center;">
-    <b>ตำแหน่งของคุณ</b><br>
-    <a href="${googleMapUrl}" target="_blank">${lat},${lon}</a><br>
-    ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร <br>
-    <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 50px; height: 50px;"><br>
-    ${weatherName} อุณหภูมิ: ${weatherTemp}°C <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
-    สภาพอากาศ: ${weatherDescription}<br>
-    PM2.5: ${pm25} µg/m³ <br>
-    AQI: <span style="color: ${aqiColor};"><b>${aqi} (${aqiLevel}) </b></span> <br>
-  </div>
-  `
-          )
-          .openPopup();
-      } catch (error) {
-        console.error("Error fetching weather or air quality data: ", error);
-      }
-
-      // Add polyline from user to destination
-      let latlngs = [
-        [lat, lon],
-        [destinationLat, destinationLon],
-      ];
-      L.polyline(latlngs, { color: "blue" }).addTo(map);
-
-      // Handle confirmation click to process checkout
-      Swal.getConfirmButton().addEventListener("click", () => {
-        processCheckinOrCheckout("Out", lat, lon);
-      });
-
-      // Hide progress bar when loading is complete
-      Swal.hideLoading();
-    },
-  });
-}
-
-
-async function checkonmap() {
-  Swal.fire({
-    title: "ตำแหน่งของคุณ",
-    html: '<div id="map"></div>',
-    showconfirmButton: false,
-    confirmButtonText: "ตกลง",
-    cancelButtonText: "ยกเลิก",
-    denyButtonText: "ตำแหน่งปัจจุบัน", // Add the deny button text
-    allowOutsideClick: false,
-    confirmButtonColor: "#005CB8",
-    cancelButtonColor: "#6F7378",
-    customClass: {
-      title: "text-primary",
-      content: "text-muted",
-    },
-    didOpen: async () => {
-      // Show progress bar during loading
-      Swal.showLoading();
-
-      // Get user location
-      const location = await getLocation();
-      const lat = location.latitude;
-      const lon = location.longitude;
-
-      // Create map in Swal
-      let map = L.map("map").setView([lat, lon], 13);
-
-      // Add base map (OpenStreetMap)
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: "",
-      }).addTo(map);
-
-      // Destination location
-      const destinationLat = parseFloat(localStorage.getItem("oflat"));
-      const destinationLon = parseFloat(localStorage.getItem("oflong"));
-      const officer = localStorage.getItem("office");
-
-      const userLatLng = L.latLng(lat, lon);
-      const destinationLatLng = L.latLng(destinationLat, destinationLon);
-
-      // Calculate distance
-      const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
-      const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
-
-      // Add circle at destination location
-      L.circle([destinationLat, destinationLon], {
-        color: "green",
-        fillColor: "#0f0",
-        fillOpacity: 0.2,
-        radius: 10000,
-      })
-        .addTo(map)
-        .bindPopup("รัศมี 10 กิโลเมตร จากหน่วยงานของคุณ");
-
-      // Add marker at destination location
-      L.marker([destinationLat, destinationLon])
-        .addTo(map)
-        .bindPopup(`${officer}`)
-        .openPopup();
-
-      // Add marker at user location with distance info
-      L.marker([lat, lon])
-        .addTo(map)
-        .bindPopup(
-          `
-          <b>ตำแหน่งของคุณ</b><br>
-          ระยะห่างจากปลายทาง: ${distanceInKilometers} กิโลเมตร
-        `
-        )
-        .openPopup();
-
-        function calculateAQI(pm25) {
-          if (pm25 <= 25) {
-            return { aqi: Math.round((25 / 25) * pm25), level: "ดีมาก", color: "#007FFE" }; // ฟ้า
-          } else if (pm25 <= 37) {
-            return { aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26), level: "ดี", color: "#008000" }; // เขียว
-          } else if (pm25 <= 50) {
-            return { aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51), level: "ปานกลาง", color: "#C09200" }; // เหลือง
-          } else if (pm25 <= 90) {
-            return { aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101), level: "มีผลกระทบต่อสุขภาพ", color: "#E2543C" }; // ส้ม
-          } else {
-            return { aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201), level: "อันตราย", color: "#FF0000" }; // แดง
-          }
-        }
-        
-
-        function getTemperatureLevel(temp) {
-          if (temp >= 45) {
-            return { level: "ร้อนจัดมาก", color: "#8B0000" }; // Very Extremely Hot (แดงเข้มมาก)
-          } else if (temp >= 40) {
-            return { level: "ร้อนจัด", color: "#B22222" }; // Very Hot (แดงเข้ม)
-          } else if (temp >= 37) {
-            return { level: "ร้อนมาก", color: "#FF4500" }; // Extremely Hot (แดงส้มเข้ม)
-          } else if (temp >= 35) {
-            return { level: "ร้อน", color: "#FF8C00" }; // Hot (ส้มเข้ม)
-          } else if (temp >= 30) {
-            return { level: "ค่อนข้างร้อน", color: "#FFA500" }; // Warm (ส้ม)
-          } else if (temp >= 23) {
-            return { level: "ปกติ", color: "#228B22" }; // Normal (เขียวเข้ม)
-          } else if (temp >= 20) {
-            return { level: "เย็นสบาย", color: "#32CD32" }; // Pleasantly Cool (เขียวสด)
-          } else if (temp >= 18) {
-            return { level: "เย็น", color: "#1E90FF" }; // Cool (ฟ้าเข้ม)
-          } else if (temp >= 16) {
-            return { level: "ค่อนข้างหนาว", color: "#4682B4" }; // Moderately Cold (ฟ้าเข้มขึ้น)
-          } else if (temp >= 8) {
-            return { level: "หนาว", color: "#00008B" }; // Cold (น้ำเงินเข้ม)
-          } else if (temp >= 5) {
-            return { level: "หนาวจัด", color: "#800080" }; // Very Cold (ม่วงเข้ม)
-          } else {
-            return { level: "หนาวจัดมาก", color: "#4B0082" }; // Extremely Cold (ม่วงน้ำเงินเข้มมาก)
-          }
-        }
-        
-
-      try {
-        const apiKey = "639b4c8c49d8ae3d835971a444856be5";
-        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=th`;
-        const airQualityUrl = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
-
-        // Fetch weather data
-        const weatherResponse = await fetch(weatherUrl);
-        const weatherData = await weatherResponse.json();
-
-        // Fetch air quality data
-        const airQualityResponse = await fetch(airQualityUrl);
-        const airQualityData = await airQualityResponse.json();
-
-        const weatherDescription = weatherData.weather[0].description;
-        const weatherIcon = weatherData.weather[0].icon;
-        const weatherTemp = weatherData.main.temp;
-        const weatherName = weatherData.name;
-        const weatherImageUrl = `https://openweathermap.org/img/wn/${weatherIcon}.png`;
-
-        const pm25 = airQualityData.list[0].components.pm2_5;
-        const { aqi, level: aqiLevel, color: aqiColor } = calculateAQI(pm25);
-        const { level: tempLevel, color: tempColor } =
-          getTemperatureLevel(weatherTemp);
-
-        const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
-
-        // Add weather, AQI, and PM2.5 information in user location popup
-        L.marker([lat, lon])
-          .addTo(map)
-          .bindPopup(
-            ` 
-  <div style="background-color: lightblue; color: black; padding: 10px; border-radius: 8px; text-align: center;">
-    <b>ตำแหน่งของคุณ</b><br>
-    <a href="${googleMapUrl}" target="_blank">${lat},${lon}</a><br>
-    ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร <br>
-    <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 50px; height: 50px;"><br>
-    ${weatherName} อุณหภูมิ: ${weatherTemp}°C <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
-    สภาพอากาศ: ${weatherDescription}<br>
-    PM2.5: ${pm25} µg/m³ <br>
-    AQI: <span style="color: ${aqiColor};"><b>${aqi} (${aqiLevel}) </b></span> <br>
-  </div>
-  `
-          )
-          .openPopup();
-      } catch (error) {
-        console.error("Error fetching weather or air quality data: ", error);
-      }
-
-      // Add polyline from user to destination
-      let latlngs = [
-        [lat, lon],
-        [destinationLat, destinationLon],
-      ];
-      L.polyline(latlngs, { color: "blue" }).addTo(map);
-
-      // Handle confirmation click to process checkout
-      // Swal.getConfirmButton().addEventListener("click", () => {
-      //   processCheckinOrCheckout("Out", lat, lon);
-      // });
-
-      // Hide progress bar when loading is complete
-      Swal.hideLoading();
-    },
-  });
+function checkinfo() {
+  let today = new Date();
+  let formattedToday = today.toLocaleDateString("th-TH");
+
+  let dateCheck = localStorage.getItem("datecheck");
+  let timeCheck = localStorage.getItem("datetimecheck");
+  let dateCheckout = localStorage.getItem("datecheckout");
+  let timeCheckout = localStorage.getItem("datetimecheckout");
+
+  if (
+    (formattedToday === dateCheck && !dateCheckout) ||
+    (formattedToday === dateCheck && formattedToday !== dateCheckout)
+  ) {
+    // Case: User has checked in but not yet checked out
+    Swal.fire({
+      title: "การลงเวลามาปฏิบัติงาน",
+      html:
+        "ท่านได้ลงเวลาปฏิบัติงานในวันที่ <strong>" +
+        dateCheck +
+        "</strong> เวลา <strong>" +
+        timeCheck +
+        " น.</strong> เรียบร้อยแล้ว",
+      icon: "info",
+      confirmButtonText: "ตกลง",
+      showCloseButton: true,
+      customClass: {
+        title: "text-primary",
+        content: "text-muted",
+        confirmButton: "btn btn-primary",
+      },
+    });
+  } else if (formattedToday === dateCheck && formattedToday === dateCheckout) {
+    // Case: User has checked in and out
+    Swal.fire({
+      title: "การลงเวลาปฏิบัติงาน",
+      html:
+        "ท่านได้ลงเวลาปฏิบัติงานในวันที่ <strong>" +
+        dateCheck +
+        "</strong> เวลา <strong>" +
+        timeCheck +
+        " น.</strong> และได้ลงเวลาสิ้นสุดการปฏิบัติงานในเวลา <strong>" +
+        timeCheckout +
+        " น.</strong> เรียบร้อยแล้ว",
+      icon: "success",
+      confirmButtonText: "ตกลง",
+      showCloseButton: true,
+      customClass: {
+        title: "text-success",
+        content: "text-muted",
+        confirmButton: "btn btn-success",
+      },
+    });
+  } else if (
+    (formattedToday != dateCheck && formattedToday === dateCheckout) ||
+    (!dateCheck && formattedToday === dateCheckout)
+  ) {
+    // Case: User has checked in and out
+    Swal.fire({
+      title: "การลงเวลาปฏิบัติงาน",
+      html:
+        "ท่านไม่ได้ลงบันทึกเวลาเข้ามาทำงานในวันที่ <strong>" +
+        dateCheckout +
+        "</strong> ระบบได้ส่งคำขอการบันทึกเวลาเข้ามาทำงานให้ท่านแล้ว โดยท่านได้ลงบันทึกเวลาเลิกงานเรียบร้อยแล้วในเวลา <strong>" +
+        timeCheckout +
+        " น.</strong>",
+      icon: "warning",
+      confirmButtonText: "ตกลง",
+      showCloseButton: true,
+      customClass: {
+        title: "text-warning",
+        content: "text-muted",
+        confirmButton: "btn btn-warning",
+      },
+    });
+  }
 }
