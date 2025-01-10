@@ -176,6 +176,10 @@ document.addEventListener("click", (e) => {
       startBtn.style.display = "none";
       statusBtn.style.display = "inline-block";
       endBtn.style.display = "none";
+      let formattedToday = now.toLocaleDateString("th-TH");
+        if (formattedToday !== localStorage.getItem("datecheck")) {
+          window.location.href = "request.html"; // redirect ไปยัง 'request.html'
+        }
     } else {
       // Show "End" button, hide others
       startBtn.style.display = "none";
