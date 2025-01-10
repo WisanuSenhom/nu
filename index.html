@@ -171,6 +171,13 @@ document.addEventListener("click", (e) => {
         startBtn.style.display = "inline-block";
         statusBtn.style.display = "none";
         endBtn.style.display = "none";
+        let formattedToday = now.toLocaleDateString("th-TH");
+        if(formattedToday === localStorage.getItem("datecheck")) {   
+          // Show "Status" button, hide others
+        startBtn.style.display = "none";
+        statusBtn.style.display = "inline-block";
+        endBtn.style.display = "none";
+        }
       } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
         // Show "Status" button, hide others
         startBtn.style.display = "none";
@@ -186,7 +193,7 @@ document.addEventListener("click", (e) => {
         startBtn.style.display = "none";
         statusBtn.style.display = "none";
         endBtn.style.display = "inline-block";
-        
+
         let formattedToday = now.toLocaleDateString("th-TH");
         if(formattedToday === localStorage.getItem("datecheckout")) {   
           // Show "Status" button, hide others
