@@ -1,328 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล" />
-  <link rel="manifest" href="mainfest.json" />
-  <link rel="apple-touch-icon" sizes="180x180"
-    href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
-  <link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <!-- Mini Apps -->
-  <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
-    <!-- CSS ของ Leaflet -->
+<!-- Required meta tags -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล" />
+<!-- <link rel="manifest" href="mainfest.json" /> -->
+<link rel="apple-touch-icon" sizes="180x180"
+  href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
+<link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<!-- CSS ของ Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 <!-- JavaScript ของ Leaflet -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- css -->
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="loading.css" />
+<!-- css -->
+<link rel="stylesheet" href="style.css" />
+<!-- <link rel="stylesheet" href="loading.css" /> -->
 
-  <title>ระบบลงเวลาปฏิบัติงาน</title>
+<title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
 </head>
 
 <body>
- <!-- start nav -->
- <nav class="navbar navbar-expand-xs navbar-dark fixed-top">
-    <!-- Button to trigger collapsible menu -->
-    <button type="button" class="navbar-toggler mr-auto" data-toggle="collapse" data-target="#collapsibleNavbar">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Avatar Image -->
-    <a class="navbar-brand"  data-toggle="collapse" data-target="#avatarMenu" >
-      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="ลงเวลา" id="avatar"
-        class="d-inline-block align-top" />
-    </a>
-
-    <!-- Collapsible menu -->
-    <div class="collapse navbar-collapse" id="collapsibleNavbar">
-      <ul class="navbar-nav">
-        <!-- หัวข้อ: การใช้งานหลัก -->
-        <li class="nav-item">
-          <span class="navbar-text font-weight-lighter">การใช้งานหลัก</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="request.html">
-            <i class="fas fa-paper-plane"></i> ส่งคำขอ
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="checktoday()">
-            <i class="fas fa-clock"></i> ตรวจสอบการลงเวลา
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="canceltoday()">
-            <i class="fas fa-xmark"></i> ยกเลิกการลงเวลาในวันนี้
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="checkonmap()">
-            <i class="fas fa-map-marker-alt"></i> ตรวจสอบพิกัด
-          </a>
-        </li>
+  <nav>
     
-        <!-- หัวข้อ: การจัดการและรายงาน -->
-        <li class="nav-item mt-3">
-          <span class="navbar-text font-weight-lighter">รายงานและการจัดการ</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebAdmin()">
-            <i class="fas fa-chart-bar"></i> รายงานและการจัดการ
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWeb5s()">
-            <i class="fas fa-folder"></i> งาน 5ส.
-          </a>
-        </li>
-
-    
-        <!-- หัวข้อ: การเชื่อมต่อ -->
-        <li class="nav-item mt-3">
-          <span class="navbar-text font-weight-lighter">การเชื่อมต่อ</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="authen.html">
-            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
-          </a>
-        </li>
-        <li class="nav-item">
-          <span class="navbar-text font-weight-lighter"></span>
-        </li>
-      </ul>
+    <div class="logo"><i class="fa-regular fa-clock"></i> ลงเวลา</div>
+    <div>
+      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar" id="avatar" onclick="editpic()">
+      <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
+      <span class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></span>
     </div>
-
-    <!-- Avatar menu -->
-    <div class="collapse navbar-collapse" id="avatarMenu">
-      <ul class="navbar-nav">
-       <!-- หัวข้อ: การตั้งค่าและข้อมูลส่วนตัว -->
-        <li class="nav-item mt-3">
-          <span class="navbar-text font-weight-lighter">การตั้งค่าและข้อมูลส่วนตัว</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="authen.html">
-            <i class="fab fa-telegram"></i> เชื่อมต่อ Telegram
-          </a>
-        </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="openWebToken()">
-            <i class="fab fa-line"></i> ออก Line Token
-          </a>
-        </li> -->
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="aboutme()">
-            <i class="fas fa-user"></i> ข้อมูลส่วนตัว
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="editpic()">
-            <i class="fas fa-image"></i> อัปเดตโปรไฟล์
-          </a>
-        </li>
-    
-        <!-- หัวข้อ: ออกจากระบบ -->
-        <li class="nav-item mt-3">
-          <span class="navbar-text font-weight-lighter">การปรับปรุง/ออกจากระบบ</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="logupdate()">
-            <i class="fas fa-history"></i> บันทึกการปรับปรุง
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="javascript:void(0);" onclick="clearLocal()">
-            <i class="fas fa-sync-alt"></i> ออกจากระบบ
-          </a>
-        </li>
-        <li class="nav-item">
-          <span class="navbar-text font-weight-lighter"></span>
-        </li>
-      </ul>
-    </div>    
+    <div class="menu" id="menu">
+      <a href="request.html"><i class="fas fa-paper-plane"></i> ส่งคำขอ</a>
+      <a href="javascript:void(0);" onclick="checktoday()"><i class="fas fa-clock"></i> ตรวจสอบ</a>
+      <a href="javascript:void(0);" onclick="canceltoday()"><i class="fas fa-xmark"></i> ยกเลิก</a>
+      <!-- <a href="#">พิกัด</a> -->
+      <a href="javascript:void(0);" onclick="openWebAdmin()"><i class="fas fa-chart-bar"></i> รายงาน</a>
+      <a href="javascript:void(0);" onclick="openWeb5s()"><i class="fas fa-folder"></i> 5ส.</a>
+      <a href="authen.html"><i class="fab fa-telegram"></i> เชื่อมต่อ</a>
+      <a href="javascript:void(0);" onclick="aboutme()"><i class="fas fa-user"></i> ฉัน</a>
+      <a href="javascript:void(0);" onclick="editpic()"><i class="fas fa-image"></i> รูปโปรไฟล์</a>
+      <a href="javascript:void(0);" onclick="logupdate()"><i class="fas fa-history"></i> บันทึก</a>
+      <a href="javascript:void(0);" onclick="clearLocal()"><i class="fas fa-sync-alt"></i> ออก</a>
+    </div>
   </nav>
-  <!-- end nav -->
 
-  <div class="container">
-    <div class="login-box">
-      <h2>ลงเวลาปฏิบัติงาน</h2>
-      <div style="text-align: center">
-        <!-- <p style="font-size:14px; color:#E0FFFF;">ในสังกัดสำนักงานสาธารณสุขอำเภอเซกา</p> -->
-        <iframe src="https://free.timeanddate.com/clock/i8z1mdj5/n3376/tlth39/fn14/fs20/fc0ef/tct/pct/ftb/th1"
-          frameborder="0" width="93" height="26" allowtransparency="true"></iframe>
-      </div>
-      <form>
-        <select id="typea" class="btn2">
-          <option value="ปกติ">ปฏิบัติงานตามปกติ</option>
-          <option value="นอกสถานที่">ปฏิบัติงานนอกสถานที่</option>
-          <option value="วันหยุด">
-            ปฏิบัติงานในวันหยุดเสาร์ อาทิตย์ และวันหยุดราชการ
-          </option>
-          <option value="ไปราชการ">ไปราชการ (ประชุม อบรมฯ)</option>
-          <!-- 			<option value="เข้ารับการฝึกอบรม">เข้ารับการฝึกอบรม</option>
-  			<option value="ไปช่วยราชการ">ไปช่วยราชการ</option>
-  			<option value="มาช่วยราชการ">มาช่วยราชการ</option> -->
-          <option value="อื่นๆ">อื่นๆ โปรดระบุเพิ่มเติม</option>
-        </select>
-        <div class="input-box">
-          <input id="nte" name="nte" type="text" placeholder="รายละเอียด" autofocus />
-          <label>บันทึกเพิ่มเติม</label>
-        </div>
-        <div class="forgot-pass">
-          <h3 id="dispDistance">กำลังคำนวนระยะห่าง...</h3>
-        </div>
+  <div id="mainContent" class="container">
+    <!-- <h1>Welcome to Work Tracker</h1> -->
+    <iframe title="time" src="https://free.timeanddate.com/clock/i9pmhovl/n3376/tlth39/fn14/fs20/fc2196f3/tct/pct/ftb/th1" frameborder="0" width="93" height="26" allowtransparency="true"></iframe>
 
-        <div id="cin" class="invisible">
-          <button id="cin" type="button" class="btn btn-success" onclick="checkin()">
-            <i class="fas fa-sign-in-alt"></i> ลงเวลามา (Check In)
-          </button>
-        </div>
-
-        <div id="creq" class="invisible">
-          <button id="creq" type="button" class="btn btn-primary" onclick="checkinfo()">
-            <i class="fas fa-check-circle"></i> ท่านได้ลงเวลาแล้ว (Checked)
-          </button>
-        </div>
-
-        <div id="cout" class="invisible">
-          <button id="cout" type="button" class="btn btn-danger" onclick="checkout()">
-            <i class="fas fa-sign-out-alt"></i> ลงเวลากลับ (Check Out)
-          </button>
-        </div>
-
-        <div class="signup-link">
-          <h4 id="utimeline"></h4>
-        </div>
-
-        <div style="text-align: center">
-          <p id="demo" style="font-size: 1px; color: #e0ffff"></p>
-        </div>
-      </form>
-    </div>
-
-    <span style="--i: 0"></span>
-    <span style="--i: 1"></span>
-    <span style="--i: 2"></span>
-    <span style="--i: 3"></span>
-    <span style="--i: 4"></span>
-    <span style="--i: 5"></span>
-    <span style="--i: 6"></span>
-    <span style="--i: 7"></span>
-    <span style="--i: 8"></span>
-    <span style="--i: 9"></span>
-    <span style="--i: 10"></span>
-    <span style="--i: 11"></span>
-    <span style="--i: 12"></span>
-    <span style="--i: 13"></span>
-    <span style="--i: 14"></span>
-    <span style="--i: 15"></span>
-    <span style="--i: 16"></span>
-    <span style="--i: 17"></span>
-    <span style="--i: 18"></span>
-    <span style="--i: 19"></span>
-    <span style="--i: 20"></span>
-    <span style="--i: 21"></span>
-    <span style="--i: 22"></span>
-    <span style="--i: 23"></span>
-    <span style="--i: 24"></span>
-    <span style="--i: 25"></span>
-    <span style="--i: 26"></span>
-    <span style="--i: 27"></span>
-    <span style="--i: 28"></span>
-    <span style="--i: 29"></span>
-    <span style="--i: 30"></span>
-    <span style="--i: 31"></span>
-    <span style="--i: 32"></span>
-    <span style="--i: 33"></span>
-    <span style="--i: 34"></span>
-    <span style="--i: 35"></span>
-    <span style="--i: 36"></span>
-    <span style="--i: 37"></span>
-    <span style="--i: 38"></span>
-    <span style="--i: 39"></span>
-    <span style="--i: 40"></span>
-    <span style="--i: 41"></span>
-    <span style="--i: 42"></span>
-    <span style="--i: 43"></span>
-    <span style="--i: 44"></span>
-    <span style="--i: 45"></span>
-    <span style="--i: 46"></span>
-    <span style="--i: 47"></span>
-    <span style="--i: 48"></span>
-    <span style="--i: 49"></span>
-  </div>
-
-  <!-- Modal สำหรับ loading -->
-  <div class="modal" id="loadingModal" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-body text-center">
-          <div class="loading-spinner mb-2"></div>
-          <h6 id="latlong">รับค่าพิกัด : กรุณาตรวจสอบการเปิดตำแหน่ง</h6>
-        </div>
+    <div id="log">
+      <label for="typea">การปฏิบัติงาน:</label>
+      <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
+        <option value="ปกติ">ตามปกติ</option>
+        <option value="นอกสถานที่">นอกสถานที่</option>
+        <option value="วันหยุด">ในวันหยุดเสาร์ อาทิตย์ และวันหยุดราชการ</option>
+        <option value="ไปราชการ">ไปราชการ (ประชุม อบรมฯ)</option>
+        <option value="อื่นๆ">อื่นๆ โปรดระบุเพิ่มเติม</option>
+      </select>
+      <div id="otherInput" >
+        <label for="otherDetails" >โปรดระบุ:</label>
+        <input type="text" id="otherDetails"  name="OtherDetails" placeholder="ระบุเพิ่มเติม"/>
+        <!-- <label for="llat" >lat:</label> -->
+        <input type="text" id="llat"  name="llat" placeholder="ละติจูด" hidden/>
+        <!-- <label for="llon" >lat:</label> -->
+        <input type="text" id="llon"  name="llon" placeholder="ลองติจูด" hidden/>
       </div>
     </div>
+    <div id="map"></div>
   </div>
 
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
+  <div id="trackerContent" class="tracker-bar">
+    <button id="startBtn" onclick="checkin()"><i class="fas fa-sign-in-alt"></i> มา</button>
+    <button id="statusBtn" onclick="checkinfo()" ><i class="fas fa-check-circle"></i> สถานะ</button>
+    <button id="endBtn" onclick="checkout()"><i class="fas fa-sign-out-alt"></i> กลับ</button>
+    <button id="imapBtn" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> แผนที่</button>
   </div>
 
-  <script>
-    window.onload = function checks() {
-      // ดึงวันที่และเวลาใน timezone 'Asia/Bangkok'
-      let today = new Date();
-      let hm = today.getHours() * 60 + today.getMinutes(); // แปลงเวลาเป็นนาทีจากเที่ยงคืน
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-      // ดึง DOM elements ที่ต้องใช้งาน
-      const cinElement = document.getElementById("cin");
-      const creqElement = document.getElementById("creq");
-      const coutElement = document.getElementById("cout");
-      const typeaElement = document.getElementById("typea");
+ <script>
+  const menuToggle = document.getElementById("menu-toggle");
+  const themeToggle = document.getElementById("theme-toggle");
+  const menu = document.getElementById("menu");
+  const body = document.body;
 
-      // แปลงวันที่เป็นรูปแบบ 'th-TH' (ภาษาไทย)
-      let formattedToday = today.toLocaleDateString("th-TH");
+  // Apply theme from localStorage on page load
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
 
-      // ตรวจสอบวันที่วันนี้กับวันที่ที่เก็บใน localStorage
-      if (formattedToday === localStorage.getItem("datecheck") || formattedToday === localStorage.getItem("datecheckout")) {   
-        // ถ้าวันที่ตรงกัน แสดง creqElement
-        creqElement.classList.remove("invisible");
-      } else {
-        // ถ้าวันที่ไม่ตรงกัน ตรวจสอบเวลา
-        if (hm <= 511) {
-          // เวลา <= 08:31 (511 นาที)
-          cinElement.classList.remove("invisible"); // แสดงปุ่ม check-in
-        } else if (hm < 989) {
-          // ถ้าเวลาอยู่ระหว่าง 08:31 และ 16:29
-          window.location.href = "request.html"; // redirect ไปยัง 'request.html'
-        }
+  // Menu Toggle
+  menuToggle.addEventListener("click", () => {
+    menu.classList.toggle("show");
+    document.body.classList.toggle('menu-open');
+
+    // Toggle the icon between hamburger and "X"
+    const icon = menuToggle.querySelector("i");
+    icon.classList.toggle("fa-bars");
+    icon.classList.toggle("fa-x");
+  });
+
+  // Close menu when clicking outside
+document.addEventListener("click", (e) => {
+  // Check if the click is outside the menu or the menu toggle button
+  if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+    menu.classList.remove("show");
+    document.body.classList.remove('menu-open');
+
+    // Reset the icon to hamburger
+    const icon = menuToggle.querySelector("i");
+    icon.classList.add("fa-bars");
+    icon.classList.remove("fa-x");
+  }
+});
+
+  // Theme Toggle
+  themeToggle.addEventListener("click", () => {
+    const currentTheme = body.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
+  });
+
+  function applyTheme(theme) {
+    body.setAttribute("data-theme", theme);
+    themeToggle.innerHTML = theme === "dark" 
+      ? '<i class="fa-solid fa-sun"></i>' 
+      : '<i class="fa-solid fa-moon"></i>';
+    localStorage.setItem("theme", theme);
+    toggleSweetAlertTheme(theme);
+  }
+
+  function toggleSweetAlertTheme(theme) {
+    const darkThemeLink = document.getElementById("sweetalert-dark-theme");
+    if (theme === "dark") {
+      if (!darkThemeLink) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.id = "sweetalert-dark-theme";
+        link.href = "https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css";
+        document.head.appendChild(link);
       }
+    } else {
+      if (darkThemeLink) darkThemeLink.remove();
+    }
+  }
 
-      // เช็คว่าเวลา >= 16:29 (989 นาที) หรือไม่
-      if (hm >= 989) {
-        // ถ้าตรงกับ datecheckout ใน localStorage ให้ซ่อน coutElement
-        if (formattedToday === localStorage.getItem("datecheckout")) {
-          coutElement.classList.add("invisible"); // ซ่อนปุ่ม check-out
-        } else {
-          creqElement.classList.add("invisible"); // ซ่อนปุ่ม info
-          coutElement.classList.remove("invisible"); // แสดงปุ่ม check-out
-        }
-      }
+  // Handle "Other" option in select dropdown
+  function handleOtherOption() {
+    const select = document.getElementById("typea");
+    const otherInput = document.getElementById("otherInput");
+    otherInput.style.display = select.value !== "ปกติ" ? "block" : "none";
+  }
 
+  // Time-based button visibility
+  function toggleButtonsByTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    const startBtn = document.getElementById("startBtn");
+    const statusBtn = document.getElementById("statusBtn");
+    const endBtn = document.getElementById("endBtn");
+
+    if ((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) {
+      // Show "Start" button, hide others
+      startBtn.style.display = "inline-block";
+      statusBtn.style.display = "none";
+      endBtn.style.display = "none";
+    } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
+      // Show "Status" button, hide others
+      startBtn.style.display = "none";
+      statusBtn.style.display = "inline-block";
+      endBtn.style.display = "none";
+    } else {
+      // Show "End" button, hide others
+      startBtn.style.display = "none";
+      statusBtn.style.display = "none";
+      endBtn.style.display = "inline-block";
+    }
       // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
-      let day = today.getDay();
+     let day = now.getDay();
       if (day === 0 || day === 6) {
         typeaElement.value = "วันหยุด"; // ตั้งค่าเป็นวันหยุด
       }
-    };
+  }
+
+  // Initialize time-based buttons
+  toggleButtonsByTime();
+  setInterval(toggleButtonsByTime, 60000); // Check every minute
+
+   
 
     // ดึงข้อมูลรูปภาพจาก localStorage
     const avatarSrc = localStorage.getItem("upic");
@@ -336,31 +207,12 @@
       // กรณีที่ไม่มีรูปภาพใน localStorage
       document.getElementById("avatar").src = avatarSrcx; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
     }
+
   </script>
 
-  <script src="app.js"></script>
   <script src="checkin.js"></script>
-  
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <!-- <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script> -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-    crossorigin="anonymous"></script>
+  <script src="app.js"></script>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-borderless/borderless.css" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.min.js"></script>
-
-<!--   <script src="https://www.line-website.com/social-plugins/js/thirdparty/loader.min.js" async="async"
-    defer="defer"></script> -->
-
-  
 </body>
 
 </html>
