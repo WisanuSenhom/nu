@@ -203,6 +203,7 @@ document.addEventListener("click", (e) => {
         }
       }
       // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
+      const typeaElement = document.getElementById("typea");
       let day = now.getDay();
       if (day === 0 || day === 6) {
         typeaElement.value = "วันหยุด"; // ตั้งค่าเป็นวันหยุด
