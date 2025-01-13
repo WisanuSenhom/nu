@@ -120,13 +120,15 @@ async function initializeMap(
     [lat, lon],
     [destinationLat, destinationLon],
   ];
-  L.polyline(latlngs, { color: "blue" }).addTo(map).bindPopup(
-    `
+  L.polyline(latlngs, { color: "blue" })
+    .addTo(map)
+    .bindPopup(
+      `
     <b>ตำแหน่งของคุณ</b><br>
     ระยะห่างจาก ${officer} : ${distanceInKilometers} กิโลเมตร
   `
-  )
-  .openPopup();;
+    )
+    .openPopup();
 
   function calculateAQI(pm25) {
     if (pm25 <= 25) {
@@ -215,13 +217,12 @@ async function initializeMap(
       getTemperatureLevel(weatherTemp);
 
     const googleMapUrl = `https://www.google.co.th/maps/dir/${destinationLat},${destinationLon}/${lat},${lon}`;
-    
 
     // Add weather, AQI, and PM2.5 information in user location popup
     L.marker([lat, lon])
-    .addTo(map)
-    .bindPopup(
-      `
+      .addTo(map)
+      .bindPopup(
+        `
       <div class="popup-content">
         <b>ตำแหน่งของคุณ</b><br>
         <a href="${googleMapUrl}" target="_blank">${lat}, ${lon}</a><br>
@@ -234,9 +235,8 @@ async function initializeMap(
         AQI: <span class="aqi" style="color: ${aqiColor};">${aqi} (${aqiLevel})</span>
       </div>
       `
-    )
-    .openPopup();
-  
+      )
+      .openPopup();
   } catch (error) {
     console.error("Error fetching weather or air quality data: ", error);
   }
@@ -250,15 +250,17 @@ async function checkonmap() {
   const loadingText = document.createElement("p");
   loadingText.textContent = "กำลังโหลดแผนที่...";
   loadingText.style.textAlign = "center";
+  loadingText.style.color = "blue"; // Set text color here
   mapContainer.appendChild(loadingText);
+  
 
   try {
     const location = await getLocation();
     const lat = location.latitude;
     const lon = location.longitude;
 
-    const destinationLat = parseFloat(localStorage.getItem("oflat") ); 
-    const destinationLon = parseFloat(localStorage.getItem("oflong")); 
+    const destinationLat = parseFloat(localStorage.getItem("oflat"));
+    const destinationLon = parseFloat(localStorage.getItem("oflong"));
     const officer = localStorage.getItem("office") || "หน่วยงาน";
 
     // เรียกฟังก์ชัน initializeMap
@@ -286,7 +288,6 @@ function displayLatLon(lat, lon) {
   document.getElementById("llon").value = lon;
 }
 
-
 async function checkin() {
   let latitude = document.querySelector("#llat").value;
   let longitude = document.querySelector("#llon").value;
@@ -309,7 +310,7 @@ async function checkin() {
 
   Swal.fire({
     title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
-    html: 'กรุณากดยืนยันเพื่อดำเนินการ',
+    html: "กรุณากดยืนยันเพื่อดำเนินการ",
     showCancelButton: true,
     confirmButtonText: "ยืนยัน",
     cancelButtonText: "ยกเลิก",
@@ -317,10 +318,10 @@ async function checkin() {
     // confirmButtonColor: "#008000",
     cancelButtonColor: "#6F7378",
     customClass: {
-      title: "text-success", 
+      title: "text-success",
       content: "text-muted",
       confirmButton: "btn btn-success",
-    // cancelButton: "btn btn-danger"
+      // cancelButton: "btn btn-danger"
     },
     didOpen: async () => {
       // Handle confirmation click to process check-in
@@ -354,18 +355,18 @@ async function checkout() {
 
   Swal.fire({
     title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
-html: 'กรุณากดยืนยันเพื่อดำเนินการ',
-showCancelButton: true,
-confirmButtonText: "ยืนยัน",
-cancelButtonText: "ยกเลิก",
+    html: "กรุณากดยืนยันเพื่อดำเนินการ",
+    showCancelButton: true,
+    confirmButtonText: "ยืนยัน",
+    cancelButtonText: "ยกเลิก",
     allowOutsideClick: false,
     // confirmButtonColor: "#008000",
     cancelButtonColor: "#6F7378",
     customClass: {
-      title: "text-danger", 
+      title: "text-danger",
       content: "text-muted",
       confirmButton: "btn btn-danger",
-    // cancelButton: "btn btn-danger"
+      // cancelButton: "btn btn-danger"
     },
     didOpen: async () => {
       // Handle confirmation click to process check-in
@@ -376,7 +377,6 @@ cancelButtonText: "ยกเลิก",
     },
   });
 }
-
 
 async function generateSecureCode() {
   const date = new Date();
@@ -400,7 +400,6 @@ async function generateSecureCode() {
 
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
 async function processCheckinOrCheckout(ctype, latitude, longitude) {
-
   try {
     // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
     const uuid = localStorage.getItem("uuid");
@@ -433,14 +432,14 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
 
-      Swal.fire({
-        title: "กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล",
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      
+    Swal.fire({
+      title: "กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     const response = await fetch(
       `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
     );
@@ -454,8 +453,8 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
 
     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
     data.res.forEach((datas) => {
-        // ปิดการแสดงสถานะการโหลด
-        Swal.close();
+      // ปิดการแสดงสถานะการโหลด
+      Swal.close();
 
       let iconx = datas.icon;
       let header = datas.header;
@@ -463,20 +462,28 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
 
       Swal.fire({
         icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
-  title: header,
-  text: data.message || text, // ข้อความที่ได้รับจาก API หรือจากแต่ละ entry
-  confirmButtonText: "ตกลง",
-  allowOutsideClick: false,
-  customClass: {
-    title: iconx === "success" ? "text-success" : 
-           iconx === "error" ? "text-danger" : 
-           iconx === "warning" ? "text-warning" : 
-           "text-info", // Default to "text-info" for other cases
-    content: "text-muted",
-    confirmButton: iconx === "success" ? "btn btn-success" : 
-                   iconx === "error" ? "btn btn-danger" : 
-                   iconx === "warning" ? "btn btn-warning" : 
-                   "btn btn-info", // Default to "btn btn-info" for other cases
+        title: header,
+        text: data.message || text, // ข้อความที่ได้รับจาก API หรือจากแต่ละ entry
+        confirmButtonText: "ตกลง",
+        allowOutsideClick: false,
+        customClass: {
+          title:
+            iconx === "success"
+              ? "text-success"
+              : iconx === "error"
+              ? "text-danger"
+              : iconx === "warning"
+              ? "text-warning"
+              : "text-info", // Default to "text-info" for other cases
+          content: "text-muted",
+          confirmButton:
+            iconx === "success"
+              ? "btn btn-success"
+              : iconx === "error"
+              ? "btn btn-danger"
+              : iconx === "warning"
+              ? "btn btn-warning"
+              : "btn btn-info", // Default to "btn btn-info" for other cases
         },
       }).then((result) => {
         if (result.isConfirmed) {
