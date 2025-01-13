@@ -527,8 +527,6 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
   }
 }
 
-
-
 function checkinfo() {
   let today = new Date();
   let formattedToday = today.toLocaleDateString("th-TH");
@@ -603,21 +601,20 @@ function checkinfo() {
         confirmButton: "btn btn-warning",
       },
     });
+  } else {
+    Swal.fire({
+      title: "ไม่พบการลงเวลาปฏิบัติงาน",
+      html: "ไม่พบข้อมูลการลงเวลาในระบบหน้าบ้าน<br>กรุณาตรวจสอบในระบบหลังบ้าน",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+      showCloseButton: true,
+      customClass: {
+        title: "text-danger",
+        content: "text-muted",
+        confirmButton: "btn btn-danger",
+      },
+    }).then(() => {
+      checktoday();
+    });
   }
-  Swal.fire({
-    title: "ไม่พบการลงเวลาปฏิบัติงาน",
-    html: "ไม่พบข้อมูลการลงเวลาในระบบหน้าบ้าน<br>กรุณาตรวจสอบในระบบหลังบ้าน",
-    icon: "error",
-    confirmButtonText: "ตกลง",
-    showCloseButton: true,
-    customClass: {
-      title: "text-danger",
-      content: "text-muted",
-      confirmButton: "btn btn-danger",
-    },
-  }).then(() => {
-    // Play a sound effect after the alert closes
-    checktoday();
-  });
-  
-  }
+}
