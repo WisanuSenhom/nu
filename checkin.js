@@ -120,7 +120,14 @@ async function initializeMap(
     [lat, lon],
     [destinationLat, destinationLon],
   ];
-  L.polyline(latlngs, { color: "blue" }).addTo(map);
+  L.polyline(latlngs, { color: "blue" }).addTo(map).bindPopup(
+    `
+    <b>ตำแหน่งของคุณ</b><br>
+    ระยะห่างจาก ${officer} : ${distanceInKilometers} กิโลเมตร
+  `
+  )
+  .openPopup();;
+
   function calculateAQI(pm25) {
     if (pm25 <= 25) {
       return {
@@ -212,34 +219,24 @@ async function initializeMap(
 
     // Add weather, AQI, and PM2.5 information in user location popup
     L.marker([lat, lon])
-      .addTo(map)
-      .bindPopup(
-        ` 
-        <div style="
-        background-color: #f8f6f6;
-        color: #333;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        font-family: 'Arial', sans-serif;
-        font-size: 14px;
-        max-width: 400px;
-        margin: 20px auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    .addTo(map)
+    .bindPopup(
+      `
+      <div class="popup-content">
         <b>ตำแหน่งของคุณ</b><br>
-        <a href="${googleMapUrl}" target="_blank" style="color: #1e90ff; text-decoration: none;">${lat}, ${lon}</a><br>
-        <span style="font-size: 12px; color: #666;">ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร</span><br>
-        <img src="${weatherImageUrl}" alt="Weather Icon" style="width: 40px; height: 40px; margin: 0.1px 0;"><br>
-        <span style="font-size: 14px;">${weatherName}, อุณหภูมิ: ${weatherTemp}°C</span> 
+        <a href="${googleMapUrl}" target="_blank">${lat}, ${lon}</a><br>
+        <span class="secondary-text">ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร</span><br>
+        <img src="${weatherImageUrl}" alt="Weather Icon"><br>
+        <span class="weather-info">${weatherName}, อุณหภูมิ: ${weatherTemp}°C</span> 
         <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
-        <span style="font-size: 12px; color: #666;">สภาพอากาศ: ${weatherDescription}</span><br>
-        <span style="font-size: 12px; color: #666;">PM2.5: ${pm25} µg/m³</span><br>
-        AQI: <span style="color: ${aqiColor}; font-size: 14px;"><b>${aqi} (${aqiLevel})</b></span>
-    </div>
-    
-`
-      )
-      .openPopup();
+        <span class="secondary-text">สภาพอากาศ: ${weatherDescription}</span><br>
+        <span class="secondary-text">PM2.5: ${pm25} µg/m³</span><br>
+        AQI: <span class="aqi" style="color: ${aqiColor};">${aqi} (${aqiLevel})</span>
+      </div>
+      `
+    )
+    .openPopup();
+  
   } catch (error) {
     console.error("Error fetching weather or air quality data: ", error);
   }
@@ -607,4 +604,20 @@ function checkinfo() {
       },
     });
   }
-}
+  Swal.fire({
+    title: "ไม่พบการลงเวลาปฏิบัติงาน",
+    html: "ไม่พบข้อมูลการลงเวลาในระบบหน้าบ้าน<br>กรุณาตรวจสอบในระบบหลังบ้าน",
+    icon: "error",
+    confirmButtonText: "ตกลง",
+    showCloseButton: true,
+    customClass: {
+      title: "text-danger",
+      content: "text-muted",
+      confirmButton: "btn btn-danger",
+    },
+  }).then(() => {
+    // Play a sound effect after the alert closes
+    checktoday();
+  });
+  
+  }
