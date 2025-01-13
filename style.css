@@ -433,7 +433,8 @@ button {
 }
 
 .leaflet-container .leaflet-control-attribution {
-	background: var(--nav-bg);
+	/* background: var(--nav-bg); */
+  background: transparent;
 	margin: 0;
-  opacity: 0; /* ปรับความโปร่งแสง */
+  opacity: .7; 
 	}
