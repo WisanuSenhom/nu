@@ -227,7 +227,7 @@ body.menu-open {
 
 .container {
   background: var(--nav-bg);
-  opacity: 0.95; /* ปรับความโปร่งแสง */
+  opacity: 1; /* ปรับความโปร่งแสง */
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 4px 10px var(--nav-shadow);
@@ -366,13 +366,15 @@ button {
 }
 
 .popup-content {
-  padding: 8px;
+  padding: 0px;
   border-radius: 12px;
   text-align: center;
   font-family: "Arial", sans-serif;
   font-size: 14px;
   max-width: 400px;
   margin: 20px auto;
+  word-wrap: break-word; 
+  overflow-wrap: break-word;
 }
 
 .popup-content a {
@@ -416,19 +418,22 @@ button {
 }
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  background-color: var(--background-color);
+  background-color: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 8px var(--shadow-color);
+  opacity: 0.92; /* ปรับความโปร่งแสง */
 }
 
 .leaflet-touch .leaflet-bar a {
   width: 20px;
   height: 20px;
   line-height: 20px;
-  background-color: var(--background-color);
+  background-color: var(--nav-bg);
+  opacity: 0.70; /* ปรับความโปร่งแสง */
 }
 
 .leaflet-container .leaflet-control-attribution {
-	background: var(--background-color);
+	background: var(--nav-bg);
 	margin: 0;
+  opacity: 0; /* ปรับความโปร่งแสง */
 	}
