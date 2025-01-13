@@ -15,7 +15,9 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 <!-- CSS ของ Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""/>
 <!-- JavaScript ของ Leaflet -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <!-- css -->
@@ -28,7 +30,10 @@
 <body>
   <nav>
     
-    <div class="logo"><i class="fa-regular fa-clock"></i> ลงเวลา</div>
+    <div class="logo" onclick="window.location.href='#';">
+      <i class="fa-regular fa-clock"></i> ลงเวลา
+    </div>
+    
     <div>
       <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar" id="avatar" onclick="editpic()">
       <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
@@ -48,7 +53,6 @@
       <a href="javascript:void(0);" onclick="clearLocal()"><i class="fas fa-sync-alt"></i> ออก</a>
     </div>
   </nav>
-
   <div id="mainContent" class="container">
     <!-- <h1>Welcome to Work Tracker</h1> -->
     <iframe title="time" src="https://free.timeanddate.com/clock/i9pmhovl/n3376/tlth39/fn14/fs20/fc2196f3/tct/pct/ftb/th1" frameborder="0" width="93" height="26" allowtransparency="true"></iframe>
@@ -183,10 +187,10 @@ document.addEventListener("click", (e) => {
         startBtn.style.display = "none";
         statusBtn.style.display = "inline-block";
         endBtn.style.display = "none";
-
+// redirect ไปยัง 'request.html'
         let formattedToday = now.toLocaleDateString("th-TH");
         if (formattedToday !== localStorage.getItem("datecheck")) {
-          window.location.href = "request.html"; // redirect ไปยัง 'request.html'
+          window.location.href = "request.html"; 
         }
       } else {
         // Show "End" button, hide others
