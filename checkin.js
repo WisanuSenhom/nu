@@ -295,8 +295,8 @@ async function checkin() {
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
-      title: "ข้อมูลไม่ครบถ้วน รับค่าพิกัดไม่ได้",
-      text: "กรุณาเปิดใช้งานตำแหน่งที่ตั้งเพื่อบันทึกเวลาการปฏิบัติงาน",
+      title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
+      text: "กรูณาลองใหม่อีกครั้ง",
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -340,8 +340,8 @@ async function checkout() {
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
-      title: "ข้อมูลไม่ครบถ้วน รับค่าพิกัดไม่ได้",
-      text: "กรุณาเปิดใช้งานตำแหน่งที่ตั้งเพื่อบันทึกเวลาการปฏิบัติงาน",
+      title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
+      text: "กรูณาลองใหม่อีกครั้ง",
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
