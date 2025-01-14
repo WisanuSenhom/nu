@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<!-- Required meta tags -->
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-<meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล" />
-<!-- <link rel="manifest" href="mainfest.json" /> -->
-<link rel="apple-touch-icon" sizes="180x180"
-  href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
-<link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-<!-- CSS ของ Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-crossorigin=""/>
-<!-- JavaScript ของ Leaflet -->
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<!-- css -->
-<link rel="stylesheet" href="style.css" />
-<!-- <link rel="stylesheet" href="loading.css" /> -->
 
-<title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล" />
+  <!-- <link rel="manifest" href="mainfest.json" /> -->
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
+  <link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" />
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- CSS ของ Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <!-- JavaScript ของ Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- css -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- <link rel="stylesheet" href="loading.css" /> -->
+
+  <title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
 </head>
 
 <body>
   <nav>
-    
+
     <div class="logo" onclick="window.location.href='#';">
       <i class="fa-regular fa-clock"></i> ลงเวลา
     </div>
-    
+
     <div>
-      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar" id="avatar" onclick="editpic()">
+      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar"
+        id="avatar" onclick="editpic()">
       <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
       <span class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></span>
     </div>
@@ -55,10 +56,11 @@ crossorigin=""/>
   </nav>
   <div id="mainContent" class="container">
     <!-- <h1>Welcome to Work Tracker</h1> -->
-   
-  <iframe title="datetime" src="https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc2196f3/tct/pct/ftb/tt0/td1/th1/tb4" frameborder="0" width="276" height="46" allowtransparency="true"></iframe>
 
-    
+    <iframe title="datetime"
+      src="https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc2196f3/tct/pct/ftb/tt0/td1/th1/tb4"
+      frameborder="0" width="276" height="46" allowtransparency="true"></iframe>
+
     <div id="log">
       <label for="typea">การปฏิบัติงาน:</label>
       <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
@@ -68,13 +70,13 @@ crossorigin=""/>
         <option value="ไปราชการ">ไปราชการ (ประชุม อบรมฯ)</option>
         <option value="อื่นๆ">อื่นๆ โปรดระบุเพิ่มเติม</option>
       </select>
-      <div id="otherInput" >
-        <label for="otherDetails" >โปรดระบุ:</label>
-        <input type="text" id="otherDetails"  name="OtherDetails" placeholder="ระบุเพิ่มเติม"/>
+      <div id="otherInput">
+        <label for="otherDetails">โปรดระบุ:</label>
+        <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุเพิ่มเติม" />
         <!-- <label for="llat" >lat:</label> -->
-        <input type="text" id="llat"  name="llat" placeholder="ละติจูด" hidden/>
+        <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
         <!-- <label for="llon" >lat:</label> -->
-        <input type="text" id="llon"  name="llon" placeholder="ลองติจูด" hidden/>
+        <input type="text" id="llon" name="llon" placeholder="ลองติจูด" hidden />
       </div>
     </div>
     <div id="map"></div>
@@ -82,87 +84,104 @@ crossorigin=""/>
 
   <div id="trackerContent" class="tracker-bar">
     <button id="startBtn" onclick="checkin()"><i class="fas fa-sign-in-alt"></i> มา</button>
-    <button id="statusBtn" onclick="checkinfo()" ><i class="fas fa-check-circle"></i> สถานะ</button>
+    <button id="statusBtn" onclick="checkinfo()"><i class="fas fa-check-circle"></i> สถานะ</button>
     <button id="endBtn" onclick="checkout()"><i class="fas fa-sign-out-alt"></i> กลับ</button>
     <button id="imapBtn" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> แผนที่</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
- <script>
-  const menuToggle = document.getElementById("menu-toggle");
-  const themeToggle = document.getElementById("theme-toggle");
-  const menu = document.getElementById("menu");
-  const body = document.body;
+  <script>
+    const menuToggle = document.getElementById("menu-toggle");
+    const themeToggle = document.getElementById("theme-toggle");
+    const menu = document.getElementById("menu");
+    const body = document.body;
 
-  // Apply theme from localStorage on page load
-  const savedTheme = localStorage.getItem("theme") || "light";
-  applyTheme(savedTheme);
+    // Apply theme from localStorage on page load
+    const savedTheme = localStorage.getItem("theme") || "light";
+    applyTheme(savedTheme);
 
-  // Menu Toggle
-  menuToggle.addEventListener("click", () => {
-    menu.classList.toggle("show");
-    document.body.classList.toggle('menu-open');
+    // Menu Toggle
+    menuToggle.addEventListener("click", () => {
+      menu.classList.toggle("show");
+      document.body.classList.toggle('menu-open');
 
-    // Toggle the icon between hamburger and "X"
-    const icon = menuToggle.querySelector("i");
-    icon.classList.toggle("fa-bars");
-    icon.classList.toggle("fa-x");
-  });
+      // Toggle the icon between hamburger and "X"
+      const icon = menuToggle.querySelector("i");
+      icon.classList.toggle("fa-bars");
+      icon.classList.toggle("fa-x");
+    });
 
-  // Close menu when clicking outside
-document.addEventListener("click", (e) => {
-  // Check if the click is outside the menu or the menu toggle button
-  if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
-    menu.classList.remove("show");
-    document.body.classList.remove('menu-open');
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      // Check if the click is outside the menu or the menu toggle button
+      if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+        menu.classList.remove("show");
+        document.body.classList.remove('menu-open');
 
-    // Reset the icon to hamburger
-    const icon = menuToggle.querySelector("i");
-    icon.classList.add("fa-bars");
-    icon.classList.remove("fa-x");
-  }
+        // Reset the icon to hamburger
+        const icon = menuToggle.querySelector("i");
+        icon.classList.add("fa-bars");
+        icon.classList.remove("fa-x");
+      }
+    });
+
+        // Theme Toggle
+// รายการธีมที่รองรับ
+const themes = ["light", "dark", "yellow", "green", "pink", "blue", "purple", "gray", "red"];
+let currentThemeIndex = themes.indexOf(localStorage.getItem("theme")) || 0;
+
+
+// ฟังก์ชันสำหรับเปลี่ยนธีม
+function applyTheme(theme) {
+  body.setAttribute("data-theme", theme);
+
+  // ไอคอนที่สอดคล้องกับแต่ละธีม
+  const themeIcons = {
+    light: '<i class="fa-solid fa-sun"></i>',
+    dark: '<i class="fa-solid fa-moon"></i>',
+    pink: '<i class="fa-solid fa-heart"></i>',
+    green: '<i class="fa-solid fa-leaf"></i>',
+    purple: '<i class="fa-solid fa-gem"></i>',
+    yellow: '<i class="fa-solid fa-star"></i>',
+    blue: '<i class="fa-solid fa-water"></i>',
+    gray: '<i class="fa-solid fa-palette"></i>',
+    red: '<i class="fa-solid fa-fire"></i>', // ไอคอนสำหรับธีมสีเทา
+  };
+
+  // ตั้งค่าไอคอนในปุ่ม
+  themeToggle.innerHTML = themeIcons[theme] || '<i class="fa-solid fa-circle"></i>';
+
+  // บันทึกธีมใน Local Storage
+  localStorage.setItem("theme", theme);
+
+  // เรียกฟังก์ชันที่เกี่ยวข้องอื่น ๆ 
+
+}
+
+// ตัวจัดการเหตุการณ์สำหรับปุ่มเปลี่ยนธีม
+themeToggle.addEventListener("click", () => {
+  currentThemeIndex = (currentThemeIndex + 1) % themes.length; // วนลูปกลับไปที่ธีมแรกเมื่อถึงธีมสุดท้าย
+  const newTheme = themes[currentThemeIndex];
+  applyTheme(newTheme);
 });
 
-  // Theme Toggle
-  themeToggle.addEventListener("click", () => {
-    const currentTheme = body.getAttribute("data-theme");
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-    applyTheme(newTheme);
-  });
+// โหลดธีมจาก Local Storage เมื่อเริ่มต้น
+document.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  currentThemeIndex = themes.indexOf(savedTheme);
+  applyTheme(savedTheme);
+});
 
-  function applyTheme(theme) {
-    body.setAttribute("data-theme", theme);
-    themeToggle.innerHTML = theme === "dark" 
-      ? '<i class="fa-solid fa-sun"></i>' 
-      : '<i class="fa-solid fa-moon"></i>';
-    localStorage.setItem("theme", theme);
-    toggleSweetAlertTheme(theme);
-  }
 
-  function toggleSweetAlertTheme(theme) {
-    const darkThemeLink = document.getElementById("sweetalert-dark-theme");
-    if (theme === "dark") {
-      if (!darkThemeLink) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.id = "sweetalert-dark-theme";
-        link.href = "https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css";
-        document.head.appendChild(link);
-      }
-    } else {
-      if (darkThemeLink) darkThemeLink.remove();
+    // Handle "Other" option in select dropdown
+    function handleOtherOption() {
+      const select = document.getElementById("typea");
+      const otherInput = document.getElementById("otherInput");
+      otherInput.style.display = select.value !== "ปกติ" ? "block" : "none";
     }
-  }
 
-  // Handle "Other" option in select dropdown
-  function handleOtherOption() {
-    const select = document.getElementById("typea");
-    const otherInput = document.getElementById("otherInput");
-    otherInput.style.display = select.value !== "ปกติ" ? "block" : "none";
-  }
-
- // Time-based button visibility
+    // Time-based button visibility
     function toggleButtonsByTime() {
       const now = new Date();
       const hours = now.getHours();
@@ -178,21 +197,21 @@ document.addEventListener("click", (e) => {
         statusBtn.style.display = "none";
         endBtn.style.display = "none";
         let formattedToday = now.toLocaleDateString("th-TH");
-        if(formattedToday === localStorage.getItem("datecheck")) {   
+        if (formattedToday === localStorage.getItem("datecheck")) {
           // Show "Status" button, hide others
-        startBtn.style.display = "none";
-        statusBtn.style.display = "inline-block";
-        endBtn.style.display = "none";
+          startBtn.style.display = "none";
+          statusBtn.style.display = "inline-block";
+          endBtn.style.display = "none";
         }
       } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
         // Show "Status" button, hide others
         startBtn.style.display = "none";
         statusBtn.style.display = "inline-block";
         endBtn.style.display = "none";
-// redirect ไปยัง 'request.html'
+        // redirect ไปยัง 'request.html'
         let formattedToday = now.toLocaleDateString("th-TH");
         if (formattedToday !== localStorage.getItem("datecheck")) {
-          window.location.href = "request.html"; 
+          window.location.href = "request.html";
         }
       } else {
         // Show "End" button, hide others
@@ -201,11 +220,11 @@ document.addEventListener("click", (e) => {
         endBtn.style.display = "inline-block";
 
         let formattedToday = now.toLocaleDateString("th-TH");
-        if(formattedToday === localStorage.getItem("datecheckout")) {   
+        if (formattedToday === localStorage.getItem("datecheckout")) {
           // Show "Status" button, hide others
-        startBtn.style.display = "none";
-        statusBtn.style.display = "inline-block";
-        endBtn.style.display = "none";
+          startBtn.style.display = "none";
+          statusBtn.style.display = "inline-block";
+          endBtn.style.display = "none";
         }
       }
       // เช็คว่าวันนี้เป็นวันหยุดสุดสัปดาห์หรือไม่ (วันเสาร์หรือวันอาทิตย์)
@@ -216,11 +235,11 @@ document.addEventListener("click", (e) => {
       }
     }
 
-  // Initialize time-based buttons
-  toggleButtonsByTime();
-  setInterval(toggleButtonsByTime, 60000); // Check every minute
+    // Initialize time-based buttons
+    toggleButtonsByTime();
+    setInterval(toggleButtonsByTime, 60000); // Check every minute
 
-   
+
 
     // ดึงข้อมูลรูปภาพจาก localStorage
     const avatarSrc = localStorage.getItem("upic");
