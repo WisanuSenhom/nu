@@ -18,7 +18,7 @@ body {
   flex-direction: column;
   padding-top: 70px;
   padding-bottom: 120px;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.5s ease, color 0.5s ease;
   /* background-image: url('https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcToySPdFCMfbBeEu3Qu-mMf33cLIwTwdFFTPjDF4d4_zLd1TaEdHd0vEaerFoOg4W4t'); 
     background-size: cover; 
     background-position: center; 
@@ -42,7 +42,7 @@ body::before {
 }
 
 :root {
-  --primary-color: #4caf50; /* สีหลัก */
+  --primary-color: #388e3c; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
   --background-color: #f9f9f9;
   --text-color: #333;
   --button-bg: #4caf50;
@@ -52,9 +52,11 @@ body::before {
   --border-color: #ddd;
   --link-color: #1e90ff;
   --secondary-text-color: #666;
+  --nav-hover-bg: #f1f1f1; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
 }
 
 [data-theme="dark"] {
+  --primary-color: #8a4dff; /* สีหลักเข้มขึ้นสำหรับโลโก้ในโหมดมืด */
   --background-color: #333;
   --text-color: #f9f9f9;
   --button-bg: #666;
@@ -63,7 +65,105 @@ body::before {
   --nav-shadow: rgba(255, 255, 255, 0.1);
   --border-color: #555;
   --secondary-text-color: #c4c4c4;
+  --nav-hover-bg: #555; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
 }
+
+[data-theme="pink"] {
+  --primary-color: #c74e7f; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #ffd6e6;
+  --text-color: #3f3f3f;
+  --button-bg: #e87b9e;
+  --button-hover-bg: #d96a8c;
+  --nav-bg: #ffebf0;
+  --nav-shadow: rgba(255, 105, 135, 0.25);
+  --border-color: #e89ba9;
+  --secondary-text-color: #944b6b;
+  --nav-hover-bg: #f8c6d9; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="green"] {
+  --primary-color: #6ea86b; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #d3f2d3;
+  --text-color: #394b39;
+  --button-bg: #8ec59c;
+  --button-hover-bg: #7eb886;
+  --nav-bg: #e6f7e6;
+  --nav-shadow: rgba(144, 238, 144, 0.25);
+  --border-color: #a7d4b8;
+  --secondary-text-color: #5e765e;
+  --nav-hover-bg: #c9f1c9; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="purple"] {
+  --primary-color: #7f63b3; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #e4dbff;
+  --text-color: #393a50;
+  --button-bg: #9c88d8;
+  --button-hover-bg: #8a76c4;
+  --nav-bg: #f4ecff;
+  --nav-shadow: rgba(160, 136, 192, 0.25);
+  --border-color: #c3aadf;
+  --secondary-text-color: #675a8b;
+  --nav-hover-bg: #d1b1ff; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="yellow"] {
+  --primary-color: #e6b800; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #fff5cc;
+  --text-color: #5a511e;
+  --button-bg: #ffda66;
+  --button-hover-bg: #ffcc33;
+  --nav-bg: #fff9e6;
+  --nav-shadow: rgba(255, 215, 115, 0.25);
+  --border-color: #ffde99;
+  --secondary-text-color: #87742f;
+  --nav-hover-bg: #fff2b3; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="blue"] {
+  --primary-color: #1e88e5; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #e3f2fd;
+  --text-color: #2c3e50;
+  --button-bg: #64b5f6;
+  --button-hover-bg: #42a5f5;
+  --nav-bg: #bbdefb;
+  --nav-shadow: rgba(100, 181, 246, 0.25);
+  --border-color: #90caf9;
+  --link-color: #1e88e5;
+  --secondary-text-color: #5c6bc0;
+  --nav-hover-bg: #a6c8ff; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="gray"] {
+  --primary-color: #607d8b; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #eceff1;
+  --text-color: #37474f;
+  --button-bg: #90a4ae;
+  --button-hover-bg: #78909c;
+  --nav-bg: #cfd8dc;
+  --nav-shadow: rgba(0, 0, 0, 0.1);
+  --border-color: #b0bec5;
+  --link-color: #607d8b;
+  --secondary-text-color: #78909c;
+  --nav-hover-bg: #b0bec5; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+[data-theme="red"] {
+  --primary-color: #d32f2f; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --background-color: #ffebee;
+  --text-color: #b71c1c;
+  --button-bg: #e57373;
+  --button-hover-bg: #ef5350;
+  --nav-bg: #ffcdd2;
+  --nav-shadow: rgba(0, 0, 0, 0.1);
+  --border-color: #ef9a9a;
+  --link-color: #d32f2f;
+  --secondary-text-color: #c62828;
+  --nav-hover-bg: #ffb3b3; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+}
+
+
+
 
 nav {
   background-color: var(--nav-bg);
@@ -162,8 +262,8 @@ nav .menu a {
 }
 
 nav .menu a:hover {
-  background-color: #4caf50;
-  color: #fff;
+  background-color:  var(--nav-hover-bg);
+  color: var(--secondary-text-color);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* เพิ่มเงา */
   transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
@@ -421,7 +521,7 @@ button {
   background-color: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 8px var(--shadow-color);
-  opacity: 0.92; /* ปรับความโปร่งแสง */
+  opacity: 0.8; /* ปรับความโปร่งแสง */
 }
 
 .leaflet-touch .leaflet-bar a {
@@ -429,12 +529,26 @@ button {
   height: 20px;
   line-height: 20px;
   background-color: var(--nav-bg);
-  opacity: 0.70; /* ปรับความโปร่งแสง */
+  opacity: 0.5; /* ปรับความโปร่งแสง */
 }
 
 .leaflet-container .leaflet-control-attribution {
 	/* background: var(--nav-bg); */
   background: transparent;
 	margin: 0;
-  opacity: .7; 
+  opacity: .5; 
 	}
+
+  .leaflet-marker-icon {
+    width: 25px;              
+    height: 41px;            
+    transform: translate3d(104px, 165px, 0px); 
+    z-index: 165;            
+    opacity: .5; 
+}
+
+ .swal2-popup {
+  background: var(--nav-bg);
+  color: var(--text-color);
+  box-shadow: 0 4px 10px var(--shadow-color);
+}
