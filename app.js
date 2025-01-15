@@ -30,13 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
     //     });
     // }
 
-    Swal.fire({
-      title: "กรุณารอสักครู่...",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // Swal.fire({
+    //   title: "กรุณารอสักครู่...",
+    //   allowOutsideClick: false,
+    //   didOpen: () => {
+    //     Swal.showLoading();
+    //   },
+    // });
   
     // Check for UUID in localStorage
     const uuid = localStorage.getItem("uuid");
@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
     // Update user information
-    Swal.close();
+    // Swal.close();
+    alertUpdate();
     updateUser(uuid);
   
   });  
@@ -647,3 +648,142 @@ document.addEventListener("DOMContentLoaded", function () {
         confirmButtonColor: "#008000",
       });
     }
+
+
+        // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
+        function applyBackgroundImage() {
+          const storedImage = localStorage.getItem("backgroundImage");
+          if (storedImage) {
+            document.body.style.backgroundImage = `url('${storedImage}')`;
+          } else {
+            document.body.style.backgroundImage = "none";
+          }
+        }
+    
+        // ฟังก์ชันสำหรับอัปโหลดภาพด้วย SweetAlert
+        async function uploadImage() {
+          const { value: file } = await Swal.fire({
+            title: "เลือกภาพเพื่อเปลี่ยนพื้นหลัง",
+            text: "กรุณาเลือกภาพที่มีขนาดพอดีกับหน้าจอ หรือแก้ไขรูปให้พอดีกับหน้าจอ",
+            input: "file",
+            inputAttributes: {
+              accept: "image/*",
+              "aria-label": "บันทึกภาพพื้นหลัง"
+            },
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "ตั้งเป็นพื้นหลัง",
+            denyButtonText: "ลบพื้นหลัง",
+            cancelButtonText: "ยกเลิก"
+          });
+    
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              Swal.fire({
+                title: "ดูตัวอย่างภาพที่คุณเลือก",
+                imageUrl: e.target.result,
+                imageAlt: "ภาพที่จะบันทึก",
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: "ตั้งเป็นพื้นหลัง",
+                denyButtonText: "ลบพื้นหลัง",
+                cancelButtonText: "ยกเลิก"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  localStorage.setItem("backgroundImage", e.target.result);
+                  applyBackgroundImage();
+                  Swal.fire("สำเร็จ", "พื้นหลังได้ถูกเปลี่ยนแล้ว!", "success");
+                } else if (result.isDenied) {
+                  localStorage.removeItem("backgroundImage");
+                  applyBackgroundImage();
+                  Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
+                }
+              });
+            };
+            reader.readAsDataURL(file);
+          } else if (!file && localStorage.getItem("backgroundImage")) {
+            const clearResult = await Swal.fire({
+              title: "ลบพื้นหลัง?",
+              text: "คุณต้องการลบพื้นหลังปัจจุบันหรือไม่?",
+              icon: "question",
+              showDenyButton: true,
+              showCancelButton: true,
+              confirmButtonText: "ไม่ลบ",
+              denyButtonText: "ลบพื้นหลัง",
+              cancelButtonText: "ยกเลิก"
+            });
+    
+            if (clearResult.isDenied) {
+              localStorage.removeItem("backgroundImage");
+              applyBackgroundImage();
+              Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
+            }
+          }
+        }
+
+        applyBackgroundImage();     
+
+// Check localStorage for the saved state and apply it
+document.addEventListener('DOMContentLoaded', function () {
+  const mainContent = document.getElementById('mainContent');
+  const showHideButton = document.getElementById('showHide');
+
+  // Retrieve the stored state from localStorage
+  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+
+  // Apply the collapsed state to the container
+  if (isCollapsed) {
+      mainContent.classList.add('collapsed');
+      showHideButton.textContent = 'แสดง'; // Change button text to 'Show'
+  } else {
+      showHideButton.textContent = 'ซ่อน'; // Change button text to 'Hide'
+  }
+
+  // Add event listener for button click
+  showHideButton.addEventListener('click', function () {
+      // Toggle the collapsed state
+      mainContent.classList.toggle('collapsed');
+
+      // Update localStorage with the new state
+      const isCollapsed = mainContent.classList.contains('collapsed');
+      localStorage.setItem('containerCollapsed', isCollapsed);
+
+      // Change the button text based on the new state
+      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ซ่อน';
+  });
+});
+
+function alertUpdate() {
+  // ตรวจสอบค่าใน local storage
+  const logUpdate = localStorage.getItem('logUpdate');
+  console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
+
+  // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
+  if (logUpdate !== '1' || !logUpdate) {
+    console.log('ข้อมูลยังไม่ได้รับการอัปเดต'); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
+
+    // แสดง Swal.fire
+    Swal.fire({
+      title: 'แจ้งเตือนการปรับปรุง',
+      html: `<div style="text-align: left;">
+      1. เปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-moon"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i> <br><br>
+      2. กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง <br><br>
+      3. ซ่อน/แสดง ส่วนแสดงแผนที่ได้
+    </div>`,
+      input: 'checkbox', // ตัวเลือกแสดง checkbox
+      inputPlaceholder: 'ไม่ต้องแสดงอีก', // ข้อความใน input
+      confirmButtonText: 'รับทราบ',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
+        if (result.value) {
+          // ถ้าเลือกไม่ให้แสดงอีก
+          localStorage.setItem('logUpdate', '1');
+          console.log('logUpdate set to 1'); // ตรวจสอบว่าได้ตั้งค่าแล้ว
+        }
+      }
+    });
+  }
+}
+
