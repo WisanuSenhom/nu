@@ -604,6 +604,7 @@ button {
   background: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 10px var(--shadow-color);
+	 opacity: .82; 
 }
 
 
