@@ -651,78 +651,117 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
-        function applyBackgroundImage() {
-          const storedImage = localStorage.getItem("backgroundImage");
-          if (storedImage) {
-            document.body.style.backgroundImage = `url('${storedImage}')`;
-          } else {
-            document.body.style.backgroundImage = "none";
-          }
-        }
-    
-        // ฟังก์ชันสำหรับอัปโหลดภาพด้วย SweetAlert
-        async function uploadImage() {
-          const { value: file } = await Swal.fire({
-            title: "เลือกภาพเพื่อเปลี่ยนพื้นหลัง",
-            text: "กรุณาเลือกภาพที่มีขนาดพอดีกับหน้าจอ หรือแก้ไขรูปให้พอดีกับหน้าจอ",
-            input: "file",
-            inputAttributes: {
-              accept: "image/*",
-              "aria-label": "บันทึกภาพพื้นหลัง"
-            },
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: "ตั้งเป็นพื้นหลัง",
-            denyButtonText: "ลบพื้นหลัง",
-            cancelButtonText: "ยกเลิก"
-          });
-    
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              Swal.fire({
-                title: "ดูตัวอย่างภาพที่คุณเลือก",
-                imageUrl: e.target.result,
-                imageAlt: "ภาพที่จะบันทึก",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: "ตั้งเป็นพื้นหลัง",
-                denyButtonText: "ลบพื้นหลัง",
-                cancelButtonText: "ยกเลิก"
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  localStorage.setItem("backgroundImage", e.target.result);
-                  applyBackgroundImage();
-                  Swal.fire("สำเร็จ", "พื้นหลังได้ถูกเปลี่ยนแล้ว!", "success");
-                } else if (result.isDenied) {
-                  localStorage.removeItem("backgroundImage");
-                  applyBackgroundImage();
-                  Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
-                }
-              });
-            };
-            reader.readAsDataURL(file);
-          } else if (!file && localStorage.getItem("backgroundImage")) {
-            const clearResult = await Swal.fire({
-              title: "ลบพื้นหลัง?",
-              text: "คุณต้องการลบพื้นหลังปัจจุบันหรือไม่?",
-              icon: "question",
-              showDenyButton: true,
-              showCancelButton: true,
-              confirmButtonText: "ไม่ลบ",
-              denyButtonText: "ลบพื้นหลัง",
-              cancelButtonText: "ยกเลิก"
-            });
-    
-            if (clearResult.isDenied) {
-              localStorage.removeItem("backgroundImage");
-              applyBackgroundImage();
-              Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
-            }
-          }
-        }
+function applyBackgroundImage() {
+  const storedImage = localStorage.getItem("backgroundImage");
+  if (storedImage) {
+    document.body.style.backgroundImage = `url('${storedImage}')`;
+  } else {
+    document.body.style.backgroundImage = "none";
+  }
+}
 
-        applyBackgroundImage();     
+// ฟังก์ชันลดขนาดภาพ
+function resizeImage(file, maxWidth, maxHeight, callback) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      let width = img.width;
+      let height = img.height;
+
+      // คำนวณขนาดใหม่เพื่อรักษาสัดส่วนของภาพ
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      // ตั้งค่าขนาด canvas
+      canvas.width = width;
+      canvas.height = height;
+
+      // วาดภาพลงใน canvas
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // แปลง canvas เป็น Data URL
+      const resizedImage = canvas.toDataURL("image/jpeg", 0.8); // ลดคุณภาพเล็กน้อย (0.8)
+      callback(resizedImage);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ฟังก์ชันสำหรับอัปโหลดภาพด้วย SweetAlert
+async function uploadImage() {
+  const { value: file } = await Swal.fire({
+    title: "เลือกภาพเพื่อเปลี่ยนพื้นหลัง",
+    text: "กรุณาเลือกภาพที่มีขนาดพอดีกับหน้าจอ หรือแก้ไขรูปให้พอดีกับหน้าจอ",
+    input: "file",
+    inputAttributes: {
+      accept: "image/*",
+      "aria-label": "บันทึกภาพพื้นหลัง"
+    },
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "ตั้งเป็นพื้นหลัง",
+    denyButtonText: "ลบพื้นหลัง",
+    cancelButtonText: "ยกเลิก"
+  });
+
+  if (file) {
+    resizeImage(file, 1920, 1080, (resizedImage) => {
+      Swal.fire({
+        title: "ดูตัวอย่างภาพที่คุณเลือก",
+        imageUrl: resizedImage,
+        imageAlt: "ภาพที่จะบันทึก",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "ตั้งเป็นพื้นหลัง",
+        denyButtonText: "ลบพื้นหลัง",
+        cancelButtonText: "ยกเลิก"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          localStorage.setItem("backgroundImage", resizedImage);
+          applyBackgroundImage();
+          Swal.fire("สำเร็จ", "พื้นหลังได้ถูกเปลี่ยนแล้ว!", "success");
+        } else if (result.isDenied) {
+          localStorage.removeItem("backgroundImage");
+          applyBackgroundImage();
+          Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
+        }
+      });
+    });
+  } else if (!file && localStorage.getItem("backgroundImage")) {
+    const clearResult = await Swal.fire({
+      title: "ลบพื้นหลัง?",
+      text: "คุณต้องการลบพื้นหลังปัจจุบันหรือไม่?",
+      icon: "question",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "ไม่ลบ",
+      denyButtonText: "ลบพื้นหลัง",
+      cancelButtonText: "ยกเลิก"
+    });
+
+    if (clearResult.isDenied) {
+      localStorage.removeItem("backgroundImage");
+      applyBackgroundImage();
+      Swal.fire("ลบสำเร็จ", "พื้นหลังได้ถูกลบแล้ว!", "info");
+    }
+  }
+}
+
+applyBackgroundImage();     
 
 // Check localStorage for the saved state and apply it
 document.addEventListener('DOMContentLoaded', function () {
