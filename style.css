@@ -19,11 +19,11 @@ body {
   padding-top: 70px;
   padding-bottom: 120px;
   transition: background-color 0.5s ease, color 0.5s ease;
-  /* background-image: url('https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcToySPdFCMfbBeEu3Qu-mMf33cLIwTwdFFTPjDF4d4_zLd1TaEdHd0vEaerFoOg4W4t'); 
+  /* background-image: url('https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcToySPdFCMfbBeEu3Qu-mMf33cLIwTwdFFTPjDF4d4_zLd1TaEdHd0vEaerFoOg4W4t');  */
     background-size: cover; 
     background-position: center; 
     background-repeat: no-repeat; 
-    position: relative; */
+    position: relative;
 }
 
 body::before {
@@ -56,7 +56,7 @@ body::before {
 }
 
 [data-theme="dark"] {
-  --primary-color: #8a4dff; /* สีหลักเข้มขึ้นสำหรับโลโก้ในโหมดมืด */
+  --primary-color: #e0e0e0; /* สีหลักเข้มขึ้นสำหรับโลโก้ในโหมดมืด */
   --background-color: #333;
   --text-color: #f9f9f9;
   --button-bg: #666;
@@ -312,6 +312,12 @@ nav .menu a:hover {
   #menu-toggle {
     display: block;
   }
+
+    /* เมื่อเมนูเปิด, ซ่อน .container */
+    body.menu-open .container {
+      display: none;
+    }
+
 }
 
 /* เมื่อเมนูเปิด */
@@ -327,7 +333,7 @@ body.menu-open {
 
 .container {
   background: var(--nav-bg);
-  opacity: 1; /* ปรับความโปร่งแสง */
+  opacity: 0.96; /* ปรับความโปร่งแสง */
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 4px 10px var(--nav-shadow);
@@ -336,7 +342,54 @@ body.menu-open {
   text-align: center;
   margin-top: 1rem;
   border: 1px solid var(--border-color);
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+  max-height: 1000px; /* Default height when shown */
+  padding-bottom: 1rem; /* Default padding */
+  overflow: hidden;
+  position: relative; /* Needed for absolute positioning of the button */
 }
+
+/* Add a collapsed class to hide the container */
+.container.collapsed {
+  max-height: 70px;
+  padding-bottom: 0;
+  opacity: 0.75; /* Adjust transparency */
+  position: absolute; /* Position it relative to the nearest positioned ancestor */
+  bottom: 90px; /* Move to the bottom of its parent container */
+}
+
+/* Button to toggle visibility */
+#showHide {
+  padding: 0px 1px;
+  background-color: var(--background-color);
+  color: var(--secondary-text-color);
+  /* box-shadow: 0 4px 10px var(--nav-shadow); */
+  font-size: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px; /* Space between the button and content */
+  position: absolute; /* Make it stay in the top-left corner */
+  top: 5px;
+  right: 10px;
+}
+
+#showHide:hover {
+  color: var(--text-color);
+  background-color: var(--nav-hover-bg);
+}
+
+#showHide:focus {
+  outline: none;
+}
+
+#showHide:active {
+  background-color: #0a6bbd;
+}
+
+
 
 label {
   font-size: 1rem;
@@ -437,7 +490,7 @@ button {
 
 .tracker-bar {
   background-color: var(--nav-bg);
-  opacity: 0.9; /* ปรับความโปร่งแสง */
+  opacity: 0.88; /* ปรับความโปร่งแสง */
   position: fixed;
   bottom: 0;
   left: 0;
@@ -551,4 +604,27 @@ button {
   background: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+
+.swal2-confirm {
+  background-color: #4CAF50; /* Set the background color */
+  color: white; /* Set the text color */
+  font-size: 16px; /* Set the font size */
+  padding: 10px 20px; /* Adjust padding */
+  border-radius: 5px; /* Round the corners */
+  border: none; /* Remove the border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow */
+  transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.swal2-popup label {
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+label.swal2-checkbox {
+  background: transparent;
+  color: inherit;
 }
