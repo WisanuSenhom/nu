@@ -79,10 +79,10 @@ async function initializeMap(
   map = L.map("map").setView([lat, lon], 13);
 
   // เพิ่มแผนที่พื้นฐาน (OpenStreetMap)
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: "",
-  }).addTo(map);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: ''
+}).addTo(map);
+
 
   const userLatLng = L.latLng(lat, lon);
   const destinationLatLng = L.latLng(destinationLat, destinationLon);
@@ -428,6 +428,13 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
     const secureCode = await generateSecureCode();
     let typea = document.querySelector("#typea").value;
     let nte = document.querySelector("#otherDetails").value;
+
+    if (typea === 'อื่นๆ' && !nte){
+      throw new Error(
+        "อื่นๆ โปรดระบุ"
+      );
+    }
+
     let todays = new Date();
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
