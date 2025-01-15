@@ -767,7 +767,7 @@ function alertUpdate() {
     Swal.fire({
       title: 'แจ้งเตือนการปรับปรุง',
       html: `<div style="text-align: left;">
-      1. เปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-moon"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i> <br><br>
+      1. เปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i> <br><br>
       2. กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง <br><br>
       3. ซ่อน/แสดง ส่วนแสดงแผนที่ได้
     </div>`,
