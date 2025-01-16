@@ -298,7 +298,7 @@ function displayLatLon(lat, lon) {
 
 // in-out
 async function checkin() {
-  const isCollapsed = localStorage.getItem("containerCollapsed") === "true";
+  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
   let latitude, longitude;
 
   if (isCollapsed) {
@@ -311,15 +311,41 @@ async function checkin() {
       },
     });
 
+    let timeoutReached = false;
+
+    // ตั้ง timeout 10 วินาที
+    const timeout = setTimeout(() => {
+      timeoutReached = true;
+      Swal.fire({
+        icon: "error",
+        title: "ไม่สามารถรับค่าพิกัดได้",
+        text: "กรุณาลองใหม่อีกครั้ง",
+        showCancelButton: true,
+        confirmButtonText: "ลองใหม่",
+        cancelButtonText: "ยกเลิก",
+        allowOutsideClick: false,
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-secondary",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          checkin(); // เรียกฟังก์ชันใหม่เมื่อเลือก "ลองใหม่"
+        }
+      });
+    }, 10000);
+
     try {
       const location = await getLocation();
+      if (timeoutReached) return; // ถ้าหมดเวลาระหว่างได้พิกัด ให้ยกเลิกการทำงาน
+      clearTimeout(timeout); // ยกเลิก timeout ถ้าได้พิกัดสำเร็จ
       latitude = location.latitude;
       longitude = location.longitude;
 
-      // ปิด Swal เมื่อได้ค่าพิกัด
       Swal.close();
     } catch (error) {
-      return; // Exit the function if error occurs
+      clearTimeout(timeout); // ยกเลิก timeout ในกรณีเกิดข้อผิดพลาด
+      return; // ออกจากฟังก์ชันหากเกิดข้อผิดพลาด
     }
   } else {
     latitude = document.querySelector("#llat").value;
@@ -378,15 +404,41 @@ async function checkout() {
       },
     });
 
+    let timeoutReached = false;
+
+    // ตั้ง timeout 10 วินาที
+    const timeout = setTimeout(() => {
+      timeoutReached = true;
+      Swal.fire({
+        icon: "error",
+        title: "ไม่สามารถรับค่าพิกัดได้",
+        text: "กรุณาลองใหม่อีกครั้ง",
+        showCancelButton: true,
+        confirmButtonText: "ลองใหม่",
+        cancelButtonText: "ยกเลิก",
+        allowOutsideClick: false,
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-secondary",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          checkout(); // เรียกฟังก์ชันใหม่เมื่อเลือก "ลองใหม่"
+        }
+      });
+    }, 10000);
+
     try {
       const location = await getLocation();
+      if (timeoutReached) return; // ถ้าหมดเวลาระหว่างได้พิกัด ให้ยกเลิกการทำงาน
+      clearTimeout(timeout); // ยกเลิก timeout ถ้าได้พิกัดสำเร็จ
       latitude = location.latitude;
       longitude = location.longitude;
 
-      // ปิด Swal เมื่อได้ค่าพิกัด
       Swal.close();
     } catch (error) {
-     return; // Exit the function if error occurs
+      clearTimeout(timeout); // ยกเลิก timeout ในกรณีเกิดข้อผิดพลาด
+      return; // ออกจากฟังก์ชันหากเกิดข้อผิดพลาด
     }
   } else {
     latitude = document.querySelector("#llat").value;
@@ -406,7 +458,7 @@ async function checkout() {
         confirmButton: "btn btn-warning",
       },
     });
-    return; // ออกจากฟังก์ชันหากไม่มีค่าที่จำเป็น
+    return;
   }
 
   Swal.fire({
@@ -416,23 +468,20 @@ async function checkout() {
     confirmButtonText: "ยืนยัน",
     cancelButtonText: "ยกเลิก",
     allowOutsideClick: false,
-    // confirmButtonColor: "#008000",
     cancelButtonColor: "#6F7378",
     customClass: {
       title: "text-danger",
       content: "text-muted",
       confirmButton: "btn btn-danger",
-      // cancelButton: "btn btn-danger"
     },
     didOpen: async () => {
-      // Handle confirmation click to process check-in
       Swal.getConfirmButton().addEventListener("click", async () => {
-        // Send latitude and longitude to process the check-in
         await processCheckinOrCheckout("Out", latitude, longitude);
       });
     },
   });
 }
+
 
 
 
