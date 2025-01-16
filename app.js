@@ -705,7 +705,7 @@ function resizeImage(file, maxWidth, maxHeight, callback) {
 async function uploadImage() {
   const { value: file } = await Swal.fire({
     title: "เลือกภาพเพื่อเปลี่ยนพื้นหลัง",
-    text: "กรุณาเลือกภาพที่มีขนาดพอดีกับหน้าจอ หรือแก้ไขรูปให้พอดีกับหน้าจอ",
+    text: "กรุณาเลือกภาพที่มีขนาดพอดีกับหน้าจอ",
     input: "file",
     inputAttributes: {
       accept: "image/*",
