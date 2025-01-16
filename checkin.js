@@ -273,10 +273,29 @@ async function checkonmap() {
 }
 
 function refreshMap() {
-  if (map) {
-    map.remove(); // ลบแผนที่เก่า
+  const mainContent = document.getElementById('mainContent');
+  const showHideButton = document.getElementById('showHide');
+  
+  // Check if mainContent is collapsed
+  const isCollapsed = mainContent.classList.contains('collapsed');
+
+  // If collapsed, show the content and change button text
+  if (isCollapsed) {
+    mainContent.classList.remove('collapsed'); // Show the content
+    showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
+    
+    // Update localStorage with the new state
+    localStorage.setItem('containerCollapsed', 'false');
+    
+    // Call checkonmap() to reload the map if shown
+    checkonmap();
+  } else {
+    // If not collapsed, just refresh the map
+    if (map) {
+      map.remove(); // Remove the old map
+    }
+    checkonmap(); // Reload the map
   }
-  checkonmap(); // เรียกฟังก์ชัน checkonmap เพื่อโหลดแผนที่ใหม่
 }
 
 // เรียกฟังก์ชัน checkonmap ครั้งแรก
