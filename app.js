@@ -650,7 +650,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-        // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
+      // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
 function applyBackgroundImage() {
   const storedImage = localStorage.getItem("backgroundImage");
   if (storedImage) {
@@ -761,37 +761,10 @@ async function uploadImage() {
   }
 }
 
-applyBackgroundImage();     
+applyBackgroundImage();
 
-// Check localStorage for the saved state and apply it
-document.addEventListener('DOMContentLoaded', function () {
-  const mainContent = document.getElementById('mainContent');
-  const showHideButton = document.getElementById('showHide');
 
-  // Retrieve the stored state from localStorage
-  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
 
-  // Apply the collapsed state to the container
-  if (isCollapsed) {
-      mainContent.classList.add('collapsed');
-      showHideButton.textContent = 'แสดง'; // Change button text to 'Show'
-  } else {
-      showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
-  }
-
-  // Add event listener for button click
-  showHideButton.addEventListener('click', function () {
-      // Toggle the collapsed state
-      mainContent.classList.toggle('collapsed');
-
-      // Update localStorage with the new state
-      const isCollapsed = mainContent.classList.contains('collapsed');
-      localStorage.setItem('containerCollapsed', isCollapsed);
-
-      // Change the button text based on the new state
-      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ย่อ';
-  });
-});
 
 function alertUpdate() {
   // ตรวจสอบค่าใน local storage
@@ -811,7 +784,9 @@ function alertUpdate() {
         <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
         <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
       </ol>
-    </div>`,
+    </div>
+    
+    `,
       input: 'checkbox', // ตัวเลือกแสดง checkbox
       inputPlaceholder: 'ไม่ต้องแสดงอีก', // ข้อความใน input
       confirmButtonText: 'รับทราบ',
@@ -828,3 +803,16 @@ function alertUpdate() {
   }
 }
 
+
+// function calculateLocalStorageSize(key) {
+//   const storedData = localStorage.getItem(key);
+//   if (storedData) {
+//     const sizeInBytes = new Blob([storedData]).size;
+//     console.log(`ขนาดของ "${key}": ${sizeInBytes} bytes (${(sizeInBytes / 1024).toFixed(2)} KB)`);
+//   } else {
+//     console.log(`ไม่พบข้อมูลในคีย์ "${key}"`);
+//   }
+// }
+
+// // ใช้งานฟังก์ชัน
+// calculateLocalStorageSize("backgroundImage");
