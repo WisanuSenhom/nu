@@ -351,11 +351,11 @@ body.menu-open {
 
 /* Add a collapsed class to hide the container */
 .container.collapsed {
-  max-height: 70px;
+  max-height: 65px;
   padding-bottom: 0;
   opacity: 0.75; /* Adjust transparency */
   position: absolute; /* Position it relative to the nearest positioned ancestor */
-  bottom: 90px; /* Move to the bottom of its parent container */
+  bottom: 85px; /* Move to the bottom of its parent container */
 }
 
 /* Button to toggle visibility */
@@ -495,7 +495,7 @@ button {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 1rem;
+  padding: 0.8rem;
   box-shadow: 0 -2px 5px var(--nav-shadow);
   display: flex;
   justify-content: center;
@@ -604,7 +604,7 @@ button {
   background: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 10px var(--shadow-color);
-	 opacity: .82; 
+  opacity: .82; 
 }
 
 
