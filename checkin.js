@@ -280,7 +280,14 @@ function refreshMap() {
 }
 
 // เรียกฟังก์ชัน checkonmap ครั้งแรก
-checkonmap();
+function startCheckmap() {
+  const isCollapsed = localStorage.getItem("containerCollapsed") === "false";
+  if (isCollapsed) {
+    checkonmap();
+  }
+}
+startCheckmap();
+
 
 function displayLatLon(lat, lon) {
   // Set the values to the hidden input fields
@@ -684,3 +691,39 @@ function checkinfo() {
     });
   }
 }
+
+
+// Check localStorage for the saved state and apply it
+document.addEventListener('DOMContentLoaded', function () {
+  const mainContent = document.getElementById('mainContent');
+  const showHideButton = document.getElementById('showHide');
+
+  // Retrieve the stored state from localStorage
+  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+
+  // Apply the collapsed state to the container
+  if (isCollapsed) {
+      mainContent.classList.add('collapsed');
+      showHideButton.textContent = 'แสดง'; // Change button text to 'Show'
+   } else {
+      showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
+  }
+
+  // Add event listener for button click
+  showHideButton.addEventListener('click', function () {
+      // Toggle the collapsed state
+      mainContent.classList.toggle('collapsed');
+
+      // Update localStorage with the new state
+      const isCollapsed = mainContent.classList.contains('collapsed');
+      localStorage.setItem('containerCollapsed', isCollapsed);
+
+      // Change the button text based on the new state
+      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ย่อ';
+
+      // Call checkonmap() if the state is expanded (not collapsed)
+      if (!isCollapsed) {
+          checkonmap();
+      }
+  });
+});
