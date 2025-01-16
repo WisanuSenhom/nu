@@ -776,7 +776,7 @@ document.addEventListener('DOMContentLoaded', function () {
       mainContent.classList.add('collapsed');
       showHideButton.textContent = 'แสดง'; // Change button text to 'Show'
   } else {
-      showHideButton.textContent = 'ซ่อน'; // Change button text to 'Hide'
+      showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
   }
 
   // Add event listener for button click
@@ -789,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function () {
       localStorage.setItem('containerCollapsed', isCollapsed);
 
       // Change the button text based on the new state
-      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ซ่อน';
+      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ย่อ';
   });
 });
 
