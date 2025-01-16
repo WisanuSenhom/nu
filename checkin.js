@@ -288,15 +288,30 @@ function displayLatLon(lat, lon) {
   document.getElementById("llon").value = lon;
 }
 
+
+// in-out
 async function checkin() {
-  let latitude = document.querySelector("#llat").value;
-  let longitude = document.querySelector("#llon").value;
+  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+  let latitude, longitude;
+
+  if (isCollapsed) {
+    try {
+      const location = await getLocation();
+      latitude = location.latitude;
+      longitude = location.longitude;
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  } else {
+    latitude = document.querySelector("#llat").value;
+    longitude = document.querySelector("#llon").value;
+  }
 
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      text: "กรูณาลองใหม่อีกครั้ง",
+      text: "กรุณาลองใหม่อีกครั้ง",
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -305,7 +320,7 @@ async function checkin() {
         confirmButton: "btn btn-warning",
       },
     });
-    return; // ออกจากฟังก์ชันหากไม่มีค่าที่จำเป็น
+    return; // Exit the function if required values are missing
   }
 
   Swal.fire({
@@ -334,14 +349,27 @@ async function checkin() {
 }
 
 async function checkout() {
-  let latitude = document.querySelector("#llat").value;
-  let longitude = document.querySelector("#llon").value;
+  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+  let latitude, longitude;
+
+  if (isCollapsed) {
+    try {
+      const location = await getLocation();
+      latitude = location.latitude;
+      longitude = location.longitude;
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  } else {
+    latitude = document.querySelector("#llat").value;
+    longitude = document.querySelector("#llon").value;
+  }
 
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      text: "กรูณาลองใหม่อีกครั้ง",
+      text: "กรุณาลองใหม่อีกครั้ง",
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -377,6 +405,9 @@ async function checkout() {
     },
   });
 }
+
+
+
 
 async function generateSecureCode() {
   const date = new Date();
