@@ -291,16 +291,28 @@ function displayLatLon(lat, lon) {
 
 // in-out
 async function checkin() {
-  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+  const isCollapsed = localStorage.getItem("containerCollapsed") === "true";
   let latitude, longitude;
 
   if (isCollapsed) {
+    Swal.fire({
+      title: "กำลังรับค่าพิกัด",
+      html: "กรุณารอสักครู่...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       const location = await getLocation();
       latitude = location.latitude;
       longitude = location.longitude;
+
+      // ปิด Swal เมื่อได้ค่าพิกัด
+      Swal.close();
     } catch (error) {
-      console.error("Error fetching location:", error);
+      return; // Exit the function if error occurs
     }
   } else {
     latitude = document.querySelector("#llat").value;
@@ -330,35 +342,44 @@ async function checkin() {
     confirmButtonText: "ยืนยัน",
     cancelButtonText: "ยกเลิก",
     allowOutsideClick: false,
-    // confirmButtonColor: "#008000",
     cancelButtonColor: "#6F7378",
     customClass: {
       title: "text-success",
       content: "text-muted",
       confirmButton: "btn btn-success",
-      // cancelButton: "btn btn-danger"
     },
     didOpen: async () => {
-      // Handle confirmation click to process check-in
       Swal.getConfirmButton().addEventListener("click", async () => {
-        // Send latitude and longitude to process the check-in
         await processCheckinOrCheckout("In", latitude, longitude);
       });
     },
   });
 }
 
+
 async function checkout() {
   const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
   let latitude, longitude;
 
   if (isCollapsed) {
+    Swal.fire({
+      title: "กำลังรับค่าพิกัด",
+      html: "กรุณารอสักครู่...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
     try {
       const location = await getLocation();
       latitude = location.latitude;
       longitude = location.longitude;
+
+      // ปิด Swal เมื่อได้ค่าพิกัด
+      Swal.close();
     } catch (error) {
-      console.error("Error fetching location:", error);
+     return; // Exit the function if error occurs
     }
   } else {
     latitude = document.querySelector("#llat").value;
