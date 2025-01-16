@@ -809,7 +809,7 @@ function alertUpdate() {
       <ol style="padding-left: 20px; line-height: 1.8;">
         <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
         <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
-        <li>สามารถซ่อนหรือแสดงส่วนแสดงแผนที่ได้</li>
+        <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
       </ol>
     </div>`,
       input: 'checkbox', // ตัวเลือกแสดง checkbox
