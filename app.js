@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Update user information
     // Swal.close();
-    alertUpdate();
+  //  alertUpdate();
     updateUser(uuid);
   
   });  
@@ -766,42 +766,42 @@ applyBackgroundImage();
 
 
 
-function alertUpdate() {
-  // ตรวจสอบค่าใน local storage
-  const logUpdate = localStorage.getItem('logUpdate');
-  console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
+// function alertUpdate() {
+//   // ตรวจสอบค่าใน local storage
+//   const logUpdate = localStorage.getItem('logUpdate');
+//   console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
 
-  // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
-  if (logUpdate !== '1' || !logUpdate) {
-    console.log('ข้อมูลยังไม่ได้รับการอัปเดต'); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
+//   // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
+//   if (logUpdate !== '1' || !logUpdate) {
+//     console.log('ข้อมูลยังไม่ได้รับการอัปเดต'); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
 
-    // แสดง Swal.fire
-    Swal.fire({
-      title: 'แจ้งเตือนการปรับปรุง',
-      html: `<div style="text-align: left;">
-      <ol style="padding-left: 20px; line-height: 1.8;">
-        <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
-        <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
-        <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
-      </ol>
-    </div>
+//     // แสดง Swal.fire
+//     Swal.fire({
+//       title: 'แจ้งเตือนการปรับปรุง',
+//       html: `<div style="text-align: left;">
+//       <ol style="padding-left: 20px; line-height: 1.8;">
+//         <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
+//         <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
+//         <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
+//       </ol>
+//     </div>
     
-    `,
-      input: 'checkbox', // ตัวเลือกแสดง checkbox
-      inputPlaceholder: 'ไม่ต้องแสดงอีก', // ข้อความใน input
-      confirmButtonText: 'รับทราบ',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
-        if (result.value) {
-          // ถ้าเลือกไม่ให้แสดงอีก
-          localStorage.setItem('logUpdate', '1');
-          console.log('logUpdate set to 1'); // ตรวจสอบว่าได้ตั้งค่าแล้ว
-        }
-      }
-    });
-  }
-}
+//     `,
+//       input: 'checkbox', // ตัวเลือกแสดง checkbox
+//       inputPlaceholder: 'ไม่ต้องแสดงอีก', // ข้อความใน input
+//       confirmButtonText: 'รับทราบ',
+//     }).then((result) => {
+//       if (result.isConfirmed) {
+//         // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
+//         if (result.value) {
+//           // ถ้าเลือกไม่ให้แสดงอีก
+//           localStorage.setItem('logUpdate', '1');
+//           console.log('logUpdate set to 1'); // ตรวจสอบว่าได้ตั้งค่าแล้ว
+//         }
+//       }
+//     });
+//   }
+// }
 
 
 // function calculateLocalStorageSize(key) {
