@@ -792,6 +792,8 @@ document.addEventListener('DOMContentLoaded', function () {
       // Call checkonmap() if the state is expanded (not collapsed)
       if (!isCollapsed) {
           checkonmap();
+      }else{
+        map.remove(); // Remove the old map
       }
   });
 });
