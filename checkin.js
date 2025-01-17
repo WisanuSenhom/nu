@@ -17,21 +17,21 @@ async function getLocation() {
     });
 
     // เมื่อถึง 30 วินาทีให้แสดงข้อความและรีโหลดหน้าเว็บ
-    if (elapsedTime >= 15){
+    if (elapsedTime >= 5){
       Loading.update({
-        title: `(${elapsedTime}s.) โปรดรอสักครู่<br>กำลังเตรียมความพร้อม...`
+        title: `(${elapsedTime}s.) กำลังรับค่าพิกัด...`
       });
-    }else  if (elapsedTime >= 25){
+    }else  if (elapsedTime >= 15){
       Loading.update({
-        title: `(${elapsedTime}s.) ขออภัยในความไม่สะดวก<br>กำลังเตรียมความพร้อม...`
+        title: `(${elapsedTime}s.) อยู่ระหว่างรับค่าพิกัด...`
       });
     }else if (elapsedTime >= 30) {
       Loading.update({
-        title: `กำลังรีโหลดหน้าเว็บ...`
+        title: `ขออภัยในความไม่สะดวก<br>ระบบจะทำการโหลดหน้าเว็บใหม่...`
       });
       setTimeout(() => {
         location.reload(); // รีโหลดหน้าเว็บหลังจากแสดงข้อความ
-      }, 3000); // 1 วินาทีหลังจากแสดงข้อความ
+      }, 2000); // 1 วินาทีหลังจากแสดงข้อความ
     }
   }
 
