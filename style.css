@@ -351,7 +351,7 @@ body.menu-open {
 
 /* Add a collapsed class to hide the container */
 .container.collapsed {
-  max-height: 65px;
+  max-height: 68px;
   padding-bottom: 0;
   opacity: 0.75; /* Adjust transparency */
   position: absolute; /* Position it relative to the nearest positioned ancestor */
@@ -609,8 +609,8 @@ button {
 
 
 .swal2-confirm {
-  background-color: #4CAF50; /* Set the background color */
-  color: white; /* Set the text color */
+  background-color: var(--button-bg) ; /* Set the background color */
+  color: var(--text-color) ; /* Set the text color */
   font-size: 16px; /* Set the font size */
   padding: 10px 20px; /* Adjust padding */
   border-radius: 5px; /* Round the corners */
@@ -622,10 +622,13 @@ button {
 .swal2-popup label {
   font-size: 16px;
   font-family: Arial, sans-serif;
-  color: #333;
+  color: var(--text-color) !important;
 }
 
 label.swal2-checkbox {
-  background: transparent;
-  color: inherit;
+  background: transparent !important;
+}
+
+.swal2-toast {
+  background: var(--nav-bg) !important;
 }
