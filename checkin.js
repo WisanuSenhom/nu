@@ -749,7 +749,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!isCollapsed) {
           checkonmap();
       }else{
-        map.remove(); // Remove the old map
+        // map.remove(); // Remove the old map
       }
   });
 });
