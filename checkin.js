@@ -1,22 +1,88 @@
 let map;
 // ฟังก์ชันที่ใช้ในการดึงตำแหน่งจาก Geolocation API
 async function getLocation() {
+  const startTime = Date.now();
+  const Loading = Swal.mixin({
+    toast: true,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  function updateElapsedTime() {
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    Loading.update({
+      title: `(${elapsedTime}s.) กำลังเตรียมความพร้อม...`,
+    });
+
+    // เมื่อถึง 30 วินาทีให้แสดงข้อความและรีโหลดหน้าเว็บ
+    if (elapsedTime >= 15){
+      Loading.update({
+        title: `(${elapsedTime}s.) โปรดรอสักครู่<br>กำลังเตรียมความพร้อม...`
+      });
+    }else  if (elapsedTime >= 25){
+      Loading.update({
+        title: `(${elapsedTime}s.) ขออภัยในความไม่สะดวก<br>กำลังเตรียมความพร้อม...`
+      });
+    }else if (elapsedTime >= 30) {
+      Loading.update({
+        title: `กำลังรีโหลดหน้าเว็บ...`
+      });
+      setTimeout(() => {
+        location.reload(); // รีโหลดหน้าเว็บหลังจากแสดงข้อความ
+      }, 3000); // 1 วินาทีหลังจากแสดงข้อความ
+    }
+  }
+
+  Loading.fire({
+    title: "กำลังเตรียมความพร้อม...",
+  });
+
+  const interval = setInterval(updateElapsedTime, 1000);
+
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          clearInterval(interval); // หยุดการอัพเดทเวลา
+          const Toast = Swal.mixin({
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "success",
+            title: "พร้อม..."
+          });
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
         },
-        (error) => showError(error)
+        (error) => {
+          clearInterval(interval); // หยุดการอัพเดทเวลา
+          reject(error);
+          showError(error);
+        }
       );
     } else {
+      clearInterval(interval); // หยุดการอัพเดทเวลา
+      Swal.fire({
+        icon: "error",
+        title: "ไม่รองรับ Geolocation",
+        text: "เบราว์เซอร์ของคุณไม่รองรับการใช้งาน Geolocation",
+      });
       reject(new Error("Geolocation is not supported by this browser."));
     }
   });
 }
+
 
 // ฟังก์ชันแสดงข้อผิดพลาด
 function showError(error) {
@@ -264,13 +330,15 @@ async function checkonmap() {
     const officer = localStorage.getItem("office") || "หน่วยงาน";
 
     // เรียกฟังก์ชัน initializeMap
-    initializeMap(lat, lon, destinationLat, destinationLon, officer);
     displayLatLon(lat, lon);
+    initializeMap(lat, lon, destinationLat, destinationLon, officer);    
   } catch (error) {
     console.error("Error displaying map: ", error);
     mapContainer.innerHTML = `<p style="text-align: center; color: red;">ไม่สามารถโหลดแผนที่ได้: ${error.message}</p>`;
   }
 }
+
+checkonmap();
 
 function refreshMap() {
   const mainContent = document.getElementById('mainContent');
@@ -298,15 +366,6 @@ function refreshMap() {
   }
 }
 
-// เรียกฟังก์ชัน checkonmap ครั้งแรก
-function startCheckmap() {
-  const isCollapsed = localStorage.getItem("containerCollapsed") === "false";
-  if (isCollapsed) {
-    checkonmap();
-  }
-}
-startCheckmap();
-
 
 function displayLatLon(lat, lon) {
   // Set the values to the hidden input fields
@@ -317,59 +376,8 @@ function displayLatLon(lat, lon) {
 
 // in-out
 async function checkin() {
-  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
-  let latitude, longitude;
-
-  if (isCollapsed) {
-    Swal.fire({
-      title: "กำลังรับค่าพิกัด",
-      html: "กรุณารอสักครู่...",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    let timeoutReached = false;
-
-    // ตั้ง timeout 10 วินาที
-    const timeout = setTimeout(() => {
-      timeoutReached = true;
-      Swal.fire({
-        icon: "error",
-        title: "ไม่สามารถรับค่าพิกัดได้",
-        text: "กรุณาลองใหม่อีกครั้ง",
-        showCancelButton: true,
-        confirmButtonText: "ลองใหม่",
-        cancelButtonText: "ยกเลิก",
-        allowOutsideClick: false,
-        customClass: {
-          confirmButton: "btn btn-primary",
-          cancelButton: "btn btn-secondary",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          checkin(); // เรียกฟังก์ชันใหม่เมื่อเลือก "ลองใหม่"
-        }
-      });
-    }, 10000);
-
-    try {
-      const location = await getLocation();
-      if (timeoutReached) return; // ถ้าหมดเวลาระหว่างได้พิกัด ให้ยกเลิกการทำงาน
-      clearTimeout(timeout); // ยกเลิก timeout ถ้าได้พิกัดสำเร็จ
-      latitude = location.latitude;
-      longitude = location.longitude;
-
-      Swal.close();
-    } catch (error) {
-      clearTimeout(timeout); // ยกเลิก timeout ในกรณีเกิดข้อผิดพลาด
-      return; // ออกจากฟังก์ชันหากเกิดข้อผิดพลาด
-    }
-  } else {
-    latitude = document.querySelector("#llat").value;
-    longitude = document.querySelector("#llon").value;
-  }
+  let  latitude = document.querySelector("#llat").value;
+  let  longitude = document.querySelector("#llon").value;
 
   if (!latitude || !longitude) {
     Swal.fire({
@@ -410,60 +418,9 @@ async function checkin() {
 
 
 async function checkout() {
-  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
-  let latitude, longitude;
-
-  if (isCollapsed) {
-    Swal.fire({
-      title: "กำลังรับค่าพิกัด",
-      html: "กรุณารอสักครู่...",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    let timeoutReached = false;
-
-    // ตั้ง timeout 10 วินาที
-    const timeout = setTimeout(() => {
-      timeoutReached = true;
-      Swal.fire({
-        icon: "error",
-        title: "ไม่สามารถรับค่าพิกัดได้",
-        text: "กรุณาลองใหม่อีกครั้ง",
-        showCancelButton: true,
-        confirmButtonText: "ลองใหม่",
-        cancelButtonText: "ยกเลิก",
-        allowOutsideClick: false,
-        customClass: {
-          confirmButton: "btn btn-primary",
-          cancelButton: "btn btn-secondary",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          checkout(); // เรียกฟังก์ชันใหม่เมื่อเลือก "ลองใหม่"
-        }
-      });
-    }, 10000);
-
-    try {
-      const location = await getLocation();
-      if (timeoutReached) return; // ถ้าหมดเวลาระหว่างได้พิกัด ให้ยกเลิกการทำงาน
-      clearTimeout(timeout); // ยกเลิก timeout ถ้าได้พิกัดสำเร็จ
-      latitude = location.latitude;
-      longitude = location.longitude;
-
-      Swal.close();
-    } catch (error) {
-      clearTimeout(timeout); // ยกเลิก timeout ในกรณีเกิดข้อผิดพลาด
-      return; // ออกจากฟังก์ชันหากเกิดข้อผิดพลาด
-    }
-  } else {
-    latitude = document.querySelector("#llat").value;
-    longitude = document.querySelector("#llon").value;
-  }
-
+let  latitude = document.querySelector("#llat").value;
+let  longitude = document.querySelector("#llon").value;
+  
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
@@ -500,7 +457,6 @@ async function checkout() {
     },
   });
 }
-
 
 
 
