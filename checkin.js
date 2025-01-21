@@ -1,5 +1,4 @@
 let map;
-// ฟังก์ชันที่ใช้ในการดึงตำแหน่งจาก Geolocation API
 async function getLocation() {
   const startTime = Date.now();
   const Loading = Swal.mixin({
@@ -12,127 +11,90 @@ async function getLocation() {
 
   function updateElapsedTime() {
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-    Loading.update({
-      title: `(${elapsedTime}s.) กำลังเตรียมความพร้อม...`,
-    });
+    let title = `(${elapsedTime}s.) กำลังเตรียมความพร้อม...`;
 
-    // เมื่อถึง 30 วินาทีให้แสดงข้อความและรีโหลดหน้าเว็บ
-    if (elapsedTime >= 5){
-      Loading.update({
-        title: `(${elapsedTime}s.) กำลังรับค่าพิกัด...`
-      });
-    }else  if (elapsedTime >= 15){
-      Loading.update({
-        title: `(${elapsedTime}s.) อยู่ระหว่างรับค่าพิกัด...`
-      });
-    }else if (elapsedTime >= 30) {
-      Loading.update({
-        title: `ขออภัยในความไม่สะดวก<br>ระบบจะทำการโหลดหน้าเว็บใหม่...`
-      });
-      setTimeout(() => {
-        location.reload(); // รีโหลดหน้าเว็บหลังจากแสดงข้อความ
-      }, 2000); // 1 วินาทีหลังจากแสดงข้อความ
+    if (elapsedTime >= 30) {
+      title = `ขออภัยในความไม่สะดวก<br>ระบบจะทำการโหลดหน้าเว็บใหม่...`;
+      setTimeout(() => location.reload(), 2000);
+    } else if (elapsedTime >= 15) {
+      title = `(${elapsedTime}s.) อยู่ระหว่างรับค่าพิกัด...`;
+    } else if (elapsedTime >= 5) {
+      title = `(${elapsedTime}s.) กำลังรับค่าพิกัด...`;
     }
+
+    Loading.update({ title });
   }
 
-  Loading.fire({
-    title: "กำลังเตรียมความพร้อม...",
-  });
-
+  Loading.fire({ title: "กำลังเตรียมความพร้อม..." });
   const interval = setInterval(updateElapsedTime, 1000);
 
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          clearInterval(interval); // หยุดการอัพเดทเวลา
+          clearInterval(interval); // Stop timer
           const Toast = Swal.mixin({
             toast: true,
             showConfirmButton: false,
-            timer: 3000,
+            timer: 2500,
             timerProgressBar: true,
             didOpen: (toast) => {
               toast.onmouseenter = Swal.stopTimer;
               toast.onmouseleave = Swal.resumeTimer;
-            }
+            },
           });
-          Toast.fire({
-            icon: "success",
-            title: "พร้อม..."
-          });
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
+          Toast.fire({ icon: "success", title: "พร้อม..." });
+          resolve({ latitude: position.coords.latitude, longitude: position.coords.longitude });
         },
         (error) => {
-          clearInterval(interval); // หยุดการอัพเดทเวลา
+          clearInterval(interval);
           reject(error);
           showError(error);
         }
       );
     } else {
-      clearInterval(interval); // หยุดการอัพเดทเวลา
+      clearInterval(interval);
       Swal.fire({
         icon: "error",
         title: "ไม่รองรับ Geolocation",
-        text: "เบราว์เซอร์ของคุณไม่รองรับการใช้งาน Geolocation",
+        text: "เบราว์เซอร์ของคุณไม่รองรับการใช้งาน Geolocation กรุณาอัปเดตเบราว์เซอร์หรือใช้อุปกรณ์อื่น",
+        footer: '<a href="https://www.google.com/chrome/" target="_blank">คลิกที่นี่เพื่อดาวน์โหลด Chrome</a>',
       });
       reject(new Error("Geolocation is not supported by this browser."));
     }
   });
 }
 
-
-// ฟังก์ชันแสดงข้อผิดพลาด
 function showError(error) {
+  let title = "เกิดข้อผิดพลาด";
+  let text = "ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
+  let footer = "";
+
   switch (error.code) {
     case error.PERMISSION_DENIED:
-      Swal.fire({
-        icon: "error",
-        title: "การขออนุญาตถูกปฏิเสธ",
-        text: "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.reload(); // Refresh the page if the user clicks OK
-        }
-      });
+      title = "การขออนุญาตถูกปฏิเสธ";
+      text = "กรุณาเปิดการอนุญาตในเบราว์เซอร์เพื่อให้สามารถเข้าถึงตำแหน่งได้";
+      footer = '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
     case error.POSITION_UNAVAILABLE:
-      Swal.fire({
-        icon: "error",
-        title: "ไม่สามารถเข้าถึงข้อมูลตำแหน่งได้",
-        text: "ขออภัย, ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้งในภายหลัง",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.reload(); // Refresh the page if the user clicks OK
-        }
-      });
+      title = "ไม่สามารถเข้าถึงข้อมูลตำแหน่ง";
+      text = "ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้ง";
       break;
     case error.TIMEOUT:
-      Swal.fire({
-        icon: "error",
-        title: "หมดเวลาในการขอข้อมูล",
-        text: "การร้องขอค่าพิกัดใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.reload(); // Refresh the page if the user clicks OK
-        }
-      });
+      title = "หมดเวลาในการขอข้อมูล";
+      text = "การร้องขอใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง";
       break;
     case error.UNKNOWN_ERROR:
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาดที่ไม่คาดคิด",
-        text: "เกิดข้อผิดพลาดบางอย่างที่เราไม่สามารถระบุได้ ขอโทษในความไม่สะดวก กรุณาลองใหม่อีกครั้ง",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          location.reload(); // Refresh the page if the user clicks OK
-        }
-      });
+      title = "เกิดข้อผิดพลาดที่ไม่คาดคิด";
+      text = "ไม่สามารถระบุข้อผิดพลาดได้ ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
       break;
   }
+
+  Swal.fire({ icon: "error", title, text, footer }).then((result) => {
+    if (result.isConfirmed) location.reload();
+  });
 }
+
 
 async function initializeMap(
   lat,
@@ -314,7 +276,7 @@ async function checkonmap() {
 
   // แสดงข้อความโหลด
   const loadingText = document.createElement("p");
-  loadingText.textContent = "กำลังโหลดแผนที่...";
+  loadingText.textContent = "กำลังโหลดแผนที่...หากแสดงแผนที่กดปุ่ม แผนที่ ";
   loadingText.style.textAlign = "center";
   loadingText.style.color = "blue"; // Set text color here
   mapContainer.appendChild(loadingText);
@@ -343,28 +305,32 @@ checkonmap();
 function refreshMap() {
   const mainContent = document.getElementById('mainContent');
   const showHideButton = document.getElementById('showHide');
-  
+
   // Check if mainContent is collapsed
   const isCollapsed = mainContent.classList.contains('collapsed');
 
-  // If collapsed, show the content and change button text
   if (isCollapsed) {
+    // If collapsed, show the content and change button text
     mainContent.classList.remove('collapsed'); // Show the content
     showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
-    
+
     // Update localStorage with the new state
     localStorage.setItem('containerCollapsed', 'false');
-    
+
     // Call checkonmap() to reload the map if shown
+    if (map) {
+      map.remove(); // Properly remove the existing map instance
+    }
     checkonmap();
   } else {
-    // If not collapsed, just refresh the map
+    // If not collapsed, refresh the map properly
     if (map) {
       map.remove(); // Remove the old map
     }
-    checkonmap(); // Reload the map
+    checkonmap(); // Reinitialize the map
   }
 }
+
 
 
 function displayLatLon(lat, lon) {
@@ -749,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // if (!isCollapsed) {
       //     checkonmap();
       // }else{
-        // map.remove(); // Remove the old map
-      }
+      //   map.remove(); // Remove the old map
+      // }
   });
 });
