@@ -746,9 +746,9 @@ document.addEventListener('DOMContentLoaded', function () {
       showHideButton.textContent = isCollapsed ? 'แสดง' : 'ย่อ';
 
       // Call checkonmap() if the state is expanded (not collapsed)
-      if (!isCollapsed) {
-          checkonmap();
-      }else{
+      // if (!isCollapsed) {
+      //     checkonmap();
+      // }else{
         // map.remove(); // Remove the old map
       }
   });
