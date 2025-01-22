@@ -607,6 +607,12 @@ button {
   opacity: .82; 
 }
 
+.swal2-confirm {
+	  background-color: #2E712A ; 
+/*   background-color: var(--button-bg) ;  */
+/*   color: var(--text-color) ;  */
+}
+
 .swal2-popup label {
   font-size: 16px;
   font-family: Arial, sans-serif;
