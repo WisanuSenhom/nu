@@ -44,11 +44,16 @@ async function getLocation() {
             },
           });
           Toast.fire({ icon: "success", title: "พร้อม..." });
-          resolve({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          alertUpdate();
         },
         (error) => {
           clearInterval(interval);
           reject(error);
+          alertUpdate();
           showError(error);
         }
       );
@@ -58,7 +63,8 @@ async function getLocation() {
         icon: "error",
         title: "ไม่รองรับ Geolocation",
         text: "เบราว์เซอร์ของคุณไม่รองรับการใช้งาน Geolocation กรุณาอัปเดตเบราว์เซอร์หรือใช้อุปกรณ์อื่น",
-        footer: '<a href="https://www.google.com/chrome/" target="_blank">คลิกที่นี่เพื่อดาวน์โหลด Chrome</a>',
+        footer:
+          '<a href="https://www.google.com/chrome/" target="_blank">คลิกที่นี่เพื่อดาวน์โหลด Chrome</a>',
       });
       reject(new Error("Geolocation is not supported by this browser."));
     }
@@ -74,7 +80,8 @@ function showError(error) {
     case error.PERMISSION_DENIED:
       title = "การขออนุญาตถูกปฏิเสธ";
       text = "กรุณาเปิดการอนุญาตในเบราว์เซอร์เพื่อให้สามารถเข้าถึงตำแหน่งได้";
-      footer = '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
+      footer =
+        '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
     case error.POSITION_UNAVAILABLE:
       title = "ไม่สามารถเข้าถึงข้อมูลตำแหน่ง";
@@ -86,7 +93,8 @@ function showError(error) {
       break;
     case error.UNKNOWN_ERROR:
       title = "เกิดข้อผิดพลาดที่ไม่คาดคิด";
-      text = "ไม่สามารถระบุข้อผิดพลาดได้ ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
+      text =
+        "ไม่สามารถระบุข้อผิดพลาดได้ ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
       break;
   }
 
@@ -94,7 +102,6 @@ function showError(error) {
     if (result.isConfirmed) location.reload();
   });
 }
-
 
 async function initializeMap(
   lat,
@@ -107,10 +114,9 @@ async function initializeMap(
   map = L.map("map").setView([lat, lon], 13);
 
   // เพิ่มแผนที่พื้นฐาน (OpenStreetMap)
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: ''
-}).addTo(map);
-
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "",
+  }).addTo(map);
 
   const userLatLng = L.latLng(lat, lon);
   const destinationLatLng = L.latLng(destinationLat, destinationLon);
@@ -276,11 +282,10 @@ async function checkonmap() {
 
   // แสดงข้อความโหลด
   const loadingText = document.createElement("p");
-  loadingText.textContent = "กำลังโหลดแผนที่... ";
+  loadingText.textContent = "กำลังโหลดแผนที่...หากแสดงแผนที่กดปุ่ม แผนที่ ";
   loadingText.style.textAlign = "center";
   loadingText.style.color = "blue"; // Set text color here
   mapContainer.appendChild(loadingText);
-  
 
   try {
     const location = await getLocation();
@@ -293,7 +298,7 @@ async function checkonmap() {
 
     // เรียกฟังก์ชัน initializeMap
     displayLatLon(lat, lon);
-    initializeMap(lat, lon, destinationLat, destinationLon, officer);    
+    initializeMap(lat, lon, destinationLat, destinationLon, officer);
   } catch (error) {
     console.error("Error displaying map: ", error);
     mapContainer.innerHTML = `<p style="text-align: center; color: red;">ไม่สามารถโหลดแผนที่ได้: ${error.message}</p>`;
@@ -303,19 +308,19 @@ async function checkonmap() {
 checkonmap();
 
 function refreshMap() {
-  const mainContent = document.getElementById('mainContent');
-  const showHideButton = document.getElementById('showHide');
+  const mainContent = document.getElementById("mainContent");
+  const showHideButton = document.getElementById("showHide");
 
   // Check if mainContent is collapsed
-  const isCollapsed = mainContent.classList.contains('collapsed');
+  const isCollapsed = mainContent.classList.contains("collapsed");
 
   if (isCollapsed) {
     // If collapsed, show the content and change button text
-    mainContent.classList.remove('collapsed'); // Show the content
-    showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
+    mainContent.classList.remove("collapsed"); // Show the content
+    showHideButton.textContent = "ย่อ"; // Change button text to 'Hide'
 
     // Update localStorage with the new state
-    localStorage.setItem('containerCollapsed', 'false');
+    localStorage.setItem("containerCollapsed", "false");
 
     // Call checkonmap() to reload the map if shown
     if (map) {
@@ -331,19 +336,16 @@ function refreshMap() {
   }
 }
 
-
-
 function displayLatLon(lat, lon) {
   // Set the values to the hidden input fields
   document.getElementById("llat").value = lat;
   document.getElementById("llon").value = lon;
 }
 
-
 // in-out
 async function checkin() {
-  let  latitude = document.querySelector("#llat").value;
-  let  longitude = document.querySelector("#llon").value;
+  let latitude = document.querySelector("#llat").value;
+  let longitude = document.querySelector("#llon").value;
 
   if (!latitude || !longitude) {
     Swal.fire({
@@ -382,11 +384,10 @@ async function checkin() {
   });
 }
 
-
 async function checkout() {
-let  latitude = document.querySelector("#llat").value;
-let  longitude = document.querySelector("#llon").value;
-  
+  let latitude = document.querySelector("#llat").value;
+  let longitude = document.querySelector("#llon").value;
+
   if (!latitude || !longitude) {
     Swal.fire({
       icon: "warning",
@@ -423,9 +424,6 @@ let  longitude = document.querySelector("#llon").value;
     },
   });
 }
-
-
-
 
 async function generateSecureCode() {
   const date = new Date();
@@ -478,10 +476,8 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
     let typea = document.querySelector("#typea").value;
     let nte = document.querySelector("#otherDetails").value;
 
-    if (typea === 'อื่นๆ' && !nte){
-      throw new Error(
-        "อื่นๆ โปรดระบุ"
-      );
+    if (typea === "อื่นๆ" && !nte) {
+      throw new Error("อื่นๆ โปรดระบุ");
     }
 
     let todays = new Date();
@@ -682,40 +678,76 @@ function checkinfo() {
   }
 }
 
-
 // Check localStorage for the saved state and apply it
-document.addEventListener('DOMContentLoaded', function () {
-  const mainContent = document.getElementById('mainContent');
-  const showHideButton = document.getElementById('showHide');
+document.addEventListener("DOMContentLoaded", function () {
+  const mainContent = document.getElementById("mainContent");
+  const showHideButton = document.getElementById("showHide");
 
   // Retrieve the stored state from localStorage
-  const isCollapsed = localStorage.getItem('containerCollapsed') === 'true';
+  const isCollapsed = localStorage.getItem("containerCollapsed") === "true";
 
   // Apply the collapsed state to the container
   if (isCollapsed) {
-      mainContent.classList.add('collapsed');
-      showHideButton.textContent = 'แสดง'; // Change button text to 'Show'
-   } else {
-      showHideButton.textContent = 'ย่อ'; // Change button text to 'Hide'
+    mainContent.classList.add("collapsed");
+    showHideButton.textContent = "แสดง"; // Change button text to 'Show'
+  } else {
+    showHideButton.textContent = "ย่อ"; // Change button text to 'Hide'
   }
 
   // Add event listener for button click
-  showHideButton.addEventListener('click', function () {
-      // Toggle the collapsed state
-      mainContent.classList.toggle('collapsed');
+  showHideButton.addEventListener("click", function () {
+    // Toggle the collapsed state
+    mainContent.classList.toggle("collapsed");
 
-      // Update localStorage with the new state
-      const isCollapsed = mainContent.classList.contains('collapsed');
-      localStorage.setItem('containerCollapsed', isCollapsed);
+    // Update localStorage with the new state
+    const isCollapsed = mainContent.classList.contains("collapsed");
+    localStorage.setItem("containerCollapsed", isCollapsed);
 
-      // Change the button text based on the new state
-      showHideButton.textContent = isCollapsed ? 'แสดง' : 'ย่อ';
+    // Change the button text based on the new state
+    showHideButton.textContent = isCollapsed ? "แสดง" : "ย่อ";
 
-      // Call checkonmap() if the state is expanded (not collapsed)
-      // if (!isCollapsed) {
-      //     checkonmap();
-      // }else{
-      //   map.remove(); // Remove the old map
-      // }
+    // Call checkonmap() if the state is expanded (not collapsed)
+    // if (!isCollapsed) {
+    //     checkonmap();
+    // }else{
+    //   map.remove(); // Remove the old map
+    // }
   });
 });
+
+function alertUpdate() {
+  // ตรวจสอบค่าใน local storage
+  const logUpdate = localStorage.getItem("logUpdate");
+  console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
+
+  // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
+  if (logUpdate !== "1" || !logUpdate) {
+    console.log("ข้อมูลยังไม่ได้รับการอัปเดต"); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
+
+    // แสดง Swal.fire
+    Swal.fire({
+      title: "แจ้งเตือนการปรับปรุง",
+      html: `<div style="text-align: left;">
+      <ol style="padding-left: 20px; line-height: 1.8;">
+        <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
+        <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
+        <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
+      </ol>
+    </div>
+    
+    `,
+      input: "checkbox", // ตัวเลือกแสดง checkbox
+      inputPlaceholder: "ไม่ต้องแสดงอีก", // ข้อความใน input
+      confirmButtonText: "รับทราบ",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
+        if (result.value) {
+          // ถ้าเลือกไม่ให้แสดงอีก
+          localStorage.setItem("logUpdate", "1");
+          console.log("logUpdate set to 1"); // ตรวจสอบว่าได้ตั้งค่าแล้ว
+        }
+      }
+    });
+  }
+}
