@@ -47,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Update user information
     // Swal.close();
-  //  alertUpdate();
     updateUser(uuid);
   
   });  
@@ -650,7 +649,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-      // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
+   // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
 function applyBackgroundImage() {
   const storedImage = localStorage.getItem("backgroundImage");
   if (storedImage) {
@@ -765,45 +764,7 @@ applyBackgroundImage();
 
 
 
-
-// function alertUpdate() {
-//   // ตรวจสอบค่าใน local storage
-//   const logUpdate = localStorage.getItem('logUpdate');
-//   console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
-
-//   // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
-//   if (logUpdate !== '1' || !logUpdate) {
-//     console.log('ข้อมูลยังไม่ได้รับการอัปเดต'); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
-
-//     // แสดง Swal.fire
-//     Swal.fire({
-//       title: 'แจ้งเตือนการปรับปรุง',
-//       html: `<div style="text-align: left;">
-//       <ol style="padding-left: 20px; line-height: 1.8;">
-//         <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
-//         <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
-//         <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
-//       </ol>
-//     </div>
-    
-//     `,
-//       input: 'checkbox', // ตัวเลือกแสดง checkbox
-//       inputPlaceholder: 'ไม่ต้องแสดงอีก', // ข้อความใน input
-//       confirmButtonText: 'รับทราบ',
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
-//         if (result.value) {
-//           // ถ้าเลือกไม่ให้แสดงอีก
-//           localStorage.setItem('logUpdate', '1');
-//           console.log('logUpdate set to 1'); // ตรวจสอบว่าได้ตั้งค่าแล้ว
-//         }
-//       }
-//     });
-//   }
-// }
-
-
+// ตรวจสอบขนาดไฟล์
 // function calculateLocalStorageSize(key) {
 //   const storedData = localStorage.getItem(key);
 //   if (storedData) {
@@ -816,3 +777,84 @@ applyBackgroundImage();
 
 // // ใช้งานฟังก์ชัน
 // calculateLocalStorageSize("backgroundImage");
+
+const menuToggle = document.getElementById("menu-toggle");
+    const themeToggle = document.getElementById("theme-toggle");
+    const menu = document.getElementById("menu");
+    const body = document.body;
+
+    // Apply theme from localStorage on page load
+    const savedTheme = localStorage.getItem("theme") || "light";
+    applyTheme(savedTheme);
+
+    // Menu Toggle
+    menuToggle.addEventListener("click", () => {
+      menu.classList.toggle("show");
+      document.body.classList.toggle('menu-open');
+
+      // Toggle the icon between hamburger and "X"
+      const icon = menuToggle.querySelector("i");
+      icon.classList.toggle("fa-bars");
+      icon.classList.toggle("fa-x");
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      // Check if the click is outside the menu or the menu toggle button
+      if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+        menu.classList.remove("show");
+        document.body.classList.remove('menu-open');
+
+        // Reset the icon to hamburger
+        const icon = menuToggle.querySelector("i");
+        icon.classList.add("fa-bars");
+        icon.classList.remove("fa-x");
+      }
+    });
+
+// Theme Toggle
+// รายการธีมที่รองรับ
+const themes = ["light", "dark", "yellow", "green", "pink", "blue", "purple", "gray", "red"];
+let currentThemeIndex = themes.indexOf(localStorage.getItem("theme")) || 0;
+
+
+// ฟังก์ชันสำหรับเปลี่ยนธีม
+function applyTheme(theme) {
+  body.setAttribute("data-theme", theme);
+
+  // ไอคอนที่สอดคล้องกับแต่ละธีม
+  const themeIcons = {
+    light: '<i class="fa-solid fa-sun"></i>',
+    dark: '<i class="fa-solid fa-moon"></i>',
+    pink: '<i class="fa-solid fa-heart"></i>',
+    green: '<i class="fa-solid fa-leaf"></i>',
+    purple: '<i class="fa-solid fa-gem"></i>',
+    yellow: '<i class="fa-solid fa-star"></i>',
+    blue: '<i class="fa-solid fa-water"></i>',
+    gray: '<i class="fa-solid fa-palette"></i>',
+    red: '<i class="fa-solid fa-fire"></i>', // ไอคอนสำหรับธีมสีเทา
+  };
+
+  // ตั้งค่าไอคอนในปุ่ม
+  themeToggle.innerHTML = themeIcons[theme] || '<i class="fa-solid fa-circle"></i>';
+
+  // บันทึกธีมใน Local Storage
+  localStorage.setItem("theme", theme);
+
+  // เรียกฟังก์ชันที่เกี่ยวข้องอื่น ๆ 
+  applyBackgroundImage();
+}
+
+// ตัวจัดการเหตุการณ์สำหรับปุ่มเปลี่ยนธีม
+themeToggle.addEventListener("click", () => {
+  currentThemeIndex = (currentThemeIndex + 1) % themes.length; // วนลูปกลับไปที่ธีมแรกเมื่อถึงธีมสุดท้าย
+  const newTheme = themes[currentThemeIndex];
+  applyTheme(newTheme);
+});
+
+// โหลดธีมจาก Local Storage เมื่อเริ่มต้น
+document.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  currentThemeIndex = themes.indexOf(savedTheme);
+  applyTheme(savedTheme);
+});
