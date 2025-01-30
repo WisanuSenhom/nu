@@ -112,6 +112,13 @@ async function main() {
 main();
 
 async function insertdata() {
+
+  let userid = document.querySelector("#userid").value;
+  if (userid.length < 2) {
+    Swal.fire("ผิดพลาด!", "ไม่พบ UserId ของ Line กรุณาอนุญาตการเข้าถึงข้อมูลของ Line แล้วสมัครใหม่อีกครั้ง!", "error");
+    return;
+  }
+
   let ucid = document.querySelector("#cid").value;
   // ตรวจสอบความยาวของรหัส PIN
   if (ucid.length !== 13) {
@@ -163,7 +170,6 @@ async function insertdata() {
 
   let subcategory = document.querySelector("#subcategory").value;
   let username = document.querySelector("#username").value;
-  let userid = document.querySelector("#userid").value;
   let userimg = document.querySelector("#userimg").value;
   let useros = document.querySelector("#useros").value;
   let latitude = document.querySelector("#latitude").value;
