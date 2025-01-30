@@ -22,7 +22,6 @@
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <!-- css -->
   <link rel="stylesheet" href="style.css" />
-  <!-- <link rel="stylesheet" href="loading.css" /> -->
 
   <title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
 </head>
@@ -56,13 +55,12 @@
     </div>
   </nav>
 
-
   <div id="mainContent" class="container">
     <button id="showHide">แสดง/ซ่อน</button>
     <!-- <h1>Welcome to Work Tracker</h1> -->
     <iframe title="datetime"
-    src="https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc2196f3/tct/pct/ftb/tt0/td1/th1/tb4"
-    frameborder="0" width="276" height="46" allowtransparency="true" style="pointer-events: none;"></iframe> 
+      src="https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc2196f3/tct/pct/ftb/tt0/td1/th1/tb4"
+      frameborder="0" width="276" height="46" allowtransparency="true" style="pointer-events: none;"></iframe>
 
     <div id="log">
       <label for="typea">การปฏิบัติงาน:</label>
@@ -95,88 +93,6 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    const menuToggle = document.getElementById("menu-toggle");
-    const themeToggle = document.getElementById("theme-toggle");
-    const menu = document.getElementById("menu");
-    const body = document.body;
-
-    // Apply theme from localStorage on page load
-    const savedTheme = localStorage.getItem("theme") || "light";
-    applyTheme(savedTheme);
-
-    // Menu Toggle
-    menuToggle.addEventListener("click", () => {
-      menu.classList.toggle("show");
-      document.body.classList.toggle('menu-open');
-
-      // Toggle the icon between hamburger and "X"
-      const icon = menuToggle.querySelector("i");
-      icon.classList.toggle("fa-bars");
-      icon.classList.toggle("fa-x");
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener("click", (e) => {
-      // Check if the click is outside the menu or the menu toggle button
-      if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
-        menu.classList.remove("show");
-        document.body.classList.remove('menu-open');
-
-        // Reset the icon to hamburger
-        const icon = menuToggle.querySelector("i");
-        icon.classList.add("fa-bars");
-        icon.classList.remove("fa-x");
-      }
-    });
-
-        // Theme Toggle
-// รายการธีมที่รองรับ
-const themes = ["light", "dark", "yellow", "green", "pink", "blue", "purple", "gray", "red"];
-let currentThemeIndex = themes.indexOf(localStorage.getItem("theme")) || 0;
-
-
-// ฟังก์ชันสำหรับเปลี่ยนธีม
-function applyTheme(theme) {
-  body.setAttribute("data-theme", theme);
-
-  // ไอคอนที่สอดคล้องกับแต่ละธีม
-  const themeIcons = {
-    light: '<i class="fa-solid fa-sun"></i>',
-    dark: '<i class="fa-solid fa-moon"></i>',
-    pink: '<i class="fa-solid fa-heart"></i>',
-    green: '<i class="fa-solid fa-leaf"></i>',
-    purple: '<i class="fa-solid fa-gem"></i>',
-    yellow: '<i class="fa-solid fa-star"></i>',
-    blue: '<i class="fa-solid fa-water"></i>',
-    gray: '<i class="fa-solid fa-palette"></i>',
-    red: '<i class="fa-solid fa-fire"></i>', // ไอคอนสำหรับธีมสีเทา
-  };
-
-  // ตั้งค่าไอคอนในปุ่ม
-  themeToggle.innerHTML = themeIcons[theme] || '<i class="fa-solid fa-circle"></i>';
-
-  // บันทึกธีมใน Local Storage
-  localStorage.setItem("theme", theme);
-
-  // เรียกฟังก์ชันที่เกี่ยวข้องอื่น ๆ 
-
-}
-
-// ตัวจัดการเหตุการณ์สำหรับปุ่มเปลี่ยนธีม
-themeToggle.addEventListener("click", () => {
-  currentThemeIndex = (currentThemeIndex + 1) % themes.length; // วนลูปกลับไปที่ธีมแรกเมื่อถึงธีมสุดท้าย
-  const newTheme = themes[currentThemeIndex];
-  applyTheme(newTheme);
-});
-
-// โหลดธีมจาก Local Storage เมื่อเริ่มต้น
-document.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme") || "light";
-  currentThemeIndex = themes.indexOf(savedTheme);
-  applyTheme(savedTheme);
-});
-
-
     // Handle "Other" option in select dropdown
     function handleOtherOption() {
       const select = document.getElementById("typea");
