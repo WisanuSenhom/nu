@@ -79,9 +79,9 @@ function showError(error) {
   switch (error.code) {
     case error.PERMISSION_DENIED:
       title = "การขออนุญาตถูกปฏิเสธ";
-      text = "กรุณาเปิดการอนุญาตในเบราว์เซอร์เพื่อให้สามารถเข้าถึงตำแหน่งได้";
-      footer =
-        '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
+      text = "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้";
+      // footer =
+      //   '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
     case error.POSITION_UNAVAILABLE:
       title = "ไม่สามารถเข้าถึงข้อมูลตำแหน่ง";
@@ -98,7 +98,7 @@ function showError(error) {
       break;
   }
 
-  Swal.fire({ icon: "error", title, text, footer }).then((result) => {
+  Swal.fire({ icon: "error", title, text, footer,allowOutsideClick: false }).then((result) => {
     if (result.isConfirmed) location.reload();
   });
 }
