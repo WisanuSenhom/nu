@@ -19,11 +19,10 @@ body {
   padding-top: 70px;
   padding-bottom: 120px;
   transition: background-color 0.5s ease, color 0.5s ease;
-  /* background-image: url('https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcToySPdFCMfbBeEu3Qu-mMf33cLIwTwdFFTPjDF4d4_zLd1TaEdHd0vEaerFoOg4W4t');  */
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 body::before {
@@ -162,9 +161,6 @@ body::before {
   --nav-hover-bg: #ffb3b3; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
 }
 
-
-
-
 nav {
   background-color: var(--nav-bg);
   opacity: 0.88; /* ปรับความโปร่งแสง */
@@ -262,7 +258,7 @@ nav .menu a {
 }
 
 nav .menu a:hover {
-  background-color:  var(--nav-hover-bg);
+  background-color: var(--nav-hover-bg);
   color: var(--secondary-text-color);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* เพิ่มเงา */
   transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
@@ -313,11 +309,10 @@ nav .menu a:hover {
     display: block;
   }
 
-    /* เมื่อเมนูเปิด, ซ่อน .container */
-    body.menu-open .container {
-      display: none;
-    }
-
+  /* เมื่อเมนูเปิด, ซ่อน .container */
+  body.menu-open .container {
+    display: none;
+  }
 }
 
 /* เมื่อเมนูเปิด */
@@ -388,8 +383,6 @@ body.menu-open {
 #showHide:active {
   background-color: #0a6bbd;
 }
-
-
 
 label {
   font-size: 1rem;
@@ -526,7 +519,7 @@ button {
   font-size: 14px;
   max-width: 400px;
   margin: 20px auto;
-  word-wrap: break-word; 
+  word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
@@ -557,11 +550,11 @@ button {
 
 /* popup map */
 .leaflet-popup-content-wrapper {
-	padding: 1px;
-	text-align: left;
-	border-radius: 12px;
-	}
-  
+  padding: 1px;
+  text-align: left;
+  border-radius: 12px;
+}
+
 .leaflet-popup-content {
   margin: 0px 2px 0px 2px;
   line-height: 1.3;
@@ -586,31 +579,31 @@ button {
 }
 
 .leaflet-container .leaflet-control-attribution {
-	/* background: var(--nav-bg); */
+  /* background: var(--nav-bg); */
   background: transparent;
-	margin: 0;
-  opacity: .5; 
-	}
-
-  .leaflet-marker-icon {
-    width: 25px;              
-    height: 41px;            
-    transform: translate3d(104px, 165px, 0px); 
-    z-index: 165;            
-    opacity: .5; 
+  margin: 0;
+  opacity: 0.5;
 }
 
- .swal2-popup {
+.leaflet-marker-icon {
+  width: 25px;
+  height: 41px;
+  transform: translate3d(104px, 165px, 0px);
+  z-index: 165;
+  opacity: 0.5;
+}
+
+.swal2-popup {
   background: var(--nav-bg);
   color: var(--text-color);
   box-shadow: 0 4px 10px var(--shadow-color);
-  opacity: .82; 
+  opacity: 0.82;
 }
 
 .swal2-confirm {
-	  background-color: #2E712A ; 
-/*   background-color: var(--button-bg) ;  */
-/*   color: var(--text-color) ;  */
+  background-color: #2e712a;
+  /*   background-color: var(--button-bg) ;  */
+  /*   color: var(--text-color) ;  */
 }
 
 .swal2-popup label {
