@@ -25,7 +25,7 @@ function getchatID() {
       },
       html: `<i class="fa-brands fa-telegram"></i> Telegram_ID : <strong> ${chatId} </strong>`,
   footer: `<a href="https://t.me/TimestampNotifybot" target="_blank">
-            <i class="fa-solid fa-user-plus"></i> เพิ่มเพื่อนใน Telegram
+            <i class="fa-solid fa-message"></i> เปิดแชท Telegram
          </a><br>
          <a href="https://t.me/setlanguage/thaith" target="_blank">
             <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
