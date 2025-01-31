@@ -282,7 +282,7 @@ async function checkonmap() {
 
   // แสดงข้อความโหลด
   const loadingText = document.createElement("p");
-  loadingText.textContent = "กำลังโหลดแผนที่...หากแสดงแผนที่กดปุ่ม แผนที่ ";
+  loadingText.textContent = "กำลังโหลดแผนที่...";
   loadingText.style.textAlign = "center";
   loadingText.style.color = "blue"; // Set text color here
   mapContainer.appendChild(loadingText);
