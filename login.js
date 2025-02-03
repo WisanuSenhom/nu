@@ -345,7 +345,7 @@ async function sentrequest(newline,hash_cid) {
 
 async function getProfile2() {
   try {
-    const profile = await liff.getProfile2();
+    const profile = await liff.getProfile();
     const { displayName, userId, pictureUrl, statusMessage } = profile;
 
     Swal.fire({
