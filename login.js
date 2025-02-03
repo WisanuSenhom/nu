@@ -236,8 +236,8 @@ async function getMember(yourId, yourPic, profile, useApp) {
 
 // เพิ่มไลน์ใหม่
 // ตรวจสอบเลขบัตร
-  function inputcid(newline) {
-    if (!newline < 2) {
+  function inputcid(userId) {
+    if (!userId < 2) {
       Swal.fire("ผิดพลาด!", "ไม่พบ UserId ของ Line กรุณาอนุญาตการเข้าถึงข้อมูลของ Line แล้วดำเนินการใหม่อีกครั้ง!", "error");
       return;
     }
@@ -285,10 +285,8 @@ async function getMember(yourId, yourPic, profile, useApp) {
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    console.log('User CID:', result.value);
                     let hash_cid = md5(result.value);
-                    console.log(hash_cid);
-                    sentrequest(newline, hash_cid);
+                    sentrequest(userId, hash_cid);
                 }
             });
         }
@@ -296,7 +294,7 @@ async function getMember(yourId, yourPic, profile, useApp) {
 }
 
 
-async function sentrequest(newline,hash_cid) {
+async function sentrequest(userId,hash_cid) {
   Swal.fire({
     title: "กำลังส่งคำขอ...",
     allowOutsideClick: false,
@@ -307,7 +305,7 @@ async function sentrequest(newline,hash_cid) {
 
   try {
     const response = await fetch(
-      `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${newline}`
+      `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${userId}`
     );
 
     if (!response.ok) {
@@ -363,7 +361,7 @@ async function getProfile2() {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        localStorage.setItem("newline", userId);
+        localStorage.setItem("userId", userId);
         inputcid(userId);
       } else {
         Swal.fire({
