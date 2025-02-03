@@ -237,7 +237,7 @@ async function getMember(yourId, yourPic, profile, useApp) {
 // เพิ่มไลน์ใหม่
 // ตรวจสอบเลขบัตร
   function inputcid(userId) {
-    if (!userId < 2) {
+    if (!userId) {
       Swal.fire("ผิดพลาด!", "ไม่พบ UserId ของ Line กรุณาอนุญาตการเข้าถึงข้อมูลของ Line แล้วดำเนินการใหม่อีกครั้ง!", "error");
       return;
     }
