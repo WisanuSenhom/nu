@@ -233,3 +233,164 @@ async function getMember(yourId, yourPic, profile, useApp) {
     hideLoading();
   }
 }
+
+// เพิ่มไลน์ใหม่
+// ตรวจสอบเลขบัตร
+  function inputcid(newline) {
+    if (!newline < 2) {
+      Swal.fire("ผิดพลาด!", "ไม่พบ UserId ของ Line กรุณาอนุญาตการเข้าถึงข้อมูลของ Line แล้วดำเนินการใหม่อีกครั้ง!", "error");
+      return;
+    }
+    // แสดงคำชี้แจงก่อน
+    Swal.fire({
+        title: 'คำชี้แจง',
+        html: `
+        <div style="text-align: left;">
+        <ol style="padding-left: 20px; line-height: 1.8;">
+          <li>หมายเลขบัตรประชาชนของคุณจะถูกเข้ารหัสเพื่อความปลอดภัย</li>
+          <li>ไลน์ที่ใช้กู้คืนจะต้องไม่มีอยู่ในระบบ</li>
+          <li>โปรดตรวจสอบว่ามีการกำหนดหัวหน้า หากยังไม่กำหนดให้แจ้ง Admin หรือ IT ของหน่วยงานท่านกำหนดให้ก่อน</li>
+          <li>เมื่อยื่นคำขอการกู้บัญชีเดิม เนื่องจากเปลี่ยนไลน์ใหม่ หรือเพิ่มไลน์สำรอง โปรดแจ้งให้หัวหน้าของท่านเป็นผู้อนุมัติ</li>
+        </ol>
+      </div>
+        `,
+        input: 'checkbox',
+        inputPlaceholder: 'ฉันยอมรับเงื่อนไข',
+        showCancelButton: true,
+        cancelButtonText: "ยกเลิก",
+        confirmButtonText: 'รับทราบ',
+        inputValidator: (result) => {
+            if (!result) {
+                return 'คุณต้องยอมรับเงื่อนไขก่อนดำเนินการต่อ!';
+            }
+        }
+    }).then((res) => {
+        if (res.isConfirmed) {
+            Swal.fire({
+                title: 'Enter Your CID',
+                input: 'number',
+                inputPlaceholder: 'กรอกเลขบัตรประชาชนของคุณ',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                preConfirm: (value) => {
+                    if (!value) {
+                        Swal.showValidationMessage('กรุณากรอกข้อมูลก่อน!');
+                        return false;
+                    }
+                    if (value.length !== 13) {
+                        Swal.showValidationMessage('กรุณาตรวจสอบเลข 13 หลัก!');
+                        return false;
+                    }
+                    return value;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log('User CID:', result.value);
+                    let hash_cid = md5(result.value);
+                    console.log(hash_cid);
+                    sentrequest(newline, hash_cid);
+                }
+            });
+        }
+    });
+}
+
+
+async function sentrequest(newline,hash_cid) {
+  Swal.fire({
+    title: "กำลังส่งคำขอ...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  try {
+    const response = await fetch(
+      `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${newline}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to process: ${response.statusText}`);
+    }
+
+    // แปลงข้อมูลที่ได้รับจาก API
+    const data = await response.json();
+
+    // เช็คข้อมูลใน data.user
+    if (data.user.length === 0) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'ข้อมูลไม่ถูกต้อง',
+        text: 'ไม่พบข้อมูลผู้ใช้งานที่ตรงกัน หรือ ไลน์นี้มีอยู่ในฐานข้อมูลอยู่แล้ว',
+      });
+    } else {
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        title: 'ส่งคำขอสำเร็จ',
+        text: 'โปรดแจ้งให้หัวหน้าของท่านเพื่อ "ยืนยัน" คำขอของท่าน',
+      });
+    }
+  } catch (error) {
+    Swal.close();
+    Swal.fire({
+      icon: 'error',
+      title: 'เกิดข้อผิดพลาด',
+      text: error.message,
+    });
+  }
+}
+
+async function getProfile2() {
+  try {
+    const profile = await liff.getProfile2();
+    const { displayName, userId, pictureUrl, statusMessage } = profile;
+
+    Swal.fire({
+      title: `ยินดีต้อนรับคุณ\n${displayName}`,
+      html: `สถานะ : ${statusMessage}<br><br><strong>คุณต้องการเพิ่มบัญชีไลน์นี้หรือไม่?</strong>`,
+      imageUrl: pictureUrl,
+      imageWidth: 150,
+      imageHeight: 150,
+      imageAlt: "User Photo",
+      showCancelButton: true,
+      confirmButtonText: "ยืนยัน",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#00B900",
+      cancelButtonColor: "#d33",
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.setItem("newline", userId);
+        inputcid(userId);
+      } else {
+        Swal.fire({
+          icon: "info",
+          title: "คุณเลือกยกเลิกการเพิ่มบัญชี",
+          confirmButtonColor: "#00B900",
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error retrieving profile:", error);
+    Swal.fire({
+      icon: "error",
+      title: "เกิดข้อผิดพลาด",
+      text: "ไม่สามารถดึงข้อมูลโปรไฟล์ได้",
+      confirmButtonColor: "#d33",
+    });
+  }
+}
+
+async function main2() {
+  hideLoading();
+ await liff.init({ liffId: "1654797991-pr0xKPxW" });
+//  await liff.init({ liffId: "1654797991-Xmxp3Gpj" }); // ทดสอบ
+  if (liff.isLoggedIn()) {
+    getProfile2();
+  } else {
+    liff.login({ redirectUri: window.location.href });
+  }
+}
