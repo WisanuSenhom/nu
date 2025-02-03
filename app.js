@@ -864,10 +864,10 @@ async function requestReceive(){
   const refid = localStorage.getItem('refid');
   const byName = localStorage.getItem('byName');
    const role = localStorage.getItem('role');
-   if (role !== 'ceo' || role !== 'boss' ) {
-    Swal.fire("ผิดพลาด!", "ท่านไม่มีสิทธิ์ในการเข้าถึงเมนูนี้!", "error");
-    return;
-  }
+if (role !== 'ceo' && role !== 'boss') {
+  Swal.fire("ผิดพลาด!", "ท่านไม่มีสิทธิ์ในการเข้าถึงเมนูนี้!", "error");
+  return;
+}
 
    // แสดงสถานะกำลังโหลดข้อมูล
    Swal.fire({
