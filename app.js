@@ -858,3 +858,148 @@ document.addEventListener("DOMContentLoaded", () => {
   currentThemeIndex = themes.indexOf(savedTheme);
   applyTheme(savedTheme);
 });
+
+// ยืนยันคำขอกู้บัญชี
+async function requestReceive(){
+  const refid = localStorage.getItem('refid');
+  const byName = localStorage.getItem('byName');
+   const role = localStorage.getItem('role');
+   if (role !== 'ceo' || role !== 'boss' ) {
+    Swal.fire("ผิดพลาด!", "ท่านไม่มีสิทธิ์ในการเข้าถึงเมนูนี้!", "error");
+    return;
+  }
+
+   // แสดงสถานะกำลังโหลดข้อมูล
+   Swal.fire({
+    title: "กำลังโหลดข้อมูล...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  var gas =
+    "https://script.google.com/macros/s/AKfycbxdv6lUeT9rWLcZtnZ6hMQTdEwiy-mK7sOJhT_eDl2ZflzhIjSkNUc4Nz0l4HweMTyl/exec";
+  var qdata = `?id=${refid}`;
+
+  await fetch(gas + qdata)
+    .then((response) => response.json())
+    .then((user) => {
+      // ปิดการแสดงสถานะการโหลด
+      Swal.close();
+      if (user.user && user.user.length > 0) {
+        var timelineData = `
+        <div style="text-align: left;">
+        <ol style="padding-left: 20px; line-height: 1.8;">
+          วันที่ : ${user.user[0].regdate} <br>
+          ชื่อ : ${user.user[0].name} <br>
+          ตำแหน่ง : ${user.user[0].job}      
+        </ol>
+      </div>
+        `;
+        // แสดงข้อมูลที่ดึงมาใน Swal
+        Swal.fire({
+          title: "คำขอกู้คืนบัญชี",
+          html: timelineData,
+          allowOutsideClick: false,
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "ยืนยัน",
+          denyButtonText: `ปฏิเสธ`
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          uu_id = user.user[0].uuid;
+          newline = user.user[0].newline;
+          if (result.isConfirmed) {
+            requestReceiveYesNo(uu_id,newline,byName,'confirm');
+            // Swal.fire("Saved!", "", "success");
+          } else if (result.isDenied) {
+            requestReceiveYesNo(uu_id,newline,byName,'deny');
+            // Swal.fire("Changes are not saved", "", "info");
+          }
+        });
+      } else {
+        // แสดงข้อความเตือนใน Swal
+        Swal.fire({
+          icon: "warning",
+          title: "ไม่พบคำขอกู้คืนบัญชี",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#DBA800"
+        });
+      }
+    })
+    .catch((error) => {
+      // ปิดการแสดงสถานะการโหลด
+      Swal.close();
+
+      console.error("Error fetching data:", error);
+
+      // แสดงข้อความผิดพลาดใน Swal
+      Swal.fire({
+        icon: "error",
+        title: "ข้อผิดพลาด",
+        text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#bb2124"
+      });
+    });
+}
+
+async function requestReceiveYesNo(uu_id,newline,byName,status){
+
+   Swal.fire({
+    title: "กำลังดำเนินการ...",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  var gas =
+    "https://script.google.com/macros/s/AKfycbyLabkeVyABhdGszcYjIwqOuooTLr-y68YkMhTMEKetyF2B29nAwj03InJDZ1p4v0SkBA/exec";
+  var qdata = `?uuid=${uu_id}&newline=${newline}&byName=${byName}&status=${status}`;
+console.log(gas + qdata);
+  await fetch(gas + qdata)
+    .then((response) => response.json())
+    .then((sts) => {
+      // ปิดการแสดงสถานะการโหลด
+      Swal.close();
+      if (sts.sts[0].sts === 'ok') {
+        var timelineData = '';
+        if (status === 'confirm'){
+          timelineData = 'การยืนยันกู้คืนบัญชีสำเร็จ';
+        } else if (status === 'deny'){
+          timelineData = 'การปฏิบัติเสธกู้คืนบัญชีสำเร็จ';
+        }        
+        Swal.fire({
+          icon: "success",
+          title: "สำเร็จ",
+          html: timelineData,
+          confirmButtonText: "ตกลง",
+        });
+      } else {
+        // แสดงข้อความเตือนใน Swal
+        Swal.fire({
+          icon: "warning",
+          title: "ไม่สามารถดำเนินการได้",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#DBA800"
+        });
+      }
+    })
+    .catch((error) => {
+      // ปิดการแสดงสถานะการโหลด
+      Swal.close();
+
+      console.error("Error fetching data:", error);
+
+      // แสดงข้อความผิดพลาดใน Swal
+      Swal.fire({
+        icon: "error",
+        title: "ข้อผิดพลาด",
+        text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#bb2124"
+      });
+    });
+}
