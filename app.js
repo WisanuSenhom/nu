@@ -1003,3 +1003,130 @@ console.log(gas + qdata);
       });
     });
 }
+
+function reportdata(){
+  // เรียกรายงานลงเวลาประจำเดือน
+// รับวันที่ปัจจุบัน
+var currentDate = new Date();
+
+// ดึงปีและเดือน
+var year = currentDate.getFullYear();
+var month = currentDate.getMonth() + 1; // เดือนเริ่มต้นที่ 0 (มกราคม) ดังนั้นต้องเพิ่ม 1
+
+// รูปแบบ yyyymm
+var formattedDate = year.toString() + (month < 10 ? '0' : '') + month.toString();
+
+//console.log(formattedDate); // ผลลัพธ์เช่น "202402" (สำหรับเดือนกุมภาพันธ์ 2024)
+fetchData(formattedDate);
+}
+
+async function fetchData(formattedDate) {
+  const cid = localStorage.getItem("cidhash");
+  const db1 = localStorage.getItem("db1");
+  var apiUrl = 'https://script.google.com/macros/s/AKfycbwjLcT7GFTETdwRt_GfU6j-8poTK6_t400RPLa4cMY72Ih3EYAWQIDyFQV0et7lMQG2LQ/exec';
+
+  var queryParams = `?startdate=${formattedDate}&cid=${cid}&db=${db1}`;
+
+  // Show the spinner
+  document.getElementById("loadingSpinner").style.display = "block";
+
+  // Make a GET request using Fetch API
+  await fetch(apiUrl + queryParams)
+      .then(response => response.json())
+      .then(data => {
+          const reporttb = document.getElementById("reportdata");
+          reporttb.innerHTML = "";
+          let datartb = '';
+          data.tst.forEach(function (tst) {
+              datartb += `<tr>
+              <td>${tst.day}</td>
+              <td>${tst.datein}</td>
+              <td>${tst.timein}</td>
+              <td>${tst.name}</td>
+              <td>${tst.subname}</td>
+              <td>${tst.typein}</td>
+            
+              <td>${tst.disin}</td>
+              <td>${tst.timeout}</td>
+              <td>${tst.disout}</td>
+              <td>${tst.notein}</td>
+              <td>${tst.request}</td>
+              <td>${tst.reqdate}</td>
+              <td>${tst.reqtime}</td>
+              <td>${tst.permitdate}</td>
+              <td>${tst.permittime}</td>
+              <td>${tst.permitname}</td>
+              <td>${tst.permit_note}</td>
+              <td>${tst.verified}</td>
+              <td>${tst.verifiedname}</td>
+              <td>${tst.verified_note}</td>
+              <td>${tst.verifieddate}</td>
+              <td>${tst.verifiedtime}</td>
+              <td>${tst.ref}</td>
+          </tr>`;
+          });
+
+          reporttb.innerHTML = datartb;
+
+          if ($.fn.dataTable.isDataTable('#dreportdata')) {
+            $('#dreportdata').DataTable().clear().destroy();
+        }
+
+          $('#dreportdata').DataTable({
+              "data": data.tst,
+              "columns": [
+                  { "data": 'day' },
+                  { "data": 'datein' },
+                  { "data": 'timein' },
+                  { "data": 'name' },
+                  { "data": 'subname' },
+                  { "data": 'typein' },
+            
+                  { "data": 'disin' },
+                  { "data": 'timeout' },
+                  { "data": 'disout' },
+                  { "data": 'notein' },
+                  { "data": 'request' },
+                  { "data": 'reqdate' },
+                  { "data": 'reqtime' },
+                  { "data": 'permitdate' },
+                  { "data": 'permittime' },
+                  { "data": 'permitname' },
+                  { "data": 'permit_note' },
+                  { "data": 'verified' },
+                  { "data": 'verifiedname' },
+                  { "data": 'verified_note' },
+                  { "data": 'verifieddate' },
+                  { "data": 'verifiedtime' },
+                  { "data": 'ref' }
+              ],
+              "language": {
+                  "url": 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json',
+              },
+              "processing": true,
+              "responsive": true,
+              "autoFill": true,
+              "order": [[22, 'asc'], [5, 'asc']],
+              "colReorder": true,
+              "fixedHeader": true,
+              "keys": true,
+              "dom": 'lBfrtip',
+              "lengthMenu": [ [10, 30, 50, 100, 150, -1], [10, 30, 50, 100, 150, "ทั้งหมด"] ],
+              "buttons": ['excel', 'print'],
+              "pageLength": 30
+          });
+
+          // Hide the spinner after data is loaded
+          document.getElementById("loadingSpinner").style.display = "none";
+      })
+      .catch(error => {
+          // Hide the spinner in case of an error
+          document.getElementById("loadingSpinner").style.display = "none";
+          console.error("Error fetching data:", error);
+      });
+}
+
+function clearTableData() {
+  const reporttb = document.getElementById("reportdata");
+  reporttb.innerHTML = ""; // ล้างข้อมูลใน tbody
+}
