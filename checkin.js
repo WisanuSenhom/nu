@@ -1,4 +1,7 @@
 let map;
+let watchId = null;
+let interval = null;
+
 async function getLocation() {
   const startTime = Date.now();
   const Loading = Swal.mixin({
@@ -26,13 +29,13 @@ async function getLocation() {
   }
 
   Loading.fire({ title: "กำลังเตรียมความพร้อม..." });
-  const interval = setInterval(updateElapsedTime, 1000);
+  interval = setInterval(updateElapsedTime, 1000);
 
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
+      watchId = navigator.geolocation.watchPosition(
         (position) => {
-          clearInterval(interval); // Stop timer
+          stopLocationTracking(); // หยุดเมื่อได้พิกัด
           const Toast = Swal.mixin({
             toast: true,
             showConfirmButton: false,
@@ -51,14 +54,14 @@ async function getLocation() {
           alertUpdate();
         },
         (error) => {
-          clearInterval(interval);
+          stopLocationTracking();
           reject(error);
           alertUpdate();
           showError(error);
         }
       );
     } else {
-      clearInterval(interval);
+      stopLocationTracking();
       Swal.fire({
         icon: "error",
         title: "ไม่รองรับ Geolocation",
@@ -71,6 +74,19 @@ async function getLocation() {
   });
 }
 
+// ฟังก์ชันหยุดการรับค่าพิกัด
+function stopLocationTracking() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+  if (interval !== null) {
+    clearInterval(interval);
+    interval = null;
+  }
+}
+
+
 function showError(error) {
   let title = "เกิดข้อผิดพลาด";
   let text = "ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
@@ -79,7 +95,8 @@ function showError(error) {
   switch (error.code) {
     case error.PERMISSION_DENIED:
       title = "การขออนุญาตถูกปฏิเสธ";
-      text = "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้";
+      text =
+        "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้";
       // footer =
       //   '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
@@ -98,7 +115,13 @@ function showError(error) {
       break;
   }
 
-  Swal.fire({ icon: "error", title, text, footer,allowOutsideClick: false }).then((result) => {
+  Swal.fire({
+    icon: "error",
+    title,
+    text,
+    footer,
+    allowOutsideClick: false,
+  }).then((result) => {
     if (result.isConfirmed) location.reload();
   });
 }
@@ -446,7 +469,7 @@ async function generateSecureCode() {
 }
 
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
-async function processCheckinOrCheckout(ctype, latitude, longitude) {
+async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
   try {
     // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
     const uuid = localStorage.getItem("uuid");
@@ -473,8 +496,10 @@ async function processCheckinOrCheckout(ctype, latitude, longitude) {
     }
 
     const secureCode = await generateSecureCode();
-    let typea = document.querySelector("#typea").value;
-    let nte = document.querySelector("#otherDetails").value;
+    let typea = document.querySelector("#typea").value || 'ปกติ';
+    let nte = document.querySelector("#otherDetails").value || (typeof staff !== 'undefined' ? staff : '');
+    
+    console.log(nte);
 
     if (typea === "อื่นๆ" && !nte) {
       throw new Error("อื่นๆ โปรดระบุ");
@@ -750,4 +775,242 @@ function alertUpdate() {
       }
     });
   }
+}
+
+// สร้าง QR-code
+let qrVisible = false;
+let qrCode = null;
+let html5QrCode = new Html5Qrcode("reader");
+
+function toggleQRCode() {
+  const refid = localStorage.getItem("refid");
+  const role = localStorage.getItem("role");
+  if (role !== 'ceo' && role !== 'boss' && role !== 'assure') {
+    Swal.fire("ท่านไม่สามารถสร้าง QR-code ได้!", "สำหรับหัวหน้า ผู้อำนวยการ ผู้ช่วย ผู้บริหาร เท่านั้น!", "error");
+    return;
+  }
+  let qrname ='';
+
+  // ctype, latitude, longitude
+
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  const ckDate = now.toLocaleDateString("th-TH");
+
+  if ((hours === 0 && minutes >= 0) ||  hours < 8 || (hours === 8 && minutes <= 30)
+  ) {
+    // In
+    qrname = 'In|'+refid+'|'+ckDate;
+  } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
+        Swal.fire("นอกช่วงเวลา !", "ท่านไม่สามารถสร้าง QR-code ได้ ในช่วงเวลา 8.31 - 16.29 น. !", "error");
+    return;
+  } else {
+    // Out
+    qrname = 'Out|'+refid+'|'+ckDate;
+  }
+
+  let qrDiv = document.getElementById("qrcode");
+  let readerDiv = document.getElementById("reader");
+  let button = document.getElementById("button-qr");
+
+  if (!qrVisible) {
+    qrDiv.style.display = "block";
+    readerDiv.style.display = "none";
+
+    stopScanner();
+
+    if (!qrCode) {
+      qrCode = new QRCode(qrDiv, {
+        text: qrname,
+        width: 200,
+        height: 200,
+        // colorDark: "#ff5733", // เปลี่ยนสี QR Code (เช่น สีส้มแดง)
+        // colorLight: "#f0f0f0", // เปลี่ยนสีพื้นหลัง (เช่น สีเทาอ่อน)
+        // correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+    button.textContent = "ซ่อน QR Code";
+  } else {
+    qrDiv.style.display = "none";
+    readerDiv.style.display = "block";
+    button.textContent = "แสดง QR Code";
+    startScan();
+  }
+  qrVisible = !qrVisible;
+}
+
+function startScan() {
+  let readerDiv = document.getElementById("reader");
+
+  readerDiv.style.display = "block";
+
+  html5QrCode
+    .start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 200, height: 200 } },
+      onScanSuccess,
+      onScanFailure
+    )
+    .catch((err) => {
+      Swal.fire({
+        icon: "error",
+        title: "ไม่สามารถเปิดกล้องได้",
+        text: "โปรดตรวจสอบสิทธิ์การเข้าถึงกล้อง",
+      });
+    });
+}
+
+function stopScanner() {
+  if (html5QrCode.isScanning) {
+    html5QrCode
+      .stop()
+      .then(() => {
+        console.log("ปิดกล้องเรียบร้อย");
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถปิดกล้องได้ โปรดลองใหม่",
+        });
+      });
+  }
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+  stopScanner();
+
+  const str = decodedText;
+  const splitStr = str.split("|");
+  
+  let part1 = splitStr[0];
+  let part2 = splitStr[1];
+  let part3 = splitStr[2];
+
+if (part1 !== 'In' || part1 !== 'Out' ){
+  Swal.fire({
+    title: "ผิดพลาด!",
+    html: 'QR-code นี้ไม่ได้สร้างด้วยระบบลงเวลา\n ' + decodedText,
+    icon: "error"
+  });
+  return;
+}
+
+  const boss = localStorage.getItem("boss");
+  const ceo = localStorage.getItem("ceo");
+ 
+  if (boss !== part2 && ceo !== part2) {
+    Swal.fire({
+      title: "ผิดพลาด!",
+      text: "QR-code ไม่สามารถใช้งานได้ ",
+      icon: "error"
+    });
+    return;
+  }
+
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  let formattedToday = now.toLocaleDateString("th-TH");
+
+  if (formattedToday !== part3) {
+    Swal.fire({
+      title: "ผิดพลาด!",
+      text: "QR-code ไม่สามารถใช้งานได้",
+      icon: "error"
+    });
+    return;
+  }
+
+  const latitude = localStorage.getItem("oflat");
+  const longitude = localStorage.getItem("oflong");
+  const ctype = part1;
+  const staff = part2;
+
+  if (part3 === localStorage.getItem("datecheck") || part3 === localStorage.getItem("datecheckout")) {
+    checkinfo();  
+  } else {
+    if (((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) && part1 === 'In') {
+      // มา
+      Swal.fire({
+        title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
+        html: "กรุณากดยืนยันเพื่อดำเนินการ",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "ลงเวลามา",
+        denyButtonText: "สแกนใหม่",
+        customClass: {
+          title: "text-success",
+          content: "text-muted",
+          confirmButton: "btn btn-success",
+          denyButton: "btn btn-primary",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          processCheckinOrCheckout(ctype, latitude, longitude,staff);
+        } else if (result.isDenied) {
+          startScan();
+        }
+      });
+
+    } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
+      window.location.href = "request.html";
+    } else if (part1 === 'Out') {
+      // กลับ
+      Swal.fire({
+        title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
+        html: "กรุณากดยืนยันเพื่อดำเนินการ",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "ลงเวลามา",
+        denyButtonText: "สแกนใหม่",
+        customClass: {
+          title: "text-danger",
+          content: "text-muted",
+          confirmButton: "btn btn-danger",
+          denyButton: "btn btn-primary",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          processCheckinOrCheckout(ctype, latitude, longitude,staff);
+        } else if (result.isDenied) {
+          startScan();
+        }
+      });
+    }else{
+     Swal.fire("ผิดพลาด!", "ไม่สามารถตำเนินการได้!", "error");
+    return;
+    }    
+  }
+
+ 
+
+
+  // Swal.fire({
+  //   title: "ยืนยันข้อมูล?",
+  //   text: "ข้อมูลที่สแกนได้: " + decodedText,
+  //   showDenyButton: true,
+  //   showCancelButton: true,
+  //   confirmButtonText: "บันทึก",
+  //   denyButtonText: "สแกนใหม่",
+  // }).then((result) => {
+  //   if (result.isConfirmed) {
+  //     Swal.fire("บันทึกแล้ว!", "", "success");
+  //   } else if (result.isDenied) {
+  //     startScan();
+  //   }
+  // });
+
+}
+
+function onScanFailure(error) {
+  // Swal.fire({
+  //     icon: "warning",
+  //     title: "เกิดข้อผิดพลาด",
+  //     text: "ไม่สามารถสแกน QR Code ได้ โปรดลองอีกครั้ง",
+  //     timer: 2000,
+  //     showConfirmButton: false
+  // });
 }
