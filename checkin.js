@@ -36,6 +36,9 @@ async function getLocation() {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
           stopLocationTracking(); // หยุดเมื่อได้พิกัด
+          clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
+          interval = null; // ✅ รีเซ็ตค่า
+
           const Toast = Swal.mixin({
             toast: true,
             showConfirmButton: false,
@@ -46,15 +49,21 @@ async function getLocation() {
               toast.onmouseleave = Swal.resumeTimer;
             },
           });
+
           Toast.fire({ icon: "success", title: "พร้อม..." });
+
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
+
           alertUpdate();
         },
         (error) => {
           stopLocationTracking();
+          clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
+          interval = null; // ✅ รีเซ็ตค่า
+
           reject(error);
           alertUpdate();
           showError(error);
@@ -62,6 +71,9 @@ async function getLocation() {
       );
     } else {
       stopLocationTracking();
+      clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
+      interval = null; // ✅ รีเซ็ตค่า
+
       Swal.fire({
         icon: "error",
         title: "ไม่รองรับ Geolocation",
@@ -69,6 +81,7 @@ async function getLocation() {
         footer:
           '<a href="https://www.google.com/chrome/" target="_blank">คลิกที่นี่เพื่อดาวน์โหลด Chrome</a>',
       });
+
       reject(new Error("Geolocation is not supported by this browser."));
     }
   });
@@ -85,6 +98,7 @@ function stopLocationTracking() {
     interval = null;
   }
 }
+
 
 
 function showError(error) {
