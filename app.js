@@ -629,6 +629,8 @@ document.addEventListener("DOMContentLoaded", function () {
       Swal.fire({
         title: "การปรับปรุงล่าสุด",
         html: 
+        "<strong>5 ก.พ. 2568</strong><br>" +
+        "เพิ่มระบบลงเวลาด้วย QR-code<br><br>" +
         "<strong>10 ม.ค. 2568</strong><br>" +
           "ออกแบบหน้าลงเวลาใหม่<br><br>" +
           "<strong>19 พ.ย. 2567</strong><br>" +
