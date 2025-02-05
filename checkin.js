@@ -903,7 +903,7 @@ function onScanSuccess(decodedText, decodedResult) {
   let part2 = splitStr[1];
   let part3 = splitStr[2];
 
-if (part1 !== 'In' || part1 !== 'Out' ){
+if (part1 !== 'In' && part1 !== 'Out' ){
   Swal.fire({
     title: "ผิดพลาด!",
     html: 'QR-code นี้ไม่ได้สร้างด้วยระบบลงเวลา\n ' + decodedText,
