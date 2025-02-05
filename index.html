@@ -304,21 +304,19 @@
       const target = this.getAttribute("data-bs-target");
 
       if (target !== "#home") {
+        stopLocationTracking();
         trackerBar.style.display = "none";
       } else {
         trackerBar.style.display = "flex"; // รีเซ็ตค่าให้ถูกต้อง
       }
 
       // ตรวจสอบว่าเป็นแท็บ #srqrcode หรือไม่
-      if (target === "#srqrcode") {
-        stopLocationTracking();
+      if (target === "#srqrcode") {    
         startScan();
       } else {
         stopScanner(); // หยุดการสแกนเมื่อเปลี่ยนแท็บ
       }
       if (target === "#report") {
-        stopLocationTracking();
-        stopScanner();
         reportdata();
       } else {
         clearTableData();
