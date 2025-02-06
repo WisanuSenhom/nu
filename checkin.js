@@ -1,69 +1,30 @@
 let map;
 let watchId = null;
-let interval = null;
 
 async function getLocation() {
-  const startTime = Date.now();
-  const Loading = Swal.mixin({
-    toast: true,
-    showConfirmButton: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  function updateElapsedTime() {
-    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-    let title = `(${elapsedTime}s.) กำลังเตรียมความพร้อม...`;
-
-    if (elapsedTime >= 30) {
-      title = `ขออภัยในความไม่สะดวก<br>ระบบจะทำการโหลดหน้าเว็บใหม่...`;
-      setTimeout(() => location.reload(), 2000);
-    } else if (elapsedTime >= 15) {
-      title = `(${elapsedTime}s.) อยู่ระหว่างรับค่าพิกัด...`;
-    } else if (elapsedTime >= 5) {
-      title = `(${elapsedTime}s.) กำลังรับค่าพิกัด...`;
-    }
-
-    Loading.update({ title });
-  }
-
-  Loading.fire({ title: "กำลังเตรียมความพร้อม..." });
-  interval = setInterval(updateElapsedTime, 1000);
-
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
         (position) => {
           stopLocationTracking(); // หยุดเมื่อได้พิกัด
-          clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
-          interval = null; // ✅ รีเซ็ตค่า
-
-          const Toast = Swal.mixin({
-            toast: true,
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            },
-          });
-
-          Toast.fire({ icon: "success", title: "พร้อม..." });
 
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-
+          Swal.fire({
+            icon: "success",
+            title: "พร้อม...",
+            showConfirmButton: false,
+            timer: 1500,
+            customClass: {
+              title: "text-success"}
+          });
+          
           alertUpdate();
         },
         (error) => {
           stopLocationTracking();
-          clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
-          interval = null; // ✅ รีเซ็ตค่า
-
           reject(error);
           alertUpdate();
           showError(error);
@@ -71,9 +32,6 @@ async function getLocation() {
       );
     } else {
       stopLocationTracking();
-      clearInterval(interval); // ✅ หยุด updateElapsedTime ทันที
-      interval = null; // ✅ รีเซ็ตค่า
-
       Swal.fire({
         icon: "error",
         title: "ไม่รองรับ Geolocation",
@@ -93,10 +51,6 @@ function stopLocationTracking() {
     navigator.geolocation.clearWatch(watchId);
     watchId = null;
   }
-  if (interval !== null) {
-    clearInterval(interval);
-    interval = null;
-  }
 }
 
 
@@ -110,22 +64,22 @@ function showError(error) {
     case error.PERMISSION_DENIED:
       title = "การขออนุญาตถูกปฏิเสธ";
       text =
-        "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้";
+        "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้ หากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้";
       // footer =
       //   '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
     case error.POSITION_UNAVAILABLE:
       title = "ไม่สามารถเข้าถึงข้อมูลตำแหน่ง";
-      text = "ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้ง";
+      text = "ข้อมูลตำแหน่งไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่อีกครั้ง หากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้";
       break;
     case error.TIMEOUT:
       title = "หมดเวลาในการขอข้อมูล";
-      text = "การร้องขอใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง";
+      text = "การร้องขอใช้เวลานานเกินไป กรุณาลองใหม่อีกครั้ง หากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้";
       break;
     case error.UNKNOWN_ERROR:
       title = "เกิดข้อผิดพลาดที่ไม่คาดคิด";
       text =
-        "ไม่สามารถระบุข้อผิดพลาดได้ ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
+        "ไม่สามารถระบุข้อผิดพลาดได้ ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง หากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้";
       break;
   }
 
@@ -148,7 +102,7 @@ async function initializeMap(
   officer
 ) {
   // สร้างแผนที่ใหม่
-  map = L.map("map").setView([lat, lon], 13);
+  map = L.map("map").setView([lat, lon], 12);
 
   // เพิ่มแผนที่พื้นฐาน (OpenStreetMap)
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -201,39 +155,52 @@ async function initializeMap(
     )
     .openPopup();
 
-  function calculateAQI(pm25) {
-    if (pm25 <= 25) {
-      return {
-        aqi: Math.round((25 / 25) * pm25),
-        level: "ดีมาก",
-        color: "#007FFE",
-      }; // ฟ้า
-    } else if (pm25 <= 37) {
-      return {
-        aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
-        level: "ดี",
-        color: "#008000",
-      }; // เขียว
-    } else if (pm25 <= 50) {
-      return {
-        aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
-        level: "ปานกลาง",
-        color: "#C09200",
-      }; // เหลือง
-    } else if (pm25 <= 90) {
-      return {
-        aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
-        level: "มีผลกระทบต่อสุขภาพ",
-        color: "#E2543C",
-      }; // ส้ม
-    } else {
-      return {
-        aqi: Math.round(((500 - 201) / (pm25 - 91)) * (pm25 - 91) + 201),
-        level: "อันตราย",
-        color: "#FF0000",
-      }; // แดง
+    function calculateAQI(pm25) {
+      if (pm25 <= 25) {
+        return {
+          aqi: Math.round((25 / 25) * pm25),
+          level: "ดีมาก",
+          color: "#007FFE",
+        }; // ฟ้า
+      } else if (pm25 <= 37) {
+        return {
+          aqi: Math.round(((50 - 26) / (37 - 26)) * (pm25 - 26) + 26),
+          level: "ดี",
+          color: "#008000",
+        }; // เขียว
+      } else if (pm25 <= 50) {
+        return {
+          aqi: Math.round(((100 - 51) / (50 - 38)) * (pm25 - 38) + 51),
+          level: "ปานกลาง",
+          color: "#C09200",
+        }; // เหลือง
+      } else if (pm25 <= 90) {
+        return {
+          aqi: Math.round(((200 - 101) / (90 - 51)) * (pm25 - 51) + 101),
+          level: "มีผลกระทบต่อสุขภาพ",
+          color: "#E2543C",
+        }; // ส้ม
+      } else if (pm25 <= 150) {
+        return {
+          aqi: Math.round(((300 - 201) / (150 - 91)) * (pm25 - 91) + 201),
+          level: "อันตราย",
+          color: "#FF0000",
+        }; // แดง
+      } else if (pm25 <= 250) {
+        return {
+          aqi: Math.round(((400 - 301) / (250 - 151)) * (pm25 - 151) + 301),
+          level: "อันตรายมาก",
+          color: "#800000",
+        }; // น้ำตาล
+      } else {
+        return {
+          aqi: Math.round(((500 - 401) / (pm25 - 251)) * (pm25 - 251) + 401),
+          level: "อันตรายถึงชีวิต",
+          color: "#660000",
+        }; // ม่วงเข้ม
+      }
     }
-  }
+    
 
   function getTemperatureLevel(temp) {
     if (temp >= 45) {
@@ -388,7 +355,7 @@ async function checkin() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      text: "กรุณาลองใหม่อีกครั้ง",
+      html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -429,7 +396,7 @@ async function checkout() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      text: "กรุณาลองใหม่อีกครั้ง",
+      html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -512,8 +479,6 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
     const secureCode = await generateSecureCode();
     let typea = document.querySelector("#typea").value || 'ปกติ';
     let nte = document.querySelector("#otherDetails").value || (typeof staff !== 'undefined' ? staff : '');
-    
-    console.log(nte);
 
     if (typea === "อื่นๆ" && !nte) {
       throw new Error("อื่นๆ โปรดระบุ");
@@ -717,42 +682,7 @@ function checkinfo() {
   }
 }
 
-// Check localStorage for the saved state and apply it
-document.addEventListener("DOMContentLoaded", function () {
-  const mainContent = document.getElementById("mainContent");
-  const showHideButton = document.getElementById("showHide");
 
-  // Retrieve the stored state from localStorage
-  const isCollapsed = localStorage.getItem("containerCollapsed") === "true";
-
-  // Apply the collapsed state to the container
-  if (isCollapsed) {
-    mainContent.classList.add("collapsed");
-    showHideButton.textContent = "แสดง"; // Change button text to 'Show'
-  } else {
-    showHideButton.textContent = "ย่อ"; // Change button text to 'Hide'
-  }
-
-  // Add event listener for button click
-  showHideButton.addEventListener("click", function () {
-    // Toggle the collapsed state
-    mainContent.classList.toggle("collapsed");
-
-    // Update localStorage with the new state
-    const isCollapsed = mainContent.classList.contains("collapsed");
-    localStorage.setItem("containerCollapsed", isCollapsed);
-
-    // Change the button text based on the new state
-    showHideButton.textContent = isCollapsed ? "แสดง" : "ย่อ";
-
-    // Call checkonmap() if the state is expanded (not collapsed)
-    // if (!isCollapsed) {
-    //     checkonmap();
-    // }else{
-    //   map.remove(); // Remove the old map
-    // }
-  });
-});
 
 function alertUpdate() {
   // ตรวจสอบค่าใน local storage
@@ -792,6 +722,7 @@ function alertUpdate() {
 }
 
 // สร้าง QR-code
+// ฟังก์ชันสร้าง QR Code
 let qrVisible = false;
 let qrCode = null;
 let html5QrCode = new Html5Qrcode("reader");
@@ -799,32 +730,27 @@ let html5QrCode = new Html5Qrcode("reader");
 function toggleQRCode() {
   const refid = localStorage.getItem("refid");
   const role = localStorage.getItem("role");
-  if (role !== 'ceo' && role !== 'boss' && role !== 'assure') {
+  if (role !== "ceo" && role !== "boss" && role !== "assure") {
     Swal.fire("ท่านไม่สามารถสร้าง QR-code ได้!", "สำหรับหัวหน้า ผู้อำนวยการ ผู้ช่วย ผู้บริหาร เท่านั้น!", "error");
     return;
   }
-  let qrname ='';
-
-  // ctype, latitude, longitude
+  let qrname = "";
 
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-
   const ckDate = now.toLocaleDateString("th-TH");
 
-  if ((hours === 0 && minutes >= 0) ||  hours < 8 || (hours === 8 && minutes <= 30)
-  ) {
-    // In
-    qrname = 'In|'+refid+'|'+ckDate;
+  if ((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) {
+    qrname = "In|" + refid + "|" + ckDate;
   } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
-        Swal.fire("นอกช่วงเวลา !", "ท่านไม่สามารถสร้าง QR-code ได้ ในช่วงเวลา 8.31 - 16.29 น. !", "error");
+    Swal.fire("นอกช่วงเวลา !", "ท่านไม่สามารถสร้าง QR-code ได้ ในช่วงเวลา 8.31 - 16.29 น. !", "error");
     return;
   } else {
-    // Out
-    qrname = 'Out|'+refid+'|'+ckDate;
+    qrname = "Out|" + refid + "|" + ckDate;
   }
 
+  let encodedQR = btoa(qrname);
   let qrDiv = document.getElementById("qrcode");
   let readerDiv = document.getElementById("reader");
   let button = document.getElementById("button-qr");
@@ -832,17 +758,13 @@ function toggleQRCode() {
   if (!qrVisible) {
     qrDiv.style.display = "block";
     readerDiv.style.display = "none";
-
     stopScanner();
 
     if (!qrCode) {
       qrCode = new QRCode(qrDiv, {
-        text: qrname,
+        text: encodedQR,
         width: 200,
         height: 200,
-        // colorDark: "#ff5733", // เปลี่ยนสี QR Code (เช่น สีส้มแดง)
-        // colorLight: "#f0f0f0", // เปลี่ยนสีพื้นหลัง (เช่น สีเทาอ่อน)
-        // correctLevel: QRCode.CorrectLevel.H
       });
     }
     button.textContent = "ซ่อน QR Code";
@@ -855,9 +777,9 @@ function toggleQRCode() {
   qrVisible = !qrVisible;
 }
 
+// ฟังก์ชันอ่าน QR Code
 function startScan() {
   let readerDiv = document.getElementById("reader");
-
   readerDiv.style.display = "block";
 
   html5QrCode
@@ -867,7 +789,7 @@ function startScan() {
       onScanSuccess,
       onScanFailure
     )
-    .catch((err) => {
+    .catch(() => {
       Swal.fire({
         icon: "error",
         title: "ไม่สามารถเปิดกล้องได้",
@@ -878,107 +800,130 @@ function startScan() {
 
 function stopScanner() {
   if (html5QrCode.isScanning) {
-    html5QrCode
-      .stop()
-      .then(() => {
-        console.log("ปิดกล้องเรียบร้อย");
-      })
-      .catch((err) => {
-        Swal.fire({
-          icon: "error",
-          title: "เกิดข้อผิดพลาด",
-          text: "ไม่สามารถปิดกล้องได้ โปรดลองใหม่",
-        });
+    html5QrCode.stop().then(() => {
+      console.log("ปิดกล้องเรียบร้อย");
+    }).catch(() => {
+      Swal.fire({
+        icon: "error",
+        title: "เกิดข้อผิดพลาด",
+        text: "ไม่สามารถปิดกล้องได้ โปรดลองใหม่",
       });
+    });
   }
 }
 
-function onScanSuccess(decodedText, decodedResult) {
+function isBase64(str) {
+  try {
+    return btoa(atob(str)) === str; // ตรวจสอบว่าเข้ารหัสแล้วกลับมาเหมือนเดิมไหม
+  } catch (err) {
+    return false; // ถ้าเกิด error แสดงว่าไม่ใช่ Base64
+  }
+}
+
+function onScanSuccess(decodedText) {
   stopScanner();
 
-  const str = decodedText;
-  const splitStr = str.split("|");
-  
-  let part1 = splitStr[0];
-  let part2 = splitStr[1];
-  let part3 = splitStr[2];
-
-if (part1 !== 'In' && part1 !== 'Out' ){
-  Swal.fire({
-    title: "ผิดพลาด!",
-    html: 'QR-code นี้ไม่ได้สร้างด้วยระบบลงเวลา\n ' + decodedText,
-    icon: "error"
-  });
-  return;
-}
-
-  const boss = localStorage.getItem("boss");
-  const ceo = localStorage.getItem("ceo");
- 
-  if (boss !== part2 && ceo !== part2) {
+  if (!isBase64(decodedText)) {
     Swal.fire({
+      icon: "error",
       title: "ผิดพลาด!",
-      text: "QR-code ไม่สามารถใช้งานได้ ",
-      icon: "error"
+      html: 'QR Code ไม่ได้เข้ารหัส Base64',
+      showDenyButton: true,
+      confirmButtonText: "ปิด",
+      denyButtonText: "สแกนใหม่",
+      customClass: {
+        title: "text-danger",
+        content: "text-muted",
+        confirmButton: "btn btn-danger",
+        denyButton: "btn btn-primary",
+      },
+      footer: `ผลลัพธ์ : <a href="#">${decodedText}</a>`
+    }).then((result) => {
+      if (result.isDenied) {
+        startScan();
+      }
     });
     return;
   }
 
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  let formattedToday = now.toLocaleDateString("th-TH");
+  try {
+    const decodedBase64 = atob(decodedText);
+    const splitStr = decodedBase64.split("|");
 
-  if (formattedToday !== part3) {
-    Swal.fire({
-      title: "ผิดพลาด!",
-      text: "QR-code ไม่สามารถใช้งานได้",
-      icon: "error"
-    });
-    return;
-  }
+    if (splitStr.length < 3) {
+      throw new Error("ข้อมูลไม่ครบถ้วน");
+    }
 
-  const latitude = localStorage.getItem("oflat");
-  const longitude = localStorage.getItem("oflong");
-  const ctype = part1;
-  const staff = part2;
+    let part1 = splitStr[0];
+    let part2 = splitStr[1];
+    let part3 = splitStr[2];
 
-  if (part3 === localStorage.getItem("datecheck") || part3 === localStorage.getItem("datecheckout")) {
-    checkinfo();  
-  } else {
-    if (((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) && part1 === 'In') {
-      // มา
+    if (part1 !== 'In' && part1 !== 'Out') {
       Swal.fire({
-        title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
-        html: "กรุณากดยืนยันเพื่อดำเนินการ",
+        icon: "error",
+        title: "ผิดพลาด!",
+        html: 'รูปแบบไม่ถูกต้อง\n' + decodedBase64,
         showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: "ลงเวลามา",
+        confirmButtonText: "ปิด",
         denyButtonText: "สแกนใหม่",
         customClass: {
-          title: "text-success",
+          title: "text-danger",
           content: "text-muted",
-          confirmButton: "btn btn-success",
+          confirmButton: "btn btn-danger",
           denyButton: "btn btn-primary",
         },
       }).then((result) => {
+        if (result.isDenied) {
+          startScan();
+        }
+      });
+      return;
+    }
+  
+    const boss = localStorage.getItem("boss");
+    const ceo = localStorage.getItem("ceo");
+   
+    if (boss !== part2 && ceo !== part2) {
+
+      Swal.fire({
+        icon: "error",
+        title: "รหัสหัวหน้าไม่ถูกต้อง!",
+        html: "โปรดตรวจสอบหรือปรับปรุงข้อมูลการกำหนดหัวหน้า",
+        showDenyButton: true,
+        // showCancelButton: true,
+        confirmButtonText: "ปิด",
+        denyButtonText: "สแกนใหม่",
+        customClass: {
+          title: "text-danger",
+          content: "text-muted",
+          confirmButton: "btn btn-danger",
+          denyButton: "btn btn-primary",
+        },
+        footer: '<a href="https://wisanusenhom.github.io/sekatime/user.html">กำหนด หัวหน้า/ผู้อำนวยการ</a>'
+      }).then((result) => {
         if (result.isConfirmed) {
-          processCheckinOrCheckout(ctype, latitude, longitude,staff);
+         //
         } else if (result.isDenied) {
           startScan();
         }
       });
 
-    } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
-      window.location.href = "request.html";
-    } else if (part1 === 'Out') {
-      // กลับ
+      return;
+    }
+  
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    let formattedToday = now.toLocaleDateString("th-TH");
+  
+    if (formattedToday !== part3) {
       Swal.fire({
-        title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
-        html: "กรุณากดยืนยันเพื่อดำเนินการ",
+        icon: "error",
+        title: "ไม่ใช่วันที่ปัจจุบัน!",
+        html: part3,
         showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: "ลงเวลามา",
+        // showCancelButton: true,
+        confirmButtonText: "ปิด",
         denyButtonText: "สแกนใหม่",
         customClass: {
           title: "text-danger",
@@ -988,43 +933,142 @@ if (part1 !== 'In' && part1 !== 'Out' ){
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          processCheckinOrCheckout(ctype, latitude, longitude,staff);
+         //
         } else if (result.isDenied) {
           startScan();
         }
       });
-    }else{
-     Swal.fire("ผิดพลาด!", "ไม่สามารถตำเนินการได้!", "error");
-    return;
-    }    
+      return;
+    }
+  
+    const latitude = localStorage.getItem("oflat");
+    const longitude = localStorage.getItem("oflong");
+    const ctype = part1;
+    const staff = part2;
+  
+    if (part3 === localStorage.getItem("datecheck") || part3 === localStorage.getItem("datecheckout")) {
+      checkinfo();  
+    } else {
+      if (((hours === 0 && minutes >= 0) || hours < 8 || (hours === 8 && minutes <= 30)) && part1 === 'In') {
+        // มา
+        Swal.fire({
+          title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
+          html: "กรุณากดยืนยันเพื่อดำเนินการ",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "ลงเวลามา",
+          denyButtonText: "สแกนใหม่",
+          customClass: {
+            title: "text-success",
+            content: "text-muted",
+            confirmButton: "btn btn-success",
+            denyButton: "btn btn-primary",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            processCheckinOrCheckout(ctype, latitude, longitude,staff);
+          } else if (result.isDenied) {
+            startScan();
+          }
+        });
+  
+      } else if ((hours >= 8 && hours < 16) || (hours === 16 && minutes < 30)) {
+          Swal.fire({
+          icon: "warning",
+          title: "โปรดยื่นคำขอลงเวลา",
+          html: "อยู่ในช่วงเวลา 08:31 - 16:29 ไม่สามารถดำเนินการได้",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "ยื่นคำขอ",
+          denyButtonText: "สแกนใหม่",
+          customClass: {
+            title: "text-success",
+            content: "text-muted",
+            confirmButton: "btn btn-danger",
+            denyButton: "btn btn-primary",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "request.html";
+          } else if (result.isDenied) {
+            startScan();
+          }
+        });
+      } else if (part1 === 'Out') {
+        // กลับ
+        Swal.fire({
+          title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
+          html: "กรุณากดยืนยันเพื่อดำเนินการ",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "ลงเวลามา",
+          denyButtonText: "สแกนใหม่",
+          customClass: {
+            title: "text-danger",
+            content: "text-muted",
+            confirmButton: "btn btn-danger",
+            denyButton: "btn btn-primary",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            processCheckinOrCheckout(ctype, latitude, longitude,staff);
+          } else if (result.isDenied) {
+            startScan();
+          }
+        });
+      }else{
+        Swal.fire({
+          icon: "error",
+          title: "ผิดพลาด!",
+          html: 'ไม่สามารถดำเนินการได้',
+          showDenyButton: true,
+          // showCancelButton: true,
+          confirmButtonText: "ปิด",
+          denyButtonText: "สแกนใหม่",
+          customClass: {
+            title: "text-danger",
+            content: "text-muted",
+            confirmButton: "btn btn-danger",
+            denyButton: "btn btn-primary",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+           //
+          } else if (result.isDenied) {
+            startScan();
+          }
+        });
+      return;
+      }    
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "ผิดพลาด!",
+      html: 'QR Code ไม่ถูกต้องหรือข้อมูลไม่ครบถ้วน',
+      showDenyButton: true,
+      confirmButtonText: "ปิด",
+      denyButtonText: "สแกนใหม่",
+      customClass: {
+        title: "text-danger",
+        content: "text-muted",
+        confirmButton: "btn btn-danger",
+        denyButton: "btn btn-primary",
+      },
+    }).then((result) => {
+      if (result.isDenied) {
+        startScan();
+      }
+    });
   }
-
- 
-
-
-  // Swal.fire({
-  //   title: "ยืนยันข้อมูล?",
-  //   text: "ข้อมูลที่สแกนได้: " + decodedText,
-  //   showDenyButton: true,
-  //   showCancelButton: true,
-  //   confirmButtonText: "บันทึก",
-  //   denyButtonText: "สแกนใหม่",
-  // }).then((result) => {
-  //   if (result.isConfirmed) {
-  //     Swal.fire("บันทึกแล้ว!", "", "success");
-  //   } else if (result.isDenied) {
-  //     startScan();
-  //   }
-  // });
-
 }
 
-function onScanFailure(error) {
+function onScanFailure() {
   // Swal.fire({
-  //     icon: "warning",
-  //     title: "เกิดข้อผิดพลาด",
-  //     text: "ไม่สามารถสแกน QR Code ได้ โปรดลองอีกครั้ง",
-  //     timer: 2000,
-  //     showConfirmButton: false
+  //   icon: "warning",
+  //   title: "เกิดข้อผิดพลาด",
+  //   text: "ไม่สามารถสแกน QR Code ได้ โปรดลองอีกครั้ง",
+  //   timer: 2000,
+  //   showConfirmButton: false,
   // });
 }
