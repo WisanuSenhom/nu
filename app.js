@@ -1111,12 +1111,14 @@ async function fetchData(formattedDate) {
               "order": [[22, 'asc'], [5, 'asc']],
               "colReorder": true,
               "fixedHeader": true,
+              "select": true,
               "keys": true,
               "dom": 'lBfrtip',
               "lengthMenu": [ [10, 30, 50, 100, 150, -1], [10, 30, 50, 100, 150, "ทั้งหมด"] ],
-              "buttons": ['excel', 'print'],
-              "pageLength": 30
-          });
+              "buttons": ['copy', 'csv', 'excel', 'print', 'colvis' ],
+              "pageLength": 30,
+            
+        });
 
           // Hide the spinner after data is loaded
           document.getElementById("loadingSpinner").style.display = "none";
