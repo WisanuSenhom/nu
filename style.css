@@ -271,7 +271,7 @@ nav .menu a:hover {
   color: var(--text-color);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1408px) {
   nav .menu {
     display: none;
     flex-direction: column;
