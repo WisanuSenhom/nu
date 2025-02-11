@@ -242,7 +242,7 @@ async function handleTelegramCallback(){
   } else {
 
 
-    const steps = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣' ] 
+    const steps = [1,2,2.1,2.2,3,"END" ] 
     const Queue = Swal.mixin({
       progressSteps: steps,
       confirmButtonText: 'ถัดไป >',
