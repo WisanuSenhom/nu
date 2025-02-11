@@ -24,12 +24,12 @@ function getchatID() {
         content: "text-muted",
       },
       html: `<i class="fa-brands fa-telegram"></i> Telegram_ID : <strong> ${chatId} </strong>`,
-  footer: `<a href="https://t.me/TimestampNotifybot" target="_blank">
-            <i class="fa-solid fa-message"></i> เปิดแชท Telegram
-         </a><br>
-         <a href="https://t.me/setlanguage/thaith" target="_blank">
-            <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
-         </a>`,
+  // footer: `<a href="https://t.me/TimestampNotifybot" target="_blank">
+  //           <i class="fa-solid fa-message"></i> เปิดแชท Telegram
+  //        </a><br>
+  //        <a href="https://t.me/setlanguage/thaith" target="_blank">
+  //           <i class="fa-solid fa-language"></i> กำหนดภาษาไทยสำหรับ Telegram
+  //        </a>`,
     }).then((result) => {
       if (result.isConfirmed) {
         getLatestUpdate();
@@ -96,17 +96,31 @@ function updateChatId(chatId, usName) {
         })
         .then((data) => {
           // Show a success message using SweetAlert
+          const telegramqr = "https://lh5.googleusercontent.com/d/1aC5SsCMqeGgYIBzwNRdXnrjTZCyANIg-"; 
           Swal.fire({
             title: "การเชื่อมต่อสำเร็จ!",
             text: "การเชื่อมต่อกับ Telegram สำเร็จ",
             icon: "success",
+            imageUrl: telegramqr,
+            imageWidth: 200,
+            imageHeight: 240,
+            imageAlt: "QR Code",
             confirmButtonColor: "#008000",
-            allowOutsideClick: false,
+            allowOutsideClick: false, // ไม่อนุญาตให้คลิกนอกกล่องข้อความ
           }).then(() => {
-            localStorage.setItem("chatId ", chatId);
+            // เก็บ chatId ใน localStorage
+            localStorage.setItem("chatId", chatId);
+          
+            // เปิดแชท Telegram
+            window.open("https://t.me/TimestampNotifyBot", "_blank");
+          
+            // ส่งข้อความไปยัง Telegram
             sendMessageToTelegram(chatId);
+          
+            // เปลี่ยนหน้าไปที่ index.html
             window.location.href = "index.html";
           });
+          
         })
         .catch((error) => {
           // Handle any errors that occurred during the fetch
@@ -225,7 +239,7 @@ async function handleTelegramCallback(){
         confirmButtonColor: "#0ef",
     });
     }
- } else {
+  } else {
 
 
     const steps = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣' ] 
