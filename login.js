@@ -173,7 +173,7 @@ async function getMember(yourId, yourPic, profile, useApp) {
       localStorage.setItem(key, user[key]);
     }
   }
-// ดึงข้อมูลเกี่ยวกับอุปกรณ์
+ // ดึงข้อมูลเกี่ยวกับอุปกรณ์
   const systemInfo = {
     browser: {
       appName: navigator.appName,
@@ -197,11 +197,6 @@ async function getMember(yourId, yourPic, profile, useApp) {
       hardwareConcurrency: navigator.hardwareConcurrency || "Not specified",
       maxTouchPoints: navigator.maxTouchPoints,
     },
-    permissions: navigator.permissions ? {
-      geolocation: navigator.permissions.query({ name: 'geolocation' }),
-      microphone: navigator.permissions.query({ name: 'microphone' }),
-      camera: navigator.permissions.query({ name: 'camera' })
-    } : null,
     geolocation: navigator.geolocation ? "Supports geolocation" : "Does not support",
     bluetooth: navigator.bluetooth ? "Supports Bluetooth connection" : "Does not support",
     mediaDevices: navigator.mediaDevices ? "Supports media device access" : "Does not support",
@@ -212,9 +207,12 @@ async function getMember(yourId, yourPic, profile, useApp) {
       sessionStorage: window.sessionStorage ? "Supports SessionStorage" : "Does not support"
     }
   };
-  
+
+const systemInfoJSON = JSON.stringify(systemInfo, null, 2);
+
   try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(systemInfo))}`;
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${systemInfoJSON}`;
+   console.log(gas);
     const records = await fetch(gas);
     const data = await records.json();
 
