@@ -173,20 +173,50 @@ async function getMember(yourId, yourPic, profile, useApp) {
       localStorage.setItem(key, user[key]);
     }
   }
-  // ดึงข้อมูลเกี่ยวกับอุปกรณ์
-  const deviceInfo = {
-    os: navigator.platform, // ระบบปฏิบัติการ
-    userAgent: navigator.userAgent, // ข้อมูลเบราว์เซอร์
-    language: navigator.language, // ภาษา
-    onlineStatus: navigator.onLine ? "online" : "offline", // สถานะออนไลน์
-    screenResolution: `${window.screen.width}x${window.screen.height}`, // ขนาดหน้าจอ
-    deviceMemory: navigator.deviceMemory || "unknown", // ข้อมูลหน่วยความจำของอุปกรณ์
-    hardwareConcurrency: navigator.hardwareConcurrency, // จำนวนคอร์ของ CPU
+// ดึงข้อมูลเกี่ยวกับอุปกรณ์
+  const systemInfo = {
+    browser: {
+      appName: navigator.appName,
+      appVersion: navigator.appVersion,
+      platform: navigator.platform,
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      cookieEnabled: navigator.cookieEnabled,
+    },
+    internetConnection: {
+      onLine: navigator.onLine,
+      connection: navigator.connection ? {
+        type: navigator.connection.type,
+        effectiveType: navigator.connection.effectiveType,
+        downlink: navigator.connection.downlink,
+        rtt: navigator.connection.rtt
+      } : null,
+    },
+    device: {
+      deviceMemory: navigator.deviceMemory || "Not specified",
+      hardwareConcurrency: navigator.hardwareConcurrency || "Not specified",
+      maxTouchPoints: navigator.maxTouchPoints,
+    },
+    permissions: navigator.permissions ? {
+      geolocation: navigator.permissions.query({ name: 'geolocation' }),
+      microphone: navigator.permissions.query({ name: 'microphone' }),
+      camera: navigator.permissions.query({ name: 'camera' })
+    } : null,
+    geolocation: navigator.geolocation ? "Supports geolocation" : "Does not support",
+    bluetooth: navigator.bluetooth ? "Supports Bluetooth connection" : "Does not support",
+    mediaDevices: navigator.mediaDevices ? "Supports media device access" : "Does not support",
+    deviceOrientation: navigator.deviceOrientation ? "Supports device orientation" : "Does not support",
+    vibrate: navigator.vibrate ? "Supports vibration" : "Does not support",
+    storage: {
+      localStorage: window.localStorage ? "Supports LocalStorage" : "Does not support",
+      sessionStorage: window.sessionStorage ? "Supports SessionStorage" : "Does not support"
+    }
   };
-
-
+  
+  const systemInfoJSON = JSON.stringify(systemInfo, null, 2);
+  
   try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(deviceInfo))}`;
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${systemInfoJSON}`;
     const records = await fetch(gas);
     const data = await records.json();
 
