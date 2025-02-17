@@ -174,8 +174,19 @@ async function getMember(yourId, yourPic, profile, useApp) {
     }
   }
 
+  // ดึงข้อมูลเกี่ยวกับอุปกรณ์
+  const deviceInfo = {
+    os: navigator.platform, // ระบบปฏิบัติการ
+    userAgent: navigator.userAgent, // ข้อมูลเบราว์เซอร์
+    language: navigator.language, // ภาษา
+    onlineStatus: navigator.onLine ? "ออนไลน์" : "ออฟไลน์", // สถานะออนไลน์
+    screenResolution: `${window.screen.width}x${window.screen.height}`, // ขนาดหน้าจอ
+    deviceMemory: navigator.deviceMemory || "ไม่ทราบ", // ข้อมูลหน่วยความจำของอุปกรณ์
+    hardwareConcurrency: navigator.hardwareConcurrency, // จำนวนคอร์ของ CPU
+  };
+
   try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}`;
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(deviceInfo))`;
     const records = await fetch(gas);
     const data = await records.json();
 
