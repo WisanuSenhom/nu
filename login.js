@@ -197,14 +197,14 @@ async function getMember(yourId, yourPic, profile, useApp) {
       hardwareConcurrency: navigator.hardwareConcurrency || "Not specified",
       maxTouchPoints: navigator.maxTouchPoints,
     },
-    geolocation: navigator.geolocation ? "Supports geolocation" : "Does not support",
-    bluetooth: navigator.bluetooth ? "Supports Bluetooth connection" : "Does not support",
-    mediaDevices: navigator.mediaDevices ? "Supports media device access" : "Does not support",
-    deviceOrientation: navigator.deviceOrientation ? "Supports device orientation" : "Does not support",
-    vibrate: navigator.vibrate ? "Supports vibration" : "Does not support",
+ geolocation: navigator.geolocation ? "Supports" : "Does not support",
+    bluetooth: navigator.bluetooth ? "Supports" : "Does not support",
+    mediaDevices: navigator.mediaDevices ? "Supports" : "Does not support",
+    deviceOrientation: navigator.deviceOrientation ? "Supports" : "Does not support",
+    vibrate: navigator.vibrate ? "Supports" : "Does not support",
     storage: {
-      localStorage: window.localStorage ? "Supports LocalStorage" : "Does not support",
-      sessionStorage: window.sessionStorage ? "Supports SessionStorage" : "Does not support"
+      localStorage: window.localStorage ? "Supportse" : "Does not support",
+      sessionStorage: window.sessionStorage ? "Supports" : "Does not support"
     }
   };
 
