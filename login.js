@@ -173,7 +173,6 @@ async function getMember(yourId, yourPic, profile, useApp) {
       localStorage.setItem(key, user[key]);
     }
   }
-
   // ดึงข้อมูลเกี่ยวกับอุปกรณ์
   const deviceInfo = {
     os: navigator.platform, // ระบบปฏิบัติการ
@@ -185,8 +184,9 @@ async function getMember(yourId, yourPic, profile, useApp) {
     hardwareConcurrency: navigator.hardwareConcurrency, // จำนวนคอร์ของ CPU
   };
 
+
   try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(deviceInfo))`;
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(deviceInfo))}`;
     const records = await fetch(gas);
     const data = await records.json();
 
@@ -314,11 +314,10 @@ async function sentrequest(userId,hash_cid) {
     },
   });
 
-      try {
+  try {
     const response = await fetch(
       `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${userId}`
-);
-    
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to process: ${response.statusText}`);
