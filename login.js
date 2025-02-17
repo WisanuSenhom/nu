@@ -178,9 +178,9 @@ async function getMember(yourId, yourPic, profile, useApp) {
     os: navigator.platform, // ระบบปฏิบัติการ
     userAgent: navigator.userAgent, // ข้อมูลเบราว์เซอร์
     language: navigator.language, // ภาษา
-    onlineStatus: navigator.onLine ? "ออนไลน์" : "ออฟไลน์", // สถานะออนไลน์
+    onlineStatus: navigator.onLine ? "online" : "offline", // สถานะออนไลน์
     screenResolution: `${window.screen.width}x${window.screen.height}`, // ขนาดหน้าจอ
-    deviceMemory: navigator.deviceMemory || "ไม่ทราบ", // ข้อมูลหน่วยความจำของอุปกรณ์
+    deviceMemory: navigator.deviceMemory || "unknown", // ข้อมูลหน่วยความจำของอุปกรณ์
     hardwareConcurrency: navigator.hardwareConcurrency, // จำนวนคอร์ของ CPU
   };
 
