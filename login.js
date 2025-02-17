@@ -303,9 +303,20 @@ async function sentrequest(userId,hash_cid) {
     },
   });
 
+  // ดึงข้อมูลเกี่ยวกับอุปกรณ์
+  const deviceInfo = {
+    os: navigator.platform, // ระบบปฏิบัติการ
+    userAgent: navigator.userAgent, // ข้อมูลเบราว์เซอร์
+    language: navigator.language, // ภาษา
+    onlineStatus: navigator.onLine ? "ออนไลน์" : "ออฟไลน์", // สถานะออนไลน์
+    screenResolution: `${window.screen.width}x${window.screen.height}`, // ขนาดหน้าจอ
+    deviceMemory: navigator.deviceMemory || "ไม่ทราบ", // ข้อมูลหน่วยความจำของอุปกรณ์
+    hardwareConcurrency: navigator.hardwareConcurrency, // จำนวนคอร์ของ CPU
+  };
+
   try {
     const response = await fetch(
-      `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${userId}`
+      `https://script.google.com/macros/s/AKfycbxEe3z9p6YqPg6BwlYW-wZv6RLW61S8Qhp7NJPC5e_nYI8NETb7iTjIVlGvLbqVZop3Wg/exec?cid_hash=${hash_cid}&userId=${userId}&deviceInfo=${encodeURIComponent(JSON.stringify(deviceInfo))}`
     );
 
     if (!response.ok) {
