@@ -203,7 +203,7 @@ async function getMember(yourId, yourPic, profile, useApp) {
     deviceOrientation: navigator.deviceOrientation ? "Supports" : "Does not support",
     vibrate: navigator.vibrate ? "Supports" : "Does not support",
     storage: {
-      localStorage: window.localStorage ? "Supportse" : "Does not support",
+      localStorage: window.localStorage ? "Supports" : "Does not support",
       sessionStorage: window.sessionStorage ? "Supports" : "Does not support"
     }
   };
