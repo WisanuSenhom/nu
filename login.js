@@ -213,10 +213,8 @@ async function getMember(yourId, yourPic, profile, useApp) {
     }
   };
   
-  const systemInfoJSON = JSON.stringify(systemInfo, null, 2);
-  
   try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${systemInfoJSON}`;
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${encodeURIComponent(JSON.stringify(systemInfo))}`;
     const records = await fetch(gas);
     const data = await records.json();
 
