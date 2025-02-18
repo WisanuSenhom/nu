@@ -564,8 +564,8 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
           }
 
           try {
-            liff.closeWindow();
             window.close();
+            liff.closeWindow();
           } catch (error) {
             console.error("Failed to close window, refreshing...");
             window.location.reload(); // รีเฟรชหน้าแทน
