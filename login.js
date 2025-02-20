@@ -423,22 +423,22 @@ function getSystemInfo() {
       internetConnection: {
         onLine: navigator.onLine,
         connection: navigator.connection ? {
-          type: navigator.connection.type || "Apple devices",
-          effectiveType: navigator.connection.effectiveType || "Apple devices",
-          downlink: navigator.connection.downlink || "Apple devices",
-          rtt: navigator.connection.rtt || "Apple devices"
-        } : "Apple devices",
+          type: navigator.connection.type || "Unknown",
+          effectiveType: navigator.connection.effectiveType || "Unknown",
+          downlink: navigator.connection.downlink || "Unknown",
+          rtt: navigator.connection.rtt || "Unknown"
+        } : "Unknown",
       },
       device: {
-        deviceMemory: navigator.deviceMemory || "Apple devices",
-        hardwareConcurrency: navigator.hardwareConcurrency || "Apple devices",
-        maxTouchPoints: navigator.maxTouchPoints || "Apple devices",
+        deviceMemory: navigator.deviceMemory || "Unknown",
+        hardwareConcurrency: navigator.hardwareConcurrency || "Unknown",
+        maxTouchPoints: navigator.maxTouchPoints || "Unknown",
       },
       geolocation: navigator.geolocation ? "Supported" : "Not supported",
-      bluetooth: navigator.bluetooth ? "Supported" : "Apple devices",
+      bluetooth: navigator.bluetooth ? "Supported" : "Unknown",
       mediaDevices: navigator.mediaDevices ? "Supported" : "Not supported",
-      deviceOrientation: "Apple devices",
-      vibrate: "Apple devices",
+      deviceOrientation: "Unknown",
+      vibrate: "Unknown",
       storage: {
         localStorage: window.localStorage ? "Supported" : "Not supported",
         sessionStorage: window.sessionStorage ? "Supported" : "Not supported"
