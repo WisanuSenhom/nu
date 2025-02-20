@@ -148,127 +148,6 @@ async function handleTelegramCallback() {
   }
 }
 
-// login
-async function getMember(yourId, yourPic, profile, useApp) {
-  showLoading();
-
-  function displaySwal(icon, title, text, confirmButtonText, cancelButtonText, denyButtonText) {
-    return Swal.fire({
-      icon: icon,
-      title: title,
-      text: text,
-      allowOutsideClick: false,
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: cancelButtonText,
-      denyButtonText: denyButtonText,
-      showCancelButton: !!cancelButtonText,
-      showDenyButton: !!denyButtonText,
-      confirmButtonColor: "#008000",
-      cancelButtonColor: "#0073E6",
-    });
-  }
-
-  function saveUserToLocalStorage(user) {
-    for (let key in user) {
-      localStorage.setItem(key, user[key]);
-    }
-  }
- // ดึงข้อมูลเกี่ยวกับอุปกรณ์
-  const systemInfo = {
-    browser: {
-      appName: navigator.appName,
-      appVersion: navigator.appVersion,
-      platform: navigator.platform,
-      userAgent: navigator.userAgent,
-      language: navigator.language,
-      cookieEnabled: navigator.cookieEnabled,
-    },
-    internetConnection: {
-      onLine: navigator.onLine,
-      connection: navigator.connection ? {
-        type: navigator.connection.type,
-        effectiveType: navigator.connection.effectiveType,
-        downlink: navigator.connection.downlink,
-        rtt: navigator.connection.rtt
-      } : null,
-    },
-    device: {
-      deviceMemory: navigator.deviceMemory || "Not specified",
-      hardwareConcurrency: navigator.hardwareConcurrency || "Not specified",
-      maxTouchPoints: navigator.maxTouchPoints,
-    },
- geolocation: navigator.geolocation ? "Supports" : "Does not support",
-    bluetooth: navigator.bluetooth ? "Supports" : "Does not support",
-    mediaDevices: navigator.mediaDevices ? "Supports" : "Does not support",
-    deviceOrientation: navigator.deviceOrientation ? "Supports" : "Does not support",
-    vibrate: navigator.vibrate ? "Supports" : "Does not support",
-    storage: {
-      localStorage: window.localStorage ? "Supports" : "Does not support",
-      sessionStorage: window.sessionStorage ? "Supports" : "Does not support"
-    }
-  };
-
-const systemInfoJSON = JSON.stringify(systemInfo, null, 2);
-
-  try {
-    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${systemInfoJSON}`;
-    const records = await fetch(gas);
-    const data = await records.json();
-
-    if (data.user.length === 0) {
-      let headerText, bodyText;
-      if (useApp === "line") {
-        headerText = "ไม่พบข้อมูลของคุณในระบบ";
-        bodyText = "กรุณาสมัครสมาชิกก่อนใช้งาน";
-      } else if (useApp === "telegram") {
-        headerText = "ไม่พบการเชื่อมต่อ Telegram";
-        bodyText = "โปรด Login ด้วย Line ก่อน แล้วทำการ เชื่อมต่อ Telegram ที่เมนูหน้าลงเวลา";
-      }
-
-      const result = await displaySwal(
-        "error",
-        headerText,
-        bodyText,
-        "ลองอีกครั้ง",
-        "ยกเลิก",
-        "สมัครสมาชิกใหม่"
-      );
-
-      if (result.isConfirmed) {
-        main();
-      }
-      if (result.isDenied) {
-        window.location.href = "register.html";
-      }
-
-      try {
-        liff.closeWindow();
-      } catch (error) {
-        setTimeout(() => location.reload(), 500);
-      }
-    } else {
-      localStorage.setItem("yourpic", yourPic);
-      data.user.forEach(saveUserToLocalStorage);
-
-      Swal.fire({
-        icon: "success",
-        title: "ลงชื่อเข้าใช้สำเร็จแล้ว",
-        confirmButtonColor: "#0ef",
-        allowOutsideClick: false,
-      }).then(() => {
-        window.location.href = "index.html";
-      });
-    }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "ข้อผิดพลาด",
-      text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
-    });
-  } finally {
-    hideLoading();
-  }
-}
 
 // เพิ่มไลน์ใหม่
 // ตรวจสอบเลขบัตร
@@ -428,3 +307,199 @@ async function main2() {
     liff.login({ redirectUri: window.location.href });
   }
 }
+
+
+
+// login
+async function getMember(yourId, yourPic, profile, useApp) {
+  showLoading();
+
+  function displaySwal(icon, title, text, confirmButtonText, cancelButtonText, denyButtonText) {
+    return Swal.fire({
+      icon: icon,
+      title: title,
+      text: text,
+      allowOutsideClick: false,
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: cancelButtonText,
+      denyButtonText: denyButtonText,
+      showCancelButton: !!cancelButtonText,
+      showDenyButton: !!denyButtonText,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#0073E6",
+    });
+  }
+
+  function saveUserToLocalStorage(user) {
+    for (let key in user) {
+      localStorage.setItem(key, user[key]);
+    }
+  }
+
+  // ดึงข้อมูลเกี่ยวกับอุปกรณ์
+  const systemInfo = getSystemInfo();
+
+  // ตรวจสอบว่ารับค่าได้หรือไม่
+  if (!systemInfo) {
+    hideLoading();
+    return; // หากรับค่าไม่ได้ หยุดการทำงาน
+  }
+
+  const systemInfoJSON = JSON.stringify(systemInfo, null, 2);
+
+  try {
+    const gas = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${yourId}&profile=${profile}&deviceInfo=${systemInfoJSON}`;
+    const records = await fetch(gas);
+    const data = await records.json();
+
+    if (data.user.length === 0) {
+      let headerText, bodyText;
+      if (useApp === "line") {
+        headerText = "ไม่พบข้อมูลของคุณในระบบ";
+        bodyText = "กรุณาสมัครสมาชิกก่อนใช้งาน";
+      } else if (useApp === "telegram") {
+        headerText = "ไม่พบการเชื่อมต่อ Telegram";
+        bodyText = "โปรด Login ด้วย Line ก่อน แล้วทำการ เชื่อมต่อ Telegram ที่เมนูหน้าลงเวลา";
+      }
+
+      const result = await displaySwal(
+        "error",
+        headerText,
+        bodyText,
+        "ลองอีกครั้ง",
+        "ยกเลิก",
+        "สมัครสมาชิกใหม่"
+      );
+
+      if (result.isConfirmed) {
+        main();
+      }
+      if (result.isDenied) {
+        window.location.href = "register.html";
+      }
+
+      try {
+        liff.closeWindow();
+      } catch (error) {
+        setTimeout(() => location.reload(), 500);
+      }
+    } else {
+      localStorage.setItem("yourpic", yourPic);
+      data.user.forEach(saveUserToLocalStorage);
+
+      Swal.fire({
+        icon: "success",
+        title: "ลงชื่อเข้าใช้สำเร็จแล้ว",
+        confirmButtonColor: "#0ef",
+        allowOutsideClick: false,
+      }).then(() => {
+        window.location.href = "index.html";
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "ข้อผิดพลาด",
+      text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+    });
+  } finally {
+    hideLoading();
+  }
+}
+
+
+// ฟังก์ชัน getSystemInfo สำหรับ iOS
+function getSystemInfo() {
+  try {
+    const systemInfo = {
+      browser: {
+        appName: navigator.appName,
+        appVersion: navigator.appVersion,
+        platform: navigator.platform,
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        cookieEnabled: navigator.cookieEnabled,
+      },
+      internetConnection: {
+        onLine: navigator.onLine,
+        connection: navigator.connection ? {
+          type: navigator.connection.type || "Apple devices",
+          effectiveType: navigator.connection.effectiveType || "Apple devices",
+          downlink: navigator.connection.downlink || "Apple devices",
+          rtt: navigator.connection.rtt || "Apple devices"
+        } : "Apple devices",
+      },
+      device: {
+        deviceMemory: navigator.deviceMemory || "Apple devices",
+        hardwareConcurrency: navigator.hardwareConcurrency || "Apple devices",
+        maxTouchPoints: navigator.maxTouchPoints || "Apple devices",
+      },
+      geolocation: navigator.geolocation ? "Supported" : "Not supported",
+      bluetooth: navigator.bluetooth ? "Supported" : "Apple devices",
+      mediaDevices: navigator.mediaDevices ? "Supported" : "Not supported",
+      deviceOrientation: "Apple devices",
+      vibrate: "Apple devices",
+      storage: {
+        localStorage: window.localStorage ? "Supported" : "Not supported",
+        sessionStorage: window.sessionStorage ? "Supported" : "Not supported"
+      }
+    };
+    
+    // Extract device information from userAgent
+    const userAgent = navigator.userAgent;
+    let brand = "Unknown";
+    let model = "Unknown";
+
+    // Simple detection for popular devices and OS
+    if (/iPhone/i.test(userAgent)) {
+      brand = "Apple";
+      model = "iPhone";
+    } else if (/iPad/i.test(userAgent)) {
+      brand = "Apple";
+      model = "iPad";
+    } else if (/Android/i.test(userAgent)) {
+      brand = "Android";
+      model = "Android Device";
+    } else if (/Windows/i.test(userAgent)) {
+      brand = "Microsoft";
+      model = "Windows Device";
+    } else if (/Macintosh/i.test(userAgent) || /Mac OS/i.test(userAgent)) {
+      brand = "Apple";
+      model = "Mac";
+    }
+
+    const deviceName = navigator.platform || "Unknown Device";
+
+    if (systemInfo && Object.keys(systemInfo).length > 0) {
+      Swal.fire({
+        icon: "success",
+        title: `รับค่าอุปกรณ์ ${brand} ${model} สำเร็จ...`,
+        showConfirmButton: false,
+        timer: 2000,
+        customClass: {
+          title: "text-success"
+        }
+      });
+      return systemInfo;
+    } else {
+      throw new Error("ข้อมูลอุปกรณ์ว่างเปล่า");
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "ไม่สามารถรับค่าอุปกรณ์ได้",
+      text: "กรุณารีเฟรชหน้าเว็บและลองใหม่อีกครั้ง",
+      confirmButtonText: "ตกลง",
+      confirmButtonColor: "#FF0000",
+      allowOutsideClick: false
+    });
+
+    console.error("Error getting system info:", error);
+    return null;
+  }
+}
+
+// เรียกใช้ getSystemInfo() ทันทีเมื่อเปิดเว็บ
+window.addEventListener('DOMContentLoaded', () => {
+  getSystemInfo();
+});
