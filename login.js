@@ -498,8 +498,3 @@ function getSystemInfo() {
     return null;
   }
 }
-
-// เรียกใช้ getSystemInfo() ทันทีเมื่อเปิดเว็บ
-window.addEventListener('DOMContentLoaded', () => {
-  getSystemInfo();
-});
