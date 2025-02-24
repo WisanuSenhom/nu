@@ -843,8 +843,72 @@ function applyTheme(theme) {
   // บันทึกธีมใน Local Storage
   localStorage.setItem("theme", theme);
 
+  // อัปเดตค่า meta tags
+  updateMetaTags(theme);
+
   // เรียกฟังก์ชันที่เกี่ยวข้องอื่น ๆ 
   applyBackgroundImage();
+}
+
+// ฟังก์ชันสำหรับอัปเดต meta tags ตามธีม
+function updateMetaTags(theme) {
+  let themeColor = "#ffffff"; // ค่า default
+  let msNavButtonColor = "#ffffff"; // ค่า default
+  let appleStatusBarStyle = "default"; // ค่า default
+
+  switch (theme) {
+    case "light":
+      themeColor = "#ffffff";
+      msNavButtonColor = "#ffffff";
+      appleStatusBarStyle = "default";
+      break;
+    case "dark":
+      themeColor = "#000000";
+      msNavButtonColor = "#000000";
+      appleStatusBarStyle = "black-translucent";
+      break;
+    case "pink":
+      themeColor = "#f9c6d4";
+      msNavButtonColor = "#f9c6d4";
+      appleStatusBarStyle = "default";
+      break;
+    case "green":
+      themeColor = "#8cd99b";
+      msNavButtonColor = "#8cd99b";
+      appleStatusBarStyle = "default";
+      break;
+    case "blue":
+      themeColor = "#5bb5d3";
+      msNavButtonColor = "#5bb5d3";
+      appleStatusBarStyle = "default";
+      break;
+    case "purple":
+      themeColor = "#9c6fd4";
+      msNavButtonColor = "#9c6fd4";
+      appleStatusBarStyle = "default";
+      break;
+    case "yellow":
+      themeColor = "#ffdd44";
+      msNavButtonColor = "#ffdd44";
+      appleStatusBarStyle = "default";
+      break;
+    case "gray":
+      themeColor = "#c7c7c7";
+      msNavButtonColor = "#c7c7c7";
+      appleStatusBarStyle = "default";
+      break;
+    case "red":
+      themeColor = "#f44336";
+      msNavButtonColor = "#f44336";
+      appleStatusBarStyle = "default";
+      break;
+    // เพิ่มกรณีธีมใหม่ๆ ที่ต้องการ
+  }
+
+  // อัปเดตค่าใน meta tags
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", themeColor);
+  document.querySelector('meta[name="msapplication-navbutton-color"]').setAttribute("content", msNavButtonColor);
+  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute("content", appleStatusBarStyle);
 }
 
 // ตัวจัดการเหตุการณ์สำหรับปุ่มเปลี่ยนธีม
