@@ -895,7 +895,7 @@ function updateMetaTags(theme) {
     case "gray":
       themeColor = "#c7c7c7";
       msNavButtonColor = "#c7c7c7";
-      appleStatusBarStyle = "default";
+      appleStatusBarStyle = "black-translucent";
       break;
     case "red":
       themeColor = "#f44336";
