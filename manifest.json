@@ -4,8 +4,7 @@
   "description": "ระบบลงเวลาปฏิบัติงาน สำหรับการบันทึกเวลาและตรวจสอบการลงเวลา",
   "start_url": "https://wisanusenhom.github.io/nu/index.html",
   "display": "standalone",
-  "theme_color": "#bbdefb",
-  "background_color": "#bbdefb",
+
   "scope": "/nu/",
   "orientation": "portrait-primary",
   "icons": [
