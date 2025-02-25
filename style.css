@@ -338,7 +338,7 @@ body.menu-open {
   margin-top: 1rem;
   border: 1px solid var(--border-color);
   transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-  max-height: 1000px; /* Default height when shown */
+/*   max-height: 1000px;  */
   padding-bottom: 1rem; /* Default padding */
   overflow: hidden;
   position: relative; /* Needed for absolute positioning of the button */
