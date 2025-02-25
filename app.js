@@ -863,43 +863,43 @@ function updateMetaTags(theme) {
       appleStatusBarStyle = "default";
       break;
     case "dark":
-      themeColor = "#000000";
-      msNavButtonColor = "#000000";
+      themeColor = "#444";
+      msNavButtonColor = "#444";
       appleStatusBarStyle = "black-translucent";
       break;
     case "pink":
-      themeColor = "#f9c6d4";
-      msNavButtonColor = "#f9c6d4";
+      themeColor = "#ffebf0";
+      msNavButtonColor = "#ffebf0";
       appleStatusBarStyle = "default";
       break;
     case "green":
-      themeColor = "#8cd99b";
-      msNavButtonColor = "#8cd99b";
+      themeColor = "#e6f7e6";
+      msNavButtonColor = "#e6f7e6";
       appleStatusBarStyle = "default";
       break;
     case "blue":
-      themeColor = "#5bb5d3";
-      msNavButtonColor = "#5bb5d3";
+      themeColor = "#bbdefb";
+      msNavButtonColor = "#bbdefb";
       appleStatusBarStyle = "default";
       break;
     case "purple":
-      themeColor = "#9c6fd4";
-      msNavButtonColor = "#9c6fd4";
+      themeColor = "#f4ecff";
+      msNavButtonColor = "#f4ecff";
       appleStatusBarStyle = "default";
       break;
     case "yellow":
-      themeColor = "#ffdd44";
-      msNavButtonColor = "#ffdd44";
+      themeColor = "#fff9e6";
+      msNavButtonColor = "#fff9e6";
       appleStatusBarStyle = "default";
       break;
     case "gray":
-      themeColor = "#c7c7c7";
-      msNavButtonColor = "#c7c7c7";
+      themeColor = "#cfd8dc";
+      msNavButtonColor = "#cfd8dc";
       appleStatusBarStyle = "black-translucent";
       break;
     case "red":
-      themeColor = "#f44336";
-      msNavButtonColor = "#f44336";
+      themeColor = "#ffcdd2";
+      msNavButtonColor = "#ffcdd2";
       appleStatusBarStyle = "default";
       break;
     // เพิ่มกรณีธีมใหม่ๆ ที่ต้องการ
