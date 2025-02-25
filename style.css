@@ -737,3 +737,9 @@ thead th {
   width: auto; /* ปรับขนาดความกว้างให้เหมาะสม */
 }
 
+
+div.dt-button-collection {
+    background-color: var(--nav-bg) !important ;
+
+}
+
