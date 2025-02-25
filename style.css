@@ -260,6 +260,7 @@ nav .menu a {
 nav .menu a:hover {
   background-color: var(--nav-hover-bg);
   color: var(--secondary-text-color);
+  transform: scale(1.2); /* ขยายเล็กน้อย */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* เพิ่มเงา */
   transition: box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
