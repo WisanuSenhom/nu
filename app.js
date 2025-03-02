@@ -814,15 +814,24 @@ const menuToggle = document.getElementById("menu-toggle");
       }
     });
 
-// Theme Toggle
 // รายการธีมที่รองรับ
 const themes = ["light", "dark", "yellow", "green", "pink", "blue", "purple", "gray", "red"];
 let currentThemeIndex = themes.indexOf(localStorage.getItem("theme")) || 0;
 
+// ฟังก์ชันสำหรับตรวจสอบธีมระบบ
+function getSystemTheme() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return "dark";
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return "light";
+  } else {
+    return "light"; // ค่าเริ่มต้นหากไม่สามารถตรวจสอบธีมระบบได้
+  }
+}
 
 // ฟังก์ชันสำหรับเปลี่ยนธีม
 function applyTheme(theme) {
-  body.setAttribute("data-theme", theme);
+  document.body.setAttribute("data-theme", theme);
 
   // ไอคอนที่สอดคล้องกับแต่ละธีม
   const themeIcons = {
@@ -834,7 +843,7 @@ function applyTheme(theme) {
     yellow: '<i class="fa-solid fa-star"></i>',
     blue: '<i class="fa-solid fa-water"></i>',
     gray: '<i class="fa-solid fa-palette"></i>',
-    red: '<i class="fa-solid fa-fire"></i>', // ไอคอนสำหรับธีมสีเทา
+    red: '<i class="fa-solid fa-fire"></i>',
   };
 
   // ตั้งค่าไอคอนในปุ่ม
@@ -920,7 +929,13 @@ themeToggle.addEventListener("click", () => {
 
 // โหลดธีมจาก Local Storage เมื่อเริ่มต้น
 document.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme") || "light";
+  let savedTheme = localStorage.getItem("theme");
+
+  // หากไม่มีธีมที่บันทึกไว้ ให้ตรวจสอบธีมระบบ
+  if (!savedTheme) {
+    savedTheme = getSystemTheme();
+  }
+
   currentThemeIndex = themes.indexOf(savedTheme);
   applyTheme(savedTheme);
 });
