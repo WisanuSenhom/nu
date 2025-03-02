@@ -786,8 +786,8 @@ const menuToggle = document.getElementById("menu-toggle");
     const body = document.body;
 
     // Apply theme from localStorage on page load
-    const savedTheme = localStorage.getItem("theme") || "light";
-    applyTheme(savedTheme);
+    // const savedTheme = localStorage.getItem("theme") || "light";
+    // applyTheme(savedTheme);
 
     // Menu Toggle
     menuToggle.addEventListener("click", () => {
