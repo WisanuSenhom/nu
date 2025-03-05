@@ -607,6 +607,7 @@ button {
 
 .swal2-confirm {
   background-color: #2e712a;
+  padding: .625em 1.1em;
   /*   background-color: var(--button-bg) ;  */
   /*   color: var(--text-color) ;  */
 }
@@ -639,7 +640,7 @@ label.swal2-checkbox {
 }
 
 .nav-link {
-  padding: 0px 16px !important;
+  padding: 0px 12px !important;
 }
 
 .nav-tabs .nav-item.show .nav-link,
