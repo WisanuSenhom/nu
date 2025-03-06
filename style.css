@@ -60,7 +60,7 @@ body::before {
   --text-color: #f9f9f9;
   --button-bg: #666;
   --button-hover-bg: #555;
-  --button-cf-color: #888;
+  --button-cf-color: #222;
   --nav-bg: #444;
   --nav-shadow: rgba(255, 255, 255, 0.1);
   --border-color: #555;
