@@ -44,129 +44,139 @@ body::before {
   --text-color: #333;
   --button-bg: #4caf50;
   --button-hover-bg: #45a049;
+  --button-cf-color: #2e7d32; /* สีปุ่มยืนยัน */
   --nav-bg: #ffffff;
   --nav-shadow: rgba(0, 0, 0, 0.1);
   --border-color: #ddd;
   --link-color: #1e90ff;
   --secondary-text-color: #666;
-  --nav-hover-bg: #f1f1f1; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
-  --font-primary: 'Sarabun', sans-serif; 
+  --nav-hover-bg: #f1f1f1;
+  --font-primary: 'Sarabun', sans-serif;
 }
 
 [data-theme="dark"] {
-  --primary-color: #e0e0e0; /* สีหลักเข้มขึ้นสำหรับโลโก้ในโหมดมืด */
+  --primary-color: #e0e0e0;
   --background-color: #333;
   --text-color: #f9f9f9;
   --button-bg: #666;
   --button-hover-bg: #555;
+  --button-cf-color: #888;
   --nav-bg: #444;
   --nav-shadow: rgba(255, 255, 255, 0.1);
   --border-color: #555;
   --secondary-text-color: #c4c4c4;
-  --nav-hover-bg: #555; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #555;
   --font-primary: "Open Sans", sans-serif;
 }
 
 [data-theme="pink"] {
-  --primary-color: #c74e7f; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #c74e7f;
   --background-color: #ffd6e6;
   --text-color: #3f3f3f;
   --button-bg: #e87b9e;
   --button-hover-bg: #d96a8c;
+  --button-cf-color: #d14675;
   --nav-bg: #ffebf0;
   --nav-shadow: rgba(255, 105, 135, 0.25);
   --border-color: #e89ba9;
   --secondary-text-color: #944b6b;
-  --nav-hover-bg: #f8c6d9; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #f8c6d9;
   --font-primary: "Itim", cursive;
 }
 
 [data-theme="green"] {
-  --primary-color: #6ea86b; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #6ea86b;
   --background-color: #d3f2d3;
   --text-color: #394b39;
   --button-bg: #8ec59c;
   --button-hover-bg: #7eb886;
+  --button-cf-color: #5c946e;
   --nav-bg: #e6f7e6;
   --nav-shadow: rgba(144, 238, 144, 0.25);
   --border-color: #a7d4b8;
   --secondary-text-color: #5e765e;
-  --nav-hover-bg: #c9f1c9; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #c9f1c9;
   --font-primary: "Taviraj", serif;
 }
 
 [data-theme="purple"] {
-  --primary-color: #7f63b3; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #7f63b3;
   --background-color: #e4dbff;
   --text-color: #393a50;
   --button-bg: #9c88d8;
   --button-hover-bg: #8a76c4;
+  --button-cf-color: #7157a3;
   --nav-bg: #f4ecff;
   --nav-shadow: rgba(160, 136, 192, 0.25);
   --border-color: #c3aadf;
   --secondary-text-color: #675a8b;
-  --nav-hover-bg: #d1b1ff; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
-  --font-primary:  "K2D", sans-serif;
+  --nav-hover-bg: #d1b1ff;
+  --font-primary: "K2D", sans-serif;
 }
 
 [data-theme="yellow"] {
-  --primary-color: #e6b800; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #e6b800;
   --background-color: #fff5cc;
   --text-color: #5a511e;
   --button-bg: #ffda66;
   --button-hover-bg: #ffcc33;
+  --button-cf-color: #d4a200;
   --nav-bg: #fff9e6;
   --nav-shadow: rgba(255, 215, 115, 0.25);
   --border-color: #ffde99;
   --secondary-text-color: #87742f;
-  --nav-hover-bg: #fff2b3; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #fff2b3;
   --font-primary: "Niramit", sans-serif;
 }
 
 [data-theme="blue"] {
-  --primary-color: #1e88e5; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #1e88e5;
   --background-color: #e3f2fd;
   --text-color: #2c3e50;
   --button-bg: #64b5f6;
   --button-hover-bg: #42a5f5;
+  --button-cf-color: #1976d2;
   --nav-bg: #bbdefb;
   --nav-shadow: rgba(100, 181, 246, 0.25);
   --border-color: #90caf9;
   --link-color: #1e88e5;
   --secondary-text-color: #5c6bc0;
-  --nav-hover-bg: #a6c8ff; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #a6c8ff;
   --font-primary: "Mali", cursive;
 }
 
 [data-theme="gray"] {
-  --primary-color: #607d8b; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #607d8b;
   --background-color: #eceff1;
   --text-color: #37474f;
   --button-bg: #90a4ae;
   --button-hover-bg: #78909c;
+  --button-cf-color: #546e7a;
   --nav-bg: #cfd8dc;
   --nav-shadow: rgba(0, 0, 0, 0.1);
   --border-color: #b0bec5;
   --link-color: #607d8b;
   --secondary-text-color: #78909c;
-  --nav-hover-bg: #b0bec5; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #b0bec5;
   --font-primary: "Roboto", sans-serif;
 }
 
 [data-theme="red"] {
-  --primary-color: #d32f2f; /* สีหลักเข้มขึ้นสำหรับโลโก้ */
+  --primary-color: #d32f2f;
   --background-color: #ffebee;
   --text-color: #b71c1c;
   --button-bg: #e57373;
   --button-hover-bg: #ef5350;
+  --button-cf-color: #c62828;
   --nav-bg: #ffcdd2;
   --nav-shadow: rgba(0, 0, 0, 0.1);
   --border-color: #ef9a9a;
   --link-color: #d32f2f;
   --secondary-text-color: #c62828;
-  --nav-hover-bg: #ffb3b3; /* สีพื้นหลังเมนูเมื่อโฮเวอร์ */
+  --nav-hover-bg: #ffb3b3;
   --font-primary: "Pattaya", sans-serif;
 }
+
 
 nav {
   background-color: var(--nav-bg);
@@ -671,7 +681,7 @@ button {
 }
 
 .swal2-confirm {
-  background-color: var(--primary-color) ;
+  background-color:  var(--button-cf-color); 
   padding: .625em 1.1em;
   /*   color: var(--text-color) ;  */
 }
