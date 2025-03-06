@@ -104,11 +104,62 @@ async function initializeMap(
   // สร้างแผนที่ใหม่
   map = L.map("map").setView([lat, lon], 12);
 
-  // เพิ่มแผนที่พื้นฐาน (OpenStreetMap)
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "",
-  }).addTo(map);
+  // เพิ่มแผนที่พื้นฐาน 
+// ✅ 1. OpenStreetMap (OSM)
+var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+});
 
+// ✅ 2. OpenTopoMap
+var opentopomap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenTopoMap contributors',
+  maxZoom: 17
+});
+
+// ✅ 3. Google Maps
+var googleMaps = L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+  attribution: '&copy; Google Maps'
+});
+
+// ✅ 4. CartoDB (Light)
+var cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; CartoDB'
+});
+
+// ✅ 5. ESRI World Imagery
+var esriImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri & NASA'
+});
+
+// 📌 เลเยอร์แผนที่หลัก
+var baseMaps = {
+  "OpenStreetMap": osm,
+  "OpenTopoMap": opentopomap,
+  "Google Maps": googleMaps,
+  "CartoDB Light": cartoLight,
+  "ESRI World Imagery": esriImagery
+};
+
+   // ✅ เช็คว่าใน localStorage มีการบันทึกแผนที่ที่เลือกหรือไม่
+   var savedMap = localStorage.getItem('selectedMap');
+
+   // ถ้ามีการเลือกแผนที่ก่อนหน้านี้ ให้ใช้แผนที่นั้น
+   if (savedMap) {
+       baseMaps[savedMap].addTo(map);
+   } else {
+       // หากไม่มีการเลือกแผนที่ ให้ใช้ OpenStreetMap เป็นค่าเริ่มต้น
+       osm.addTo(map);
+   }
+
+// 📌 เมนูเลือกแผนที่
+L.control.layers(baseMaps).addTo(map);
+
+     // ฟังก์ชันสำหรับบันทึกแผนที่ที่เลือกใน localStorage
+     map.on('baselayerchange', function(e) {
+      var selectedMap = e.name;
+      localStorage.setItem('selectedMap', selectedMap);
+  });
+  
   const userLatLng = L.latLng(lat, lon);
   const destinationLatLng = L.latLng(destinationLat, destinationLon);
 
@@ -264,7 +315,7 @@ async function initializeMap(
       <div class="popup-content">
         <b>ตำแหน่งของคุณ</b><br>
         <a href="${googleMapUrl}" target="_blank">${lat}, ${lon}</a><br>
-        <span class="secondary-text">ระยะห่างจาก ${officer}: ${distanceInKilometers} กิโลเมตร</span><br>
+        <span class="secondary-text">ระยะห่างจาก ${officer}:<b> ${distanceInKilometers}</b> กิโลเมตร</span><br>
         <img src="${weatherImageUrl}" alt="Weather Icon"><br>
         <span class="weather-info">${weatherName}, อุณหภูมิ: ${weatherTemp}°C</span> 
         <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
@@ -687,11 +738,11 @@ function checkinfo() {
 function alertUpdate() {
   // ตรวจสอบค่าใน local storage
   const logUpdate = localStorage.getItem("logUpdate");
-  console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
+ // console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
 
   // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
   if (logUpdate !== "1" || !logUpdate) {
-    console.log("ข้อมูลยังไม่ได้รับการอัปเดต"); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
+  //  console.log("ข้อมูลยังไม่ได้รับการอัปเดต"); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
 
     // แสดง Swal.fire
     Swal.fire({
@@ -714,7 +765,7 @@ function alertUpdate() {
         if (result.value) {
           // ถ้าเลือกไม่ให้แสดงอีก
           localStorage.setItem("logUpdate", "1");
-          console.log("logUpdate set to 1"); // ตรวจสอบว่าได้ตั้งค่าแล้ว
+        //  console.log("logUpdate set to 1"); // ตรวจสอบว่าได้ตั้งค่าแล้ว
         }
       }
     });
