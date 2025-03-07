@@ -651,13 +651,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-   // ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
+// ฟังก์ชันสำหรับตั้งค่าภาพพื้นหลังจาก LocalStorage
 function applyBackgroundImage() {
   const storedImage = localStorage.getItem("backgroundImage");
+  const currentTheme = document.body.getAttribute("data-theme"); // ดึงธีมปัจจุบัน
+
+  // หากมีค่า storedImage ใช้ภาพนั้น
   if (storedImage) {
     document.body.style.backgroundImage = `url('${storedImage}')`;
   } else {
-    document.body.style.backgroundImage = "none";
+    // กำหนดภาพพื้นหลังเริ่มต้นตามธีม
+    const defaultBackgrounds = {
+      light: "url('https://cdn.pixabay.com/photo/2017/07/31/18/17/calendar-2559708_1280.jpg')",
+      dark: "url('https://cdn.pixabay.com/photo/2021/09/10/14/24/sky-6613380_1280.jpg')",
+      pink: "url('https://cdn.pixabay.com/photo/2024/03/15/18/53/magnolia-flower-8635583_1280.jpg')",
+      green: "url('https://cdn.pixabay.com/photo/2020/01/08/19/53/chamomile-4751118_1280.jpg')",
+      blue: "url('https://cdn.pixabay.com/photo/2023/04/04/22/06/cherry-blossoms-7900305_1280.jpg')",
+      purple: "url('https://cdn.pixabay.com/photo/2015/01/14/17/29/flowers-599344_1280.jpg')",
+      yellow: "url('https://cdn.pixabay.com/photo/2020/04/17/23/41/macro-5057196_1280.jpg')",
+      gray: "url('https://cdn.pixabay.com/photo/2023/05/29/00/24/blue-tit-8024809_1280.jpg')",
+      red: "url('https://cdn.pixabay.com/photo/2019/09/17/05/42/red-rose-4482541_1280.jpg')",
+    };
+
+    document.body.style.backgroundImage = defaultBackgrounds[currentTheme] || "none";
   }
 }
 
