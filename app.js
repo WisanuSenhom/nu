@@ -675,6 +675,22 @@ function applyBackgroundImage() {
 
     document.body.style.backgroundImage = defaultBackgrounds[currentTheme] || "none";
   }
+       // เปลี่ยน URL ของ iframe ตามธีม
+   const iframe = document.querySelector("iframe[title='datetime']");
+   const themeClockURLs = {
+     light: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc666666/tct/pct/ftb/tt0/td1/th1/tb4",
+     dark: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fcf9f9f9/tct/pct/ftb/tt0/td1/th1/tb4",
+     pink: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc944b6b/tct/pct/ftb/tt0/td1/th1/tb4",
+     green: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc394b39/tct/pct/ftb/tt0/td1/th1/tb4",
+     blue: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc1a3d63/tct/pct/ftb/tt0/td1/th1/tb4",
+     purple: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc9B59B6/tct/pct/ftb/tt0/td1/th1/tb4",
+     yellow: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc5a511e/tct/pct/ftb/tt0/td1/th1/tb4",
+     gray: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fc37474f/tct/pct/ftb/tt0/td1/th1/tb4",
+     red: "https://free.timeanddate.com/clock/i9pxn797/n3376/tlth39/fs18/fcb71c1c/tct/pct/ftb/tt0/td1/th1/tb4",
+   };
+ 
+   // ตั้งค่า iframe URL ตามธีม
+   iframe.src = themeClockURLs[currentTheme] || iframe.src;
 }
 
 // ฟังก์ชันลดขนาดภาพ
