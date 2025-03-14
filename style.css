@@ -21,6 +21,14 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
+  background-attachment: fixed;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 body::before {
@@ -34,7 +42,6 @@ body::before {
     var(--background-color-rgb),
     1
   ); /* Semi-transparent overlay */
-
   z-index: -1; /* Ensure the overlay stays behind the content */
 }
 
@@ -132,7 +139,7 @@ body::before {
 [data-theme="blue"] {
   --primary-color: #1e88e5;
   --background-color: #e3f2fd;
-  --text-color: #2c3e50;
+  --text-color: #1a3d63; /* Darker shade for more contrast */
   --button-bg: #64b5f6;
   --button-hover-bg: #42a5f5;
   --button-cf-color: #1976d2;
@@ -140,10 +147,11 @@ body::before {
   --nav-shadow: rgba(100, 181, 246, 0.25);
   --border-color: #90caf9;
   --link-color: #1e88e5;
-  --secondary-text-color: #5c6bc0;
+  --secondary-text-color: #3e4a77; /* Darker shade for secondary text */
   --nav-hover-bg: #a6c8ff;
   --font-primary: "Mali", cursive;
 }
+
 
 [data-theme="gray"] {
   --primary-color: #607d8b;
@@ -346,7 +354,7 @@ body.menu-open {
 
 .container {
   background: var(--nav-bg);
-  opacity: 0.96; /* ปรับความโปร่งแสง */
+  opacity: 0; /* เริ่มต้นจากโปร่งแสง */
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 4px 10px var(--nav-shadow);
@@ -356,11 +364,19 @@ body.menu-open {
   margin-top: 1rem;
   border: 1px solid var(--border-color);
   transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
-/*   max-height: 1000px;  */
   padding-bottom: 1rem; /* Default padding */
   overflow: hidden;
-  position: relative; /* Needed for absolute positioning of the button */
+  position: relative;
+  animation: containerFadeIn 1s ease-in-out forwards; 
+  animation-delay: 1s;
 }
+
+@keyframes containerFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
 
 /* Add a collapsed class to hide the container */
 .container.collapsed {
@@ -503,6 +519,32 @@ button {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
 }
 
+body {
+  font-family: var(--font-primary);  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-color, #f9f9f9);
+  color: var(--text-color, #333);
+  flex-direction: column;
+  padding-top: 70px;
+  padding-bottom: 120px;
+  transition: background-color 0.5s ease, color 0.5s ease;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  background-attachment: fixed;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .tracker-bar {
   background-color: var(--nav-bg);
   opacity: 0.85; /* ปรับความโปร่งแสง */
@@ -516,7 +558,23 @@ button {
   justify-content: center;
   gap: 10px;
   z-index: 1000;
+  opacity: 0; /* เริ่มต้นจากโปร่งแสง */
+  animation: trackerBarFadeIn 1s ease-in-out forwards; /* เพิ่มแอนิเมชั่น */
+  animation-delay: 1s; /* หน่วงเวลาให้แสดงหลังจาก body */
 }
+
+@keyframes trackerBarFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ปุ่มใน tracker-bar */
+.tracker-bar button {
+  opacity: 1; /* เริ่มต้นจากโปร่งแสง */
+  transition: opacity 0.3s ease-in-out; /* เพิ่มการเปลี่ยนแปลง opacity */
+}
+
+
 
 #otherInput {
   display: none;
