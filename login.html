@@ -37,9 +37,11 @@
        
               <button id="telegramlogin" type="button" class="btn btn-primary" onclick="telegramLogin()"><i class="fab fa-telegram"></i> เข้าสู่ระบบด้วย Telegram</button>
 
+		 <button id="googlelogin" type="button" class="btn btn-info" onclick="googleLogin()"><i class="fab fa-google"></i> เข้าสู่ระบบด้วย google</button>
+
 		 <button id="linerecovery" type="button" class="btn btn-warning" onclick="main2()"><i class="fa-solid fa-retweet"></i> กู้คืนบัญชี</button>
 
-              <button id="clearLocalStorageBtn" type="button" class="btn btn-danger" onclick="clearLocal()"><i class="fa-regular fa-circle-xmark"></i> ลบข้อมูลใน Local Storage</button>
+<!--               <button id="clearLocalStorageBtn" type="button" class="btn btn-danger" onclick="clearLocal()"><i class="fa-regular fa-circle-xmark"></i> ลบข้อมูลใน Local Storage</button> -->
 
   <div class="signup-link">
                 <a href="register.html">สมัครสมาชิก</a>
@@ -115,6 +117,8 @@
   <div class="loading-spinner"></div>
 </div>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+	  <!-- OAuth -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="login.js"></script>
 <script src="md5.js"></script>
