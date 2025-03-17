@@ -580,7 +580,7 @@ window.onload = function () {
 // แสดงปุ่มล็อกอิน Google ด้วย Swal
 function googleLogin() {
     Swal.fire({
-        html: '<div id="google-login-container"></div>',
+          html: '<div id="google-login-container" class="google-login-container"></div>', 
         showCloseButton: true,
         showCancelButton: false,
         focusConfirm: false,
