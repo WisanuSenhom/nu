@@ -12,13 +12,20 @@ async function getLocation() {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
-          Swal.fire({
-            icon: "success",
-            title: "พร้อม...",
+              const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
             showConfirmButton: false,
             timer: 1500,
-            customClass: {
-              title: "text-success"}
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "success",
+            title: "พร้อม"
           });
           
           alertUpdate();
