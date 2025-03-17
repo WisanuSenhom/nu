@@ -360,6 +360,9 @@ async function getMember(yourId, yourPic, profile, useApp) {
       } else if (useApp === "telegram") {
         headerText = "ไม่พบการเชื่อมต่อ Telegram";
         bodyText = "โปรด Login ด้วย Line ก่อน แล้วทำการ เชื่อมต่อ Telegram ที่เมนูหน้าลงเวลา";
+      }else if (useApp === "google") {
+        headerText = "ไม่พบการเชื่อมต่อ Google";
+        bodyText = "โปรด Login ด้วย Line ก่อน แล้วทำการ เชื่อมต่อ Google ที่เมนูหน้าลงเวลา";
       }
 
       const result = await displaySwal(
@@ -498,3 +501,104 @@ function getSystemInfo() {
     return null;
   }
 }
+
+
+// OAuth 2.0
+let decodedClientId = atob('Njg5NzYxNTA5MS1yMnR1bzEzZjdnbmY5aXJqcWJidHQzdTFpY2lnaG1zdi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbQ==');
+
+// จัดการ Credential Response
+async function handleCredentialResponse(response) {
+    const user = decodeJwtResponse(response.credential);
+    if (!user || !user.sub) {
+        Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถอ่านข้อมูลบัญชี Google ได้",
+            icon: "error"
+        });
+        return;
+    }
+    let googleId = user.sub;
+    let googleName = user.name;
+    let googleEmail = user.email;
+    let googlePicture = user.picture;
+
+    console.log("Google ID:", googleId);
+    console.log("Google Email:", googleEmail);
+    
+     const result = await Swal.fire({
+      title: `ยินดีต้อนรับคุณ\n${googleName}`,
+      html: `คุณต้องการเข้าสู่ระบบด้วยอีเมล์ ${googleEmail} หรือไม่?`,
+      imageUrl: googlePicture,
+      imageWidth: 150,
+      imageHeight: 150,
+      imageAlt: "User Photo",
+      showCancelButton: true,
+      confirmButtonText: "ยืนยัน",
+      cancelButtonText: "ยกเลิก",
+      confirmButtonColor: "#24A1DE",
+      cancelButtonColor: "#d33",
+      allowOutsideClick: false,
+    });
+
+    if (result.isConfirmed) {
+      await getMember(googleId, googlePicture, googleName, "google");
+    } else {
+      Swal.fire({
+        icon: "info",
+        title: "คุณเลือกยกเลิกการเข้าสู่ระบบ",
+        confirmButtonColor: "#0ef",
+      });
+    }
+  }
+
+// ฟังก์ชันแปลง JWT Token
+function decodeJwtResponse(token) {
+    try {
+        let base64Url = token.split('.')[1];
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4 !== 0) {
+            base64 += '=';
+        }
+        let jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error("JWT Decode Error:", error);
+        return null;
+    }
+}
+
+// โหลดระบบ Google Login
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: decodedClientId,
+        callback: handleCredentialResponse
+    });
+};
+
+// แสดงปุ่มล็อกอิน Google ด้วย Swal
+function googleLogin() {
+    Swal.fire({
+        html: '<div id="google-login-container"></div>',
+        showCloseButton: true,
+        showCancelButton: false,
+        focusConfirm: false,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            setTimeout(() => {
+                google.accounts.id.renderButton(
+                    document.getElementById("google-login-container"),
+                    {
+                        theme: "filled_blue",
+                        size: "large",
+                        text: "sign_in_with",
+                        shape: "pill",
+                    }
+                );
+            }, 100);
+        }
+    });
+}
+
