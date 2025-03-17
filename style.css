@@ -874,5 +874,11 @@ thead th {
 
 div.dt-button-collection {
     background-color: var(--nav-bg) !important ;
-
 }
+
+       .google-login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
