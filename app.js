@@ -1245,3 +1245,164 @@ function clearTableData() {
   const reporttb = document.getElementById("reportdata");
   reporttb.innerHTML = ""; // ล้างข้อมูลใน tbody
 }
+
+// OAuth 2.0
+let decodedClientId = atob('Njg5NzYxNTA5MS1yMnR1bzEzZjdnbmY5aXJqcWJidHQzdTFpY2lnaG1zdi5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbQ==');
+
+// ฟังก์ชันอัพเดทข้อมูลลง Google Sheets
+function updateGoogleId(googleId, googleName, googleEmail) {
+    if (!googleId || !googleEmail) {
+        Swal.fire({
+            title: "ผิดพลาด!",
+            text: "ไม่สามารถดำเนินการได้",
+            icon: "error"
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: "กำลังเชื่อมต่อกับ Google...",
+        text: "โปรดรอสักครู่",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    let uuid = localStorage.getItem("uuid");
+    if (!uuid) {
+        Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่พบข้อมูล UUID",
+            icon: "error",
+        });
+        return;
+    }
+
+    let urlperson = `https://script.google.com/macros/s/AKfycby3NXj2VrZg4KEc98fDk5WCopX1N0mf8QNvVOS7pphbe-ZFa_0E6H4z88F5az7b8LUafQ/exec`;
+    let dataperson = `?id=${uuid}&googleId=${googleId}&googleEmail=${googleEmail}`;
+
+    fetch(urlperson + dataperson)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            Swal.fire({
+                title: "การเชื่อมต่อสำเร็จ!",
+                html: `การเชื่อมต่อกับ ${googleEmail} สำเร็จ`,
+                icon: "success",
+                allowOutsideClick: false,
+            }).then(() => {
+                localStorage.setItem("googleId", googleId);
+                localStorage.setItem("googleEmail", googleEmail);
+                window.location.href = "index.html";
+            });
+        })
+        .catch((error) => {
+            console.error("Fetch error:", error);
+            Swal.fire({
+                title: "เกิดข้อผิดพลาด",
+                text: "ไม่สามารถแก้ไขข้อมูลได้",
+                icon: "error",
+            });
+        });
+}
+
+// จัดการ Credential Response
+function handleCredentialResponse(response) {
+    const user = decodeJwtResponse(response.credential);
+    if (!user || !user.sub) {
+        Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถอ่านข้อมูลบัญชี Google ได้",
+            icon: "error"
+        });
+        return;
+    }
+
+    let googleId = user.sub;
+    let googleName = user.name;
+    let googleEmail = user.email;
+    console.log("Google ID:", googleId);
+    console.log("Google Email:", googleEmail);
+    
+    updateGoogleId(googleId, googleName, googleEmail);
+}
+
+// ฟังก์ชันแปลง JWT Token
+function decodeJwtResponse(token) {
+    try {
+        let base64Url = token.split('.')[1];
+        let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4 !== 0) {
+            base64 += '=';
+        }
+        let jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+            '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error("JWT Decode Error:", error);
+        return null;
+    }
+}
+
+// โหลดระบบ Google Login
+window.onload = function () {
+    google.accounts.id.initialize({
+        client_id: decodedClientId,
+        callback: handleCredentialResponse
+    });
+};
+
+// แสดงปุ่มล็อกอิน Google ด้วย Swal
+function googlelogin() {
+  let storedGoogleId = localStorage.getItem("googleId");
+  let storedGoogleEmail = localStorage.getItem("googleEmail");
+
+  if (storedGoogleId && storedGoogleEmail) {
+      Swal.fire({
+          title: "คุณได้ล็อกอินอยู่แล้ว",
+          text: `บัญชีปัจจุบัน: ${storedGoogleEmail}\nคุณต้องการดำเนินการต่อหรือไม่?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "ดำเนินการต่อ",
+          cancelButtonText: "ยกเลิก",
+      }).then((result) => {
+          if (result.isConfirmed) {
+              showGoogleLoginButton(); // แสดงปุ่มล็อกอิน Google
+          }
+      });
+  } else {
+      showGoogleLoginButton(); // แสดงปุ่มล็อกอิน Google ทันทีถ้ายังไม่มีบัญชีล็อกอิน
+  }
+}
+
+function showGoogleLoginButton() {
+  Swal.fire({
+    html: '<div id="google-login-container" class="google-login-container"></div>', 
+      showCloseButton: true,
+      showCancelButton: false,
+      focusConfirm: false,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+          setTimeout(() => {
+              google.accounts.id.renderButton(
+                  document.getElementById("google-login-container"),
+                  {
+                      theme: "filled_blue",
+                      size: "large",
+                      text: "sign_in_with",
+                      shape: "pill",
+                  }
+              );
+          }, 100);
+      }
+  });
+}
