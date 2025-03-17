@@ -1331,7 +1331,22 @@ function handleCredentialResponse(response) {
     console.log("Google ID:", googleId);
     console.log("Google Email:", googleEmail);
     
-    updateGoogleId(googleId, googleName, googleEmail);
+        Swal.fire({
+      title: 'ยืนยันข้อมูลบัญชี Google',
+      html: `
+          <p><strong>ชื่อ:</strong> ${googleName}</p>
+          <p><strong>อีเมล์:</strong> ${googleEmail}</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'ยืนยัน',
+      cancelButtonText: 'ยกเลิก',
+      focusConfirm: false,
+      allowOutsideClick: false,
+      preConfirm: () => {
+          updateGoogleId(googleId, googleName, googleEmail);
+      }
+  });
 }
 
 // ฟังก์ชันแปลง JWT Token
