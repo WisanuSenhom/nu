@@ -404,7 +404,90 @@ function displayLatLon(lat, lon) {
   document.getElementById("llon").value = lon;
 }
 
-// in-out
+// in-out-old
+// async function checkin() {
+//   let latitude = document.querySelector("#llat").value;
+//   let longitude = document.querySelector("#llon").value;
+
+//   if (!latitude || !longitude) {
+//     Swal.fire({
+//       icon: "warning",
+//       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
+//       html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+//       confirmButtonText: "ตกลง",
+//       allowOutsideClick: false,
+//       customClass: {
+//         title: "text-warning",
+//         content: "text-muted",
+//         confirmButton: "btn btn-warning",
+//       },
+//     });
+//     return; // Exit the function if required values are missing
+//   }
+
+//   Swal.fire({
+//     title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
+//     html: "กรุณากดยืนยันเพื่อดำเนินการ",
+//     showCancelButton: true,
+//     confirmButtonText: "ยืนยัน",
+//     cancelButtonText: "ยกเลิก",
+//     allowOutsideClick: false,
+//     cancelButtonColor: "#6F7378",
+//     customClass: {
+//       title: "text-success",
+//       content: "text-muted",
+//       confirmButton: "btn btn-success",
+//     },
+//     didOpen: async () => {
+//       Swal.getConfirmButton().addEventListener("click", async () => {
+//         await processCheckinOrCheckout("In", latitude, longitude);
+//       });
+//     },
+//   });
+// }
+
+// async function checkout() {
+//   let latitude = document.querySelector("#llat").value;
+//   let longitude = document.querySelector("#llon").value;
+
+//   if (!latitude || !longitude) {
+//     Swal.fire({
+//       icon: "warning",
+//       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
+//       html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+//       confirmButtonText: "ตกลง",
+//       allowOutsideClick: false,
+//       customClass: {
+//         title: "text-warning",
+//         content: "text-muted",
+//         confirmButton: "btn btn-warning",
+//       },
+//     });
+//     return;
+//   }
+
+//   Swal.fire({
+//     title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
+//     html: "กรุณากดยืนยันเพื่อดำเนินการ",
+//     showCancelButton: true,
+//     confirmButtonText: "ยืนยัน",
+//     cancelButtonText: "ยกเลิก",
+//     allowOutsideClick: false,
+//     cancelButtonColor: "#6F7378",
+//     customClass: {
+//       title: "text-danger",
+//       content: "text-muted",
+//       confirmButton: "btn btn-danger",
+//     },
+//     didOpen: async () => {
+//       Swal.getConfirmButton().addEventListener("click", async () => {
+//         await processCheckinOrCheckout("Out", latitude, longitude);
+//       });
+//     },
+//   });
+// }
+
+// in-out-new
 async function checkin() {
   let latitude = document.querySelector("#llat").value;
   let longitude = document.querySelector("#llon").value;
@@ -413,7 +496,7 @@ async function checkin() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+      html: 'กรุณาลองใหม่อีกครั้ง<br>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -422,9 +505,40 @@ async function checkin() {
         confirmButton: "btn btn-warning",
       },
     });
-    return; // Exit the function if required values are missing
+    return;
   }
 
+  let now = new Date();
+  let hour = now.getHours();
+  let minute = now.getMinutes().toString().padStart(2, "0"); // ให้แสดงเลข 2 หลัก เช่น 05 แทน 5
+  let currentTime = `${hour}:${minute}`;
+
+  if (hour >= 0 && hour < 5) {
+    Swal.fire({
+      icon: "warning",
+      title: `ขณะนี้เวลา ${currentTime} น.`,
+      html: "ขณะนี้เป็นช่วงเวลากลางดึก ฟ้ายังมืดอยู่ 🌙<br>คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ?",
+      showCancelButton: true,
+      confirmButtonText: "ดำเนินการต่อ",
+      cancelButtonText: "ยกเลิก",
+      allowOutsideClick: false,
+      cancelButtonColor: "#6F7378",
+      customClass: {
+        title: "text-danger",
+        content: "text-muted",
+        confirmButton: "btn btn-danger",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showCheckinConfirmation(latitude, longitude);
+      }
+    });
+  } else {
+    showCheckinConfirmation(latitude, longitude);
+  }
+}
+
+async function showCheckinConfirmation(latitude, longitude) {
   Swal.fire({
     title: "คุณต้องการบันทึกเวลาการปฏิบัติงานหรือไม่?",
     html: "กรุณากดยืนยันเพื่อดำเนินการ",
@@ -446,6 +560,7 @@ async function checkin() {
   });
 }
 
+
 async function checkout() {
   let latitude = document.querySelector("#llat").value;
   let longitude = document.querySelector("#llon").value;
@@ -454,7 +569,7 @@ async function checkout() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      html: 'กรุณาลองใหม่อีกครั้ง\nหากรับค่าพิกัดไม่ได้ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+      html: 'กรุณาลองใหม่อีกครั้ง<br>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -466,6 +581,37 @@ async function checkout() {
     return;
   }
 
+  let now = new Date();
+  let hour = now.getHours();
+  let minute = now.getMinutes().toString().padStart(2, "0");
+  let currentTime = `${hour}:${minute}`;
+
+  if (hour >= 19 && hour <= 23) {
+    Swal.fire({
+      icon: "info",
+      title: `ขณะนี้เวลา ${currentTime} น.`,
+      html: "ขณะนี้เป็นช่วงเวลาค่ำ ฟ้ามืดแล้ว 🌙<br>คุณต้องการบันทึกเวลาการกลับตอนนี้หรือไม่?",
+      showCancelButton: true,
+      confirmButtonText: "ดำเนินการต่อ",
+      cancelButtonText: "ยกเลิก",
+      allowOutsideClick: false,
+      cancelButtonColor: "#6F7378",
+      customClass: {
+        title: "text-primary",
+        content: "text-muted",
+        confirmButton: "btn btn-primary",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showCheckoutConfirmation(latitude, longitude);
+      }
+    });
+  } else {
+    showCheckoutConfirmation(latitude, longitude);
+  }
+}
+
+async function showCheckoutConfirmation(latitude, longitude) {
   Swal.fire({
     title: "คุณต้องการบันทึกเวลาการกลับหรือไม่?",
     html: "กรุณากดยืนยันเพื่อดำเนินการ",
