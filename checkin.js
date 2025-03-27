@@ -1276,3 +1276,54 @@ function onScanFailure() {
   //   showConfirmButton: false,
   // });
 }
+
+
+// ขอสิทธิ์แจ้งเตือนจากผู้ใช้
+async function requestNotificationPermission() {
+    if (Notification.permission !== "granted") {
+        await Notification.requestPermission();
+    }
+}
+
+// ฟังก์ชันแจ้งเตือน
+function showNotification() {
+   let nows = new Date();
+    let formatToday = nows.toLocaleDateString("th-TH");
+    if (Notification.permission === "granted" && formatToday !== localStorage.getItem("datecheck") ) {
+        let options = {
+            body: "💼 โปรดลงเวลาปฏิบัติงาน คลิกที่นี่",
+            icon: "https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5",
+        };
+
+        let notification = new Notification("🚨 【 แจ้งเตือนสำคัญ 】 🚨", options);
+
+        // ถ้าผู้ใช้คลิกแจ้งเตือน
+        notification.onclick = () => {
+            window.open("https://wisanusenhom.github.io/nu?checkin=true", "_blank"); // URL ที่จะเปิด
+            notification.close();
+        };
+    }
+}
+
+// ฟังก์ชันตั้งเวลาแจ้งเตือน (06:00 น.)
+function startNotificationScheduler(hour, minute) {
+    setInterval(() => {
+        let now = new Date();
+        if (now.getHours() === hour && now.getMinutes() === minute) {
+            showNotification();
+        }
+    }, 60 * 1000); // ตรวจสอบทุก 1 นาที
+}
+
+// เรียกใช้งาน
+requestNotificationPermission().then(() => {
+    startNotificationScheduler(6, 0);
+});
+
+// ตรวจสอบพารามิเตอร์ใน URL
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('checkin') && urlParams.get('checkin') === 'true') {
+        checkin(); // เรียกฟังก์ชัน checkin() เมื่อพารามิเตอร์ตรงกับที่กำหนด
+    }
+};
