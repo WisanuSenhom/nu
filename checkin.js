@@ -1287,9 +1287,16 @@ async function requestNotificationPermission() {
 
 // ฟังก์ชันแจ้งเตือน
 function showNotification() {
-   let nows = new Date();
+    let nows = new Date();
     let formatToday = nows.toLocaleDateString("th-TH");
-    if (Notification.permission === "granted" && formatToday !== localStorage.getItem("datecheck") ) {
+
+    // ถ้าผู้ใช้เคยลงเวลาแล้ว หรือเคยปิดแจ้งเตือนวันนี้ ไม่ต้องแจ้งเตือน
+    if (localStorage.getItem("datecheck") === formatToday || localStorage.getItem("notifiedToday") === formatToday) {
+        console.log("✅ ผู้ใช้ลงเวลาแล้ว หรือเห็นแจ้งเตือนแล้ววันนี้ ไม่ต้องแจ้งเตือนอีก");
+        return;
+    }
+
+    if (Notification.permission === "granted") {
         let options = {
             body: "💼 โปรดลงเวลาปฏิบัติงาน คลิกที่นี่",
             icon: "https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5",
@@ -1299,31 +1306,51 @@ function showNotification() {
 
         // ถ้าผู้ใช้คลิกแจ้งเตือน
         notification.onclick = () => {
-            window.open("https://wisanusenhom.github.io/nu?checkin=true", "_blank"); // URL ที่จะเปิด
+            window.open("https://wisanusenhom.github.io/nu/?checkin=true", "_blank");
             notification.close();
+            localStorage.setItem("notifiedToday", formatToday); // บันทึกว่าเห็นแจ้งเตือนแล้ว
+        };
+
+        // ถ้าผู้ใช้ปิดแจ้งเตือนเอง
+        notification.onclose = () => {
+            localStorage.setItem("notifiedToday", formatToday); // บันทึกว่าเห็นแจ้งเตือนแล้ว
         };
     }
 }
 
-// ฟังก์ชันตั้งเวลาแจ้งเตือน (06:00 น.)
-function startNotificationScheduler(hour, minute) {
+// ฟังก์ชันตั้งเวลาแจ้งเตือน (06:00 - 08:00 น.)
+function startNotificationScheduler() {
     setInterval(() => {
         let now = new Date();
-        if (now.getHours() === hour && now.getMinutes() === minute) {
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+
+        // แจ้งเตือนถ้าอยู่ในช่วงเวลา 06:00 - 08:00 น. และยังไม่เคยแจ้งเตือนในวันนี้
+        if (hours >= 6 && hours < 8 && minutes % 10 === 0) {
             showNotification();
         }
     }, 60 * 1000); // ตรวจสอบทุก 1 นาที
 }
 
-// เรียกใช้งาน
-requestNotificationPermission().then(() => {
-    startNotificationScheduler(6, 0);
+// เช็คว่าผู้ใช้เคยลงเวลาหรือยัง
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    let nows = new Date();
+    let formatToday = nows.toLocaleDateString("th-TH");
+
+    // ถ้าผู้ใช้เคยลงเวลาแล้ววันนี้ ไม่ต้องแจ้งเตือน
+    if (localStorage.getItem("datecheck") === formatToday) {
+        console.log("✅ ผู้ใช้ลงเวลาแล้ววันนี้ ไม่ต้องแจ้งเตือน");
+        return;
+    }
+
+    // ถ้ามีพารามิเตอร์ checkin=true ให้บันทึกวันที่ลงเวลา
+    if (urlParams.has('checkin') && urlParams.get('checkin') === 'true') {
+        console.log("✅ ลงเวลาเรียบร้อย บันทึกวันที่:", formatToday);
+    }
 });
 
-// ตรวจสอบพารามิเตอร์ใน URL
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('checkin') && urlParams.get('checkin') === 'true') {
-        checkin(); // เรียกฟังก์ชัน checkin() เมื่อพารามิเตอร์ตรงกับที่กำหนด
-    }
-};
+// เรียกใช้งาน
+requestNotificationPermission().then(() => {
+    startNotificationScheduler();
+});
