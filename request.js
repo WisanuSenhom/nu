@@ -598,9 +598,9 @@ async function checktoday(){
   await  fetch(gas + qdata)
         .then(response => response.json())
         .then(data => {
-            if (data.cc && data.cc.length > 0) {
+            if (data) {
                 // Assuming the server response has a property named 'cc' and 'intime'
-                var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \n ลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`; // Assuming you want the first 'intime' value
+                var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.intype} \n ลงเวลาเมื่อ ${data.intime}  ระยะ ${data.indistan} ${data.inunit}`; // Assuming you want the first 'intime' value
 
                 // Set the text content of the element with the fetched data
                  utimelineElement.innerText = timelineData;
@@ -608,7 +608,7 @@ async function checktoday(){
                 const cktoday = new Date();
                 const ckfd = cktoday.toLocaleDateString("th-TH"); 
                 localStorage.setItem("datecheck", ckfd);
-                localStorage.setItem("datetimecheck", data.cc[0].intime);
+                localStorage.setItem("datetimecheck", data.intime);
                 Swal.fire({
                     title: 'พบการลงเวลาในวันนี้',
                     html: `คุณได้ลงเวลาปฏิบัติงานในวันนี้แล้ว <br> หากต้องการยื่นคำขอใหม่ <br> โปรดกด "ดำเนินการ" <br> หรือกด "ปิด" หากไม่ต้องการดำเนินการต่อ`,
