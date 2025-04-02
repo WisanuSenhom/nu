@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //  checktoday();
   }
   
-  async function checktoday() {
+ async function checktoday() {
     // แสดงสถานะกำลังโหลดข้อมูล
     Swal.fire({
       title: "กำลังโหลดข้อมูล...",
@@ -200,62 +200,56 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     });
   
-    var gas =
-      "https://script.google.com/macros/s/AKfycby0bCwNY5tyoVzfb1aM_48Yvs0PInOqUEnb_Aw2Bdyt4t2dBQ-m3FBA4lkMtmgaYHC53w/exec";
-    var qdata = `?id=${localStorage.getItem("refid")}&db=${localStorage.getItem(
-      "db1"
-    )}`;
+    var gas = "https://script.google.com/macros/s/AKfycby0bCwNY5tyoVzfb1aM_48Yvs0PInOqUEnb_Aw2Bdyt4t2dBQ-m3FBA4lkMtmgaYHC53w/exec";
+    var qdata = `?id=${localStorage.getItem("refid")}&db=${localStorage.getItem("db1")}`;
   
-    await fetch(gas + qdata)
-      .then((response) => response.json())
-      .then((data) => {
+    try {
+        let response = await fetch(gas + qdata);
+        let data = await response.json();
+
         // ปิดการแสดงสถานะการโหลด
         Swal.close();
-  
-        if (data.cc && data.cc.length > 0) {
-          // Assuming the server response has a property named 'cc' and 'intime'
-          var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.cc[0].intype} \nลงเวลาเมื่อ ${data.cc[0].intime}  ระยะ ${data.cc[0].indistan} ${data.cc[0].inunit}`;
-          const cktoday = new Date();
-          const ckfd = cktoday.toLocaleDateString("th-TH"); 
-          localStorage.setItem("datecheck", ckfd);
-          localStorage.setItem("datetimecheck", data.cc[0].intime);
-          // แสดงข้อมูลที่ดึงมาใน Swal
-          Swal.fire({
-            icon: "success",
-            title: "ตรวจสอบการลงเวลา",
-            text: timelineData,
-            confirmButtonText: "ตกลง",
-            confirmButtonColor: "#008000"
-          });
+
+        if (data.name) {
+            // กรณีมีข้อมูลการลงเวลา
+            let timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.intype} \nลงเวลาเมื่อ ${data.intime}  ระยะ ${data.indistan} ${data.inunit}`;
+            const cktoday = new Date();
+            const ckfd = cktoday.toLocaleDateString("th-TH"); 
+            localStorage.setItem("datecheck", ckfd);
+            localStorage.setItem("datetimecheck", data.intime);
+            
+            Swal.fire({
+                icon: "success",
+                title: "ตรวจสอบการลงเวลา",
+                text: timelineData,
+                confirmButtonText: "ตกลง",
+                confirmButtonColor: "#008000"
+            });
         } else {
-          var timelineData = `วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน`;
-  
-          // แสดงข้อความเตือนใน Swal
-          Swal.fire({
-            icon: "warning",
-            title: "ตรวจสอบการลงเวลา",
-            text: timelineData,
-            confirmButtonText: "ตกลง",
-            confirmButtonColor: "#DBA800"
-          });
+            // กรณีไม่มีข้อมูลการลงเวลา
+            Swal.fire({
+                icon: "warning",
+                title: "ตรวจสอบการลงเวลา",
+                text: "วันนี้คุณยังไม่ได้ลงเวลามาปฏิบัติงาน",
+                confirmButtonText: "ตกลง",
+                confirmButtonColor: "#DBA800"
+            });
         }
-      })
-      .catch((error) => {
+    } catch (error) {
         // ปิดการแสดงสถานะการโหลด
         Swal.close();
-  
+
         console.error("Error fetching data:", error);
-  
-        // แสดงข้อความผิดพลาดใน Swal
+
         Swal.fire({
-          icon: "error",
-          title: "ข้อผิดพลาด",
-          text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#bb2124"
+            icon: "error",
+            title: "ข้อผิดพลาด",
+            text: "ไม่สามารถดึงข้อมูลได้ กรุณาลองใหม่อีกครั้ง",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#bb2124"
         });
-      });
-  }
+    }
+}
   
   
   function openWebToken() {
