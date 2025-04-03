@@ -882,3 +882,69 @@ div.dt-button-collection {
             align-items: center;
             width: 100%;
         }
+
+
+.form-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ระยะห่างระหว่างองค์ประกอบ */
+}
+
+#reportBtn {
+  background-color: var(--background-color); /* สีเหลืองสด */
+  color: var(--text-color); /* สีดำ */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  padding: 6px 24px; /* แนวตั้ง แนวนอน */
+  font-size: 16px; 
+  margin-bottom: 20px;
+}
+
+#reportBtn:hover {
+  background-color: var(--button-hover-bg); /* สีเหลืองเข้ม */
+  color: var(--background-color); /* สีเหลืองอ่อน */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+#statistics {
+  background: var(--background-color);
+  padding: 8px 50px 20px 50px; /* บน ขวา ล่าง ซ้าย */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family);
+  max-width: 500px;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+.stat-title {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-top: 14px;
+  color:  var(--text-color);
+  border-bottom: 1px solid  var(--secondary-text-color);
+  padding-bottom: 5px;
+}
+
+.stat-item {
+  font-size: .9rem;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+}
+
+.stat-item i {
+  color: var(--text-color);
+  margin-right: 8px;
+  
+}
+
+.stat-item span {
+  font-weight: bold;
+  color: var(--text-color);
+  padding-left: 10px; /* ระยะห่างด้านหน้า (ก่อนตัวอักษร) */
+  padding-right: 5px; /* ระยะห่างด้านหลัง (หลังตัวอักษร) */
+}
