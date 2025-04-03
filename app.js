@@ -1111,73 +1111,161 @@ console.log(gas + qdata);
     });
 }
 
-function reportdata(){
-  // เรียกรายงานลงเวลาประจำเดือน
-// รับวันที่ปัจจุบัน
-var currentDate = new Date();
+// รายงาน สถิติ
 
-// ดึงปีและเดือน
-var year = currentDate.getFullYear();
-var month = currentDate.getMonth() + 1; // เดือนเริ่มต้นที่ 0 (มกราคม) ดังนั้นต้องเพิ่ม 1
+document.addEventListener("DOMContentLoaded", function () {
+  setupYearMonthSelectors();
+});
 
-// รูปแบบ yyyymm
-var formattedDate = year.toString() + (month < 10 ? '0' : '') + month.toString();
+function setupYearMonthSelectors() {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear(); // ปี ค.ศ.
+  const selectYear = document.getElementById("year");
+  const selectMonth = document.getElementById("month");
 
-//console.log(formattedDate); // ผลลัพธ์เช่น "202402" (สำหรับเดือนกุมภาพันธ์ 2024)
-fetchData(formattedDate);
+  // รายชื่อเดือนภาษาไทย
+  const monthNames = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+  ];
+
+  // แสดง 2 ปี (ปีปัจจุบันและปีก่อนหน้า) ในรูปแบบ พ.ศ. แต่ใช้ค่า ค.ศ.
+  for (let i = 0; i < 2; i++) {
+      const yearCE = currentYear - i; // ปี ค.ศ.
+      const yearBE = yearCE + 543; // แปลงเป็น พ.ศ.
+      let option = new Option(yearBE, yearCE);
+      selectYear.add(option);
+  }
+
+  // เพิ่มเดือน พร้อมชื่อเต็มภาษาไทย
+  for (let i = 0; i < 12; i++) {
+      let monthValue = (i + 1).toString().padStart(2, "0");
+      let option = new Option(monthNames[i], monthValue);
+      selectMonth.add(option);
+  }
+
+  // ตั้งค่าค่าปัจจุบันเป็นเดือนและปีนี้
+  selectYear.value = currentYear;
+  selectMonth.value = (currentDate.getMonth() + 1).toString().padStart(2, "0");
 }
 
-async function fetchData(formattedDate) {
+function reportdata() {
+  let yearCE = document.getElementById("year").value; // ได้ค่า ค.ศ.
+  let month = document.getElementById("month").value;
+  let formattedDate = yearCE + month; // yyyymm
+  fetchReportData(formattedDate,month,yearCE); // เรียกใช้ชื่อใหม่
+}
+
+async function fetchReportData(formattedDate,month,yearCE) {
   const cid = localStorage.getItem("cidhash");
   const db1 = localStorage.getItem("db1");
   var apiUrl = 'https://script.google.com/macros/s/AKfycbwjLcT7GFTETdwRt_GfU6j-8poTK6_t400RPLa4cMY72Ih3EYAWQIDyFQV0et7lMQG2LQ/exec';
 
   var queryParams = `?startdate=${formattedDate}&cid=${cid}&db=${db1}`;
 
-  // Show the spinner
+  // แสดงตัวโหลด
   document.getElementById("loadingSpinner").style.display = "block";
 
-  // Make a GET request using Fetch API
   await fetch(apiUrl + queryParams)
       .then(response => response.json())
       .then(data => {
           const reporttb = document.getElementById("reportdata");
           reporttb.innerHTML = "";
           let datartb = '';
+
+          let totalDays = 0;
+          let weekdays = 0;
+          let weekends = 0;
+          let normalWork = 0;
+          let offsiteWork = 0;
+          let holidayWork = 0;
+          let officialWork = 0;
+          let otherWork = 0;
+          let requestCount = 0; // จำนวนที่มีคำขอ
+
           data.tst.forEach(function (tst) {
+              // ข้ามข้อมูลที่ไม่มีค่า (null, undefined, ว่าง)
+              if (!tst.datein || !tst.typein) return;
+
+              totalDays++;
+
+              const date = new Date(tst.datein);
+              const dayOfWeek = date.getDay();
+              if (dayOfWeek === 0 || dayOfWeek === 6) {
+                  weekends++;
+              } else {
+                  weekdays++;
+              }
+
+              switch(tst.typein) {
+                  case 'ปกติ': normalWork++; break;
+                  case 'นอกสถานที่': offsiteWork++; break;
+                  case 'วันหยุด': holidayWork++; break;
+                  case 'ไปราชการ': officialWork++; break;
+                  case 'อื่นๆ': otherWork++; break;
+              }
+
+              // นับเฉพาะรายการที่มีค่าคำขอจริง ๆ
+              if (tst.reqdate && tst.reqdate.trim() !== "") {
+                  requestCount++;
+              }
+
               datartb += `<tr>
-              <td>${tst.day}</td>
-              <td>${tst.datein}</td>
-              <td>${tst.timein}</td>
-              <td>${tst.name}</td>
-              <td>${tst.subname}</td>
-              <td>${tst.typein}</td>
-            
-              <td>${tst.disin}</td>
-              <td>${tst.timeout}</td>
-              <td>${tst.disout}</td>
-              <td>${tst.notein}</td>
-              <td>${tst.request}</td>
-              <td>${tst.reqdate}</td>
-              <td>${tst.reqtime}</td>
-              <td>${tst.permitdate}</td>
-              <td>${tst.permittime}</td>
-              <td>${tst.permitname}</td>
-              <td>${tst.permit_note}</td>
-              <td>${tst.verified}</td>
-              <td>${tst.verifiedname}</td>
-              <td>${tst.verified_note}</td>
-              <td>${tst.verifieddate}</td>
-              <td>${tst.verifiedtime}</td>
-              <td>${tst.ref}</td>
-          </tr>`;
+                  <td>${tst.day}</td>
+                  <td>${tst.datein}</td>
+                  <td>${tst.timein}</td>
+                  <td>${tst.name}</td>
+                  <td>${tst.subname}</td>
+                  <td>${tst.typein}</td>
+                  <td>${tst.disin}</td>
+                  <td>${tst.timeout}</td>
+                  <td>${tst.disout}</td>
+                  <td>${tst.notein}</td>
+                  <td>${tst.request || "-"}</td>
+                  <td>${tst.reqdate}</td>
+                  <td>${tst.reqtime}</td>
+                  <td>${tst.permitdate}</td>
+                  <td>${tst.permittime}</td>
+                  <td>${tst.permitname}</td>
+                  <td>${tst.permit_note}</td>
+                  <td>${tst.verified}</td>
+                  <td>${tst.verifiedname}</td>
+                  <td>${tst.verified_note}</td>
+                  <td>${tst.verifieddate}</td>
+                  <td>${tst.verifiedtime}</td>
+                  <td>${tst.ref}</td>
+              </tr>`;
           });
 
           reporttb.innerHTML = datartb;
 
+          const statistics = `          
+          <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
+          <p class="stat-item"><i class="fa-solid fa-calendar-days"></i> รวมทั้งหมด :  <span>${totalDays}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-business-time"></i> จันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-calendar-week"></i> เสาร์-อาทิตย์ :  <span>${weekends}</span> วัน</p>
+      
+          <h4 class="stat-title"><i class="fa-solid fa-briefcase"></i> ประเภทการปฏิบัติงาน</h4>
+          <p class="stat-item"><i class="fa-solid fa-check-circle"></i> ปกติ :  <span>${normalWork}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-building"></i> นอกสถานที่ :  <span>${offsiteWork}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-star"></i> วันหยุด :  <span>${holidayWork}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-file-signature"></i> ไปราชการ :  <span>${officialWork}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-ellipsis"></i> อื่นๆ :  <span>${otherWork}</span> วัน</p>
+      
+          <h4 class="stat-title"><i class="fa-solid fa-envelope"></i> ข้อมูลคำขอ</h4>
+          <p class="stat-item"><i class="fa-solid fa-envelope-open-text"></i> ยื่นคำขอ :  <span>${requestCount}</span> วัน</p>
+      `;
+      document.getElementById("statistics").innerHTML = statistics;
+  
+      
+
+          document.getElementById("dreportdata").style.display = "table";
+          document.getElementById("loadingSpinner").style.display = "none";
+          sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWork, holidayWork, officialWork, otherWork, requestCount,month,yearCE);
+
           if ($.fn.dataTable.isDataTable('#dreportdata')) {
-            $('#dreportdata').DataTable().clear().destroy();
-        }
+              $('#dreportdata').DataTable().clear().destroy();
+          }
 
           $('#dreportdata').DataTable({
               "data": data.tst,
@@ -1188,7 +1276,6 @@ async function fetchData(formattedDate) {
                   { "data": 'name' },
                   { "data": 'subname' },
                   { "data": 'typein' },
-            
                   { "data": 'disin' },
                   { "data": 'timeout' },
                   { "data": 'disout' },
@@ -1222,18 +1309,69 @@ async function fetchData(formattedDate) {
               "lengthMenu": [ [10, 30, 50, 100, 150, -1], [10, 30, 50, 100, 150, "ทั้งหมด"] ],
               "buttons": ['copy', 'csv', 'excel', 'print', 'colvis' ],
               "pageLength": 30,
-            
-        });
-
-          // Hide the spinner after data is loaded
-          document.getElementById("loadingSpinner").style.display = "none";
+          });
       })
       .catch(error => {
-          // Hide the spinner in case of an error
           document.getElementById("loadingSpinner").style.display = "none";
           console.error("Error fetching data:", error);
       });
 }
+
+
+function sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWork, holidayWork, officialWork, otherWork, requestCount, month, yearCE) {
+  const chatId = localStorage.getItem("chatId");
+  const botToken = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
+
+  // ฟังก์ชันเพื่อแปลงหมายเลขเดือนเป็นชื่อเดือนภาษาไทย
+  function getThaiMonth(month) {
+    const months = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    return months[month - 1];  // ปรับให้ตรงกับการนับเดือนที่ 1 ถึง 12
+  }
+
+  const thaimonth = getThaiMonth(month);
+
+  const yearCEInt = parseInt(yearCE, 10); // แปลง yearCE ให้เป็นตัวเลข
+  const yearBE = yearCEInt + 543;  // บวก 543 เพื่อแปลงปี ค.ศ. เป็นปี พ.ศ.
+
+  const statisticsx = `
+
+  <strong>ข้อมูลการลงเวลา </strong>
+  <strong>ประจำเดือน ${thaimonth} พ.ศ. ${yearBE}</strong>
+
+  รวมทั้งหมด:  <strong>${totalDays}</strong> วัน
+  จันทร์-ศุกร์:  <strong>${weekdays}</strong> วัน
+  เสาร์-อาทิตย์:  <strong>${weekends}</strong> วัน
+  
+  <strong>ประเภทการปฏิบัติงาน</strong>
+  ปกติ:  <strong>${normalWork}</strong> วัน
+  นอกสถานที่:  <strong>${offsiteWork}</strong> วัน
+  วันหยุด:  <strong>${holidayWork}</strong> วัน
+  ไปราชการ:  <strong>${officialWork}</strong> วัน
+  อื่นๆ:  <strong>${otherWork}</strong> วัน
+  
+  <strong>ข้อมูลคำขอ</strong>
+  ยื่นคำขอ:  <strong>${requestCount}</strong> วัน
+
+  `;
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(statisticsx)}&parse_mode=HTML`;
+
+  fetch(url)
+      .then(response => response.json())
+      .then(data => {
+          if (data.ok) {
+              console.log("Message sent successfully");
+          } else {
+              console.error("Failed to send message", data);
+          }
+      })
+      .catch(error => console.error("Error sending message to Telegram", error));
+}
+
+
 
 function clearTableData() {
   const reporttb = document.getElementById("reportdata");
