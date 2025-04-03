@@ -159,7 +159,21 @@
 
       </div>
 
+       <!-- รายงาน -->
       <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+
+        <div class="form-container">
+          <label for="month">เดือน:</label>
+          <select id="month"></select>
+
+          <label for="year">พ.ศ.:</label>
+          <select id="year"></select>
+
+        </div>
+        <button id="reportBtn" name="reportBtn" onclick="reportdata()">ดูรายงาน</button>
+
+        <div id="statistics"></div>
+
 
         <div id="loadingSpinner" style="display: none;">
           <div class="spinner-grow text-primary" role="status">
@@ -191,13 +205,7 @@
           </div>
         </div>
 
-
-
-        <div class="d-flex justify-content-center align-items-center">
-          <strong role="status">เดือนนี้</strong>
-        </div>
-
-        <table id="dreportdata" class="table-striped table-bordered table-hover display nowrap">
+        <table id="dreportdata" class="table-striped table-bordered table-hover display nowrap" style="display: none;">
 
           <thead>
             <tr>
