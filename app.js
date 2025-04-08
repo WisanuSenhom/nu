@@ -1111,7 +1111,7 @@ console.log(gas + qdata);
     });
 }
 
-// รายงาน สถิติ
+// รายงานและสถิติ
 
 document.addEventListener("DOMContentLoaded", function () {
   setupYearMonthSelectors();
@@ -1182,6 +1182,10 @@ async function fetchReportData(formattedDate,month,yearCE) {
           let officialWork = 0;
           let otherWork = 0;
           let requestCount = 0; // จำนวนที่มีคำขอ
+          let actualWorkDays = 0;
+          let approvedRequests = 0;
+          let verifiedCount = 0;
+          let workDaysWithoutRequest = 0;
 
           data.tst.forEach(function (tst) {
               // ข้ามข้อมูลที่ไม่มีค่า (null, undefined, ว่าง)
@@ -1209,6 +1213,14 @@ async function fetchReportData(formattedDate,month,yearCE) {
               if (tst.reqdate && tst.reqdate.trim() !== "") {
                   requestCount++;
               }
+
+              actualWorkDays = (normalWork + offsiteWork + officialWork + otherWork)-holidayWork;
+
+              approvedRequests = data.tst.filter(d => d.permitdate && d.permitdate.trim() !== "").length;
+
+              verifiedCount = data.tst.filter(d => d.verified && d.verified.trim() !== "" && d.verified.trim() !== "รอตรวจสอบ" ).length;
+
+              workDaysWithoutRequest = totalDays - requestCount;              
 
               datartb += `<tr>
                   <td>${tst.day}</td>
@@ -1242,8 +1254,10 @@ async function fetchReportData(formattedDate,month,yearCE) {
           const statistics = `          
           <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
           <p class="stat-item"><i class="fa-solid fa-calendar-days"></i> รวมทั้งหมด :  <span>${totalDays}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-business-time"></i> จันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-calendar-week"></i> เสาร์-อาทิตย์ :  <span>${weekends}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-user-check"></i> วันทำการ : <span>${actualWorkDays}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-business-time"></i> วันจันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-calendar-week"></i> วันเสาร์-อาทิตย์ :  <span>${weekends}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-circle-check"></i> ทันเวลา : <span>${workDaysWithoutRequest}</span> วัน</p>
       
           <h4 class="stat-title"><i class="fa-solid fa-briefcase"></i> ประเภทการปฏิบัติงาน</h4>
           <p class="stat-item"><i class="fa-solid fa-check-circle"></i> ปกติ :  <span>${normalWork}</span> วัน</p>
@@ -1252,8 +1266,10 @@ async function fetchReportData(formattedDate,month,yearCE) {
           <p class="stat-item"><i class="fa-solid fa-file-signature"></i> ไปราชการ :  <span>${officialWork}</span> วัน</p>
           <p class="stat-item"><i class="fa-solid fa-ellipsis"></i> อื่นๆ :  <span>${otherWork}</span> วัน</p>
       
-          <h4 class="stat-title"><i class="fa-solid fa-envelope"></i> ข้อมูลคำขอ</h4>
+          <h4 class="stat-title"><i class="fa-solid fa-envelope"></i> ข้อมูลคำขอ/การตรวจสอบ</h4>
           <p class="stat-item"><i class="fa-solid fa-envelope-open-text"></i> ยื่นคำขอ :  <span>${requestCount}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-stamp"></i> อนุมัติแล้ว : <span>${approvedRequests}</span> วัน</p>
+          <p class="stat-item"><i class="fa-solid fa-user-shield"></i> ตรวจสอบแล้ว : <span>${verifiedCount}</span> วัน</p>
       `;
       document.getElementById("statistics").innerHTML = statistics;
   
