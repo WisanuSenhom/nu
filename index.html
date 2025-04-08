@@ -110,7 +110,7 @@
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="srqrcode-tab" data-bs-toggle="tab" data-bs-target="#srqrcode" type="button"
-          role="tab" aria-controls="srqrcode" aria-selected="false"><i class="fa-solid fa-qrcode"></i> QR-code</button>
+          role="tab" aria-controls="srqrcode" aria-selected="false"><i class="fa-solid fa-qrcode"></i> QR Code</button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab"
@@ -126,24 +126,26 @@
           src=""
           frameborder="0" width="276" height="46" allowtransparency="true" style="pointer-events: none;"></iframe>
 
-        <div id="log">
-          <label for="typea">การปฏิบัติงาน:</label>
-          <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
-            <option value="ปกติ">ตามปกติ</option>
-            <option value="นอกสถานที่">นอกสถานที่</option>
-            <option value="วันหยุด">ในวันหยุดเสาร์ อาทิตย์ และวันหยุดราชการ</option>
-            <option value="ไปราชการ">ไปราชการ (ประชุม อบรมฯ)</option>
-            <option value="อื่นๆ">อื่นๆ โปรดระบุเพิ่มเติม</option>
-          </select>
-          <div id="otherInput">
-            <label for="otherDetails">โปรดระบุ:</label>
-            <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุเพิ่มเติม" />
-            <!-- <label for="llat" >lat:</label> -->
-            <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
-            <!-- <label for="llon" >lat:</label> -->
-            <input type="text" id="llon" name="llon" placeholder="ลองติจูด" hidden />
+          <div id="log">
+            <label for="typea">ลักษณะการปฏิบัติงาน:</label>
+            <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
+              <option value="ปกติ">ทำงานตามปกติ</option>
+              <option value="นอกสถานที่">ออกปฏิบัติงานนอกสถานที่</option>
+              <option value="วันหยุด">ปฏิบัติงานในวันหยุด (เสาร์-อาทิตย์ หรือวันหยุดราชการ)</option>
+              <option value="ไปราชการ">ไปราชการ (เช่น ประชุม อบรม ฯลฯ)</option>
+              <option value="อื่นๆ">อื่นๆ (โปรดระบุรายละเอียด)</option>
+            </select>
+          
+            <div id="otherInput">
+              <label for="otherDetails">รายละเอียดเพิ่มเติม:</label>
+              <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" />
+          
+              <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
+              <input type="text" id="llon" name="llon" placeholder="ลองจิจูด" hidden />
+            </div>
           </div>
-        </div>
+          
+
         <div id="map"></div>
       </div>
 
@@ -151,10 +153,10 @@
 
         <div class="content-wrapper">
           <div id="reader"></div>
-          <button id="button-qr" onclick="toggleQRCode()" class="btn btn-primary">แสดง QR Code</button>
+          <button id="button-qr" onclick="toggleQRCode()" class="btn btn-primary">สร้าง <i class="fa-solid fa-qrcode"></i> QR Code</button>
           <div id="qrcode"></div>
           <P></P>
-          <P>วิธีใช้ : แสกน QR-code จากหัวหน้าของคุณ</P>
+          <P>วิธีใช้ : แสกน QR Code จากหัวหน้าของคุณ</P>
           <P>หมายเหตุ : สำหรับลงเวลาการปฏิบัติงานตามปกติเท่านั้น</P>
         </div>
 
@@ -164,19 +166,16 @@
       <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
 
         <div class="form-container">
-          <label for="month">เดือน:</label>
+          <label for="month">เดือน</label>
           <select id="month"></select>
 
-          <label for="year">พ.ศ.:</label>
+          <label for="year">พ.ศ.</label>
           <select id="year"></select>
 
         </div>
-        <button id="reportBtn" name="reportBtn" onclick="reportdata()">ดูรายงาน</button>
+        <button id="reportBtn" name="reportBtn" onclick="reportdata()"><i class="fa-solid fa-magnifying-glass"></i> ดูรายงาน</button>
 
-        <div id="statistics"></div>
-
-
-        <div id="loadingSpinner" style="display: none;">
+          <div id="loadingSpinner" style="display: none;">
           <div class="spinner-grow text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
@@ -202,9 +201,11 @@
             <span class="visually-hidden">Loading...</span>
           </div>
           <div class="d-flex justify-content-center align-items-center">
-            <strong role="status">Loading...</strong>
+            <strong role="status"><i class="fa-solid fa-cloud-arrow-down"></i> Loading...</strong>
           </div>
         </div>
+
+        <div id="statistics"></div>
 
         <table id="dreportdata" class="table-striped table-bordered table-hover display nowrap" style="display: none;">
 
@@ -286,7 +287,7 @@
     <button id="startBtn" onclick="checkin()"><i class="fas fa-sign-in-alt"></i> มา</button>
     <button id="statusBtn" onclick="checkinfo()"><i class="fas fa-check-circle"></i> สถานะ</button>
     <button id="endBtn" onclick="checkout()"><i class="fas fa-sign-out-alt"></i> กลับ</button>
-    <button id="imapBtn" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> แผนที่</button>
+    <button id="imapBtn" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> พิกัด</button>
   </div>
 
 <!-- jQuery -->
