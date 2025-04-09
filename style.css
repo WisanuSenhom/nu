@@ -393,7 +393,7 @@ body.menu-open {
 /* เมื่อย่อลง */
 .container.collapsed {
   padding-top: 1%;
-  max-height: 62px;
+  max-height: 60px;
   padding-bottom: 0;
   opacity: 0.7 !important; /* Adjust transparency */
   position: absolute; /* Position it relative to the nearest positioned ancestor */
@@ -783,6 +783,7 @@ label.swal2-checkbox {
 }
 
 .nav-tabs {
+  --bs-nav-tabs-border-width: none !important;
   --bs-nav-tabs-border-color: var(--border-color) !important;
   background-color: var(--background-color) !important;
   width: 98%  !important;
