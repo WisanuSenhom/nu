@@ -840,6 +840,49 @@ const menuToggle = document.getElementById("menu-toggle");
       }
     });
 
+// การแจ้งเตือน
+    const notifyToggle = document.getElementById("notify-toggle");
+const notifyMenu = document.getElementById("notify-menu");
+
+// Toggle notification menu
+notifyToggle.addEventListener("click", (e) => {
+  e.stopPropagation(); // Prevent event bubbling to document
+  notifyMenu.classList.toggle("show");
+});
+
+// Close notification when clicking outside
+document.addEventListener("click", (e) => {
+  if (!notifyMenu.contains(e.target) && !notifyToggle.contains(e.target)) {
+    notifyMenu.classList.remove("show");
+  }
+});
+
+const notifyBadge = document.getElementById("notify-badge");
+const noTimeLog = document.getElementById("no-time-log");
+const hasTimeLog = document.getElementById("has-time-log");
+
+// ตัวอย่าง: ถ้ามีแจ้งเตือนให้แสดง badge
+let hasNotifications = false;
+
+        const now = new Date();
+        let formattedToday = now.toLocaleDateString("th-TH");
+        if (formattedToday === localStorage.getItem("datecheck")) {
+          hasNotifications = false;
+        }else{
+          hasNotifications = true;
+        }
+
+        if (hasNotifications) {
+          notifyBadge.style.display = "block";
+          noTimeLog.style.display = "block";  // Show the "no time log" message
+          hasTimeLog.style.display = "none";  // Hide the "has time log" message
+        } else {
+          notifyBadge.style.display = "none";
+          noTimeLog.style.display = "none";  // Hide the "no time log" message
+          hasTimeLog.style.display = "block";  // Show the "has time log" message
+        }
+
+
 // รายการธีมที่รองรับ
 const themes = ["light", "dark", "yellow", "green", "pink", "blue", "purple", "gray", "red"];
 let currentThemeIndex = themes.indexOf(localStorage.getItem("theme")) || 0;
