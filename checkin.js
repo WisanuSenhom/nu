@@ -319,17 +319,36 @@ L.control.layers(baseMaps).addTo(map);
       .addTo(map)
       .bindPopup(
         `
-      <div class="popup-content">
-        <b>ตำแหน่งของคุณ</b><br>
-        <a href="${googleMapUrl}" target="_blank">${lat}, ${lon}</a><br>
-        <span class="secondary-text">ระยะห่างจาก ${officer}:<b> ${distanceInKilometers}</b> กิโลเมตร</span><br>
+        <div class="popup-content">
+        <b><i class="fas fa-map-marker-alt"></i> ตำแหน่งของคุณ</b><br>
+        <a href="${googleMapUrl}" target="_blank"><i class="fas fa-location-arrow"></i> ${lat}, ${lon}</a><br>
+        
+        <span class="secondary-text">
+          <i class="fas fa-route"></i> ระยะห่างจาก ${officer}: <b>${distanceInKilometers}</b> กิโลเมตร
+        </span><br>
+      
         <img src="${weatherImageUrl}" alt="Weather Icon"><br>
-        <span class="weather-info">${weatherName}, อุณหภูมิ: ${weatherTemp}°C</span> 
+        
+        <span class="weather-info">
+          <i class="fas fa-city"></i> ${weatherName}, 
+          <i class="fas fa-thermometer-half"></i> อุณหภูมิ: ${weatherTemp}°C
+        </span>
         <span style="color: ${tempColor};"><b>(${tempLevel})</b></span><br>
-        <span class="secondary-text">สภาพอากาศ: ${weatherDescription}</span><br>
-        <span class="secondary-text">PM2.5: ${pm25} µg/m³</span><br>
-        AQI: <span class="aqi" style="color: ${aqiColor};">${aqi} (${aqiLevel})</span>
+      
+        <span class="secondary-text">
+          <i class="fas fa-cloud-sun"></i> สภาพอากาศ: ${weatherDescription}
+        </span><br>
+      
+        <span class="secondary-text">
+          <i class="fas fa-smog"></i> PM2.5: ${pm25} µg/m³
+        </span><br>
+      
+        <span class="secondary-text">
+          <i class="fas fa-wind"></i> AQI: 
+          <span class="aqi" style="color: ${aqiColor};">${aqi} (${aqiLevel})</span>
+        </span>
       </div>
+      
       `
       )
       .openPopup();
