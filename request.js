@@ -598,7 +598,7 @@ async function checktoday(){
   await  fetch(gas + qdata)
         .then(response => response.json())
         .then(data => {
-            if (data) {
+            if (data.name) {
                 // Assuming the server response has a property named 'cc' and 'intime'
                 var timelineData = `วันนี้คุณลงเวลามาแล้ว : การปฏิบัติงาน ${data.intype} \n ลงเวลาเมื่อ ${data.intime}  ระยะ ${data.indistan} ${data.inunit}`; // Assuming you want the first 'intime' value
 
