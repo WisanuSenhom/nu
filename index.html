@@ -70,15 +70,9 @@
   <nav>
 
     <div class="logo" onclick="window.location.href='#';">
-      <i class="fa-regular fa-clock"></i> ลงเวลา
+      <i class="fa-regular fa-clock"></i> <span class="logo-text">ลงเวลา</span>
     </div>
 
-    <div>
-      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar"
-        id="avatar" onclick="editpic()">
-      <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
-      <span class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></span>
-    </div>
     <div class="menu" id="menu">
       <a href="request.html" target="_blank"><i class="fas fa-paper-plane"></i> ส่งคำขอ</a>
       <a href="javascript:void(0);" onclick="checktoday()"><i class="fas fa-clock"></i> ตรวจสอบ</a>
@@ -96,10 +90,30 @@
          <a href="https://drive.google.com/file/d/1vv9PcsMhtZrztWn3daz13PQUH2Pko71x/view?usp=drive_link" target="_blank"><i class="fas fa-book"></i> วิธีใช้</a>
       <a href="javascript:void(0);" onclick="clearLocal()"><i class="fas fa-sync-alt"></i> ออก</a>
     </div>
+
+    <div>
+      <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar"
+        id="avatar" onclick="editpic()">
+
+     <span class="notify-toggle" id="notify-toggle">
+  <i class="fa-solid fa-bell"></i>
+  <span class="notify-badge" id="notify-badge"></span>
+</span>
+
+        
+<div id="notify-menu" class="notify-menu">
+  <p id="no-time-log"><i class="fas fa-clock"></i> คุณยังไม่ได้ลงเวลาปฏิบัติงานในวันนี้</p>
+  <p id="has-time-log"><i class="fas fa-check-circle"></i> คุณได้ลงเวลาปฏิบัติงานในวันนี้แล้ว</p>
+</div>
+        
+      <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
+      <span class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></span>
+    </div>
+    
   </nav>
 
   <div id="mainContent" class="container">
-    <button id="showHide">แสดง/ซ่อน</button>
+    <button id="showHide">ย่อ/แสดง</button>
 
     <!-- tap -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -127,7 +141,7 @@
           frameborder="0" width="276" height="46" allowtransparency="true" style="pointer-events: none;"></iframe>
 
           <div id="log">
-            <label for="typea">ลักษณะการปฏิบัติงาน:</label>
+            <label for="typea"><i class="fa-solid fa-list"></i> ลักษณะการปฏิบัติงาน:</label>
             <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
               <option value="ปกติ">ทำงานตามปกติ</option>
               <option value="นอกสถานที่">ออกปฏิบัติงานนอกสถานที่</option>
@@ -137,7 +151,7 @@
             </select>
           
             <div id="otherInput">
-              <label for="otherDetails">รายละเอียดเพิ่มเติม:</label>
+              <label for="otherDetails"><i class="fas fa-info-circle"></i> รายละเอียดเพิ่มเติม:</label>
               <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" />
           
               <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
@@ -156,8 +170,8 @@
           <button id="button-qr" onclick="toggleQRCode()" class="btn btn-primary">สร้าง <i class="fa-solid fa-qrcode"></i> QR Code</button>
           <div id="qrcode"></div>
           <P></P>
-          <P>วิธีใช้ : แสกน QR Code จากหัวหน้าของคุณ</P>
-          <P>หมายเหตุ : สำหรับลงเวลาการปฏิบัติงานตามปกติเท่านั้น</P>
+          <p><i class="fas fa-book-open"></i> วิธีใช้ : แสกน QR Code จากหัวหน้าของคุณ</p>
+          <p><i class="fas fa-sticky-note"></i> หมายเหตุ : สำหรับลงเวลาการปฏิบัติงานตามปกติเท่านั้น</p>
         </div>
 
       </div>
