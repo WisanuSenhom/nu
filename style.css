@@ -219,7 +219,7 @@ nav .logo {
 
 nav .logo:hover {
   color: var(--text-color); /* เปลี่ยนสีเมื่อ hover */
-  transform: scale(1.8); /* ขยายเล็กน้อย */
+  transform: scale(1.2); /* ขยายเล็กน้อย */
 }
 
 h1 {
@@ -302,7 +302,7 @@ nav > div {
 .menu-toggle:hover,
 .theme-toggle:hover {
   color: var(--secondary-text-color); /* Add a hover color if needed */
-  transform: scale(1.8); /* ขยายเล็กน้อย */
+  transform: scale(1.2); /* ขยายเล็กน้อย */
 }
 
 .avatar {
@@ -313,7 +313,7 @@ nav > div {
 }
 
 .avatar:hover {
-  transform: scale(1.8); /* ขยายเล็กน้อย */
+  transform: scale(1.2); /* ขยายเล็กน้อย */
 }
 
 nav .menu {
