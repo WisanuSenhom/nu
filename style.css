@@ -416,7 +416,7 @@ body.menu-open {
   /* padding: 1rem; */
   border-radius: 10px;
   box-shadow: 0 4px 10px var(--nav-shadow);
-  width: 100%;
+  width: 98%;
   /* max-width: 400px; */
   text-align: center;
   margin-top: 1rem;
