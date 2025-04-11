@@ -1257,14 +1257,6 @@ async function fetchReportData(formattedDate,month,yearCE) {
                   requestCount++;
               }
 
-              actualWorkDays = (normalWork + offsiteWork + officialWork + otherWork)-holidayWork;
-
-              approvedRequests = data.tst.filter(d => d.permitdate && d.permitdate.trim() !== "").length;
-
-              verifiedCount = data.tst.filter(d => d.verified && d.verified.trim() !== "" && d.verified.trim() !== "รอตรวจสอบ" ).length;
-
-              workDaysWithoutRequest = totalDays - requestCount;              
-
               datartb += `<tr>
                   <td>${tst.day}</td>
                   <td>${tst.datein}</td>
@@ -1293,6 +1285,14 @@ async function fetchReportData(formattedDate,month,yearCE) {
           });
 
           reporttb.innerHTML = datartb;
+
+                        actualWorkDays = (normalWork + offsiteWork + officialWork + otherWork)-holidayWork;
+
+              approvedRequests = data.tst.filter(d => d.permitdate && d.permitdate.trim() !== "").length;
+
+              verifiedCount = data.tst.filter(d => d.verified && d.verified.trim() !== "" && d.verified.trim() !== "รอตรวจสอบ" ).length;
+
+              workDaysWithoutRequest = totalDays - requestCount; 
 
           const statistics = `          
           <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
