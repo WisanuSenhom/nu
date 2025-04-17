@@ -69,6 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
           confirmButtonColor: "#0ef",
           icon: "success",
           title: "ออกจากระบบสำเร็จ",
+            allowOutsideClick: false,
           confirmButtonColor: "#008000"
         }).then((result) => {
           if (result.isConfirmed) {
