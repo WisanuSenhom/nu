@@ -487,7 +487,8 @@ body.menu-open {
 
 label {
   font-size: 1rem;
-  margin-bottom: 0.1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.2rem;
   display: block;
   color: var(--text-color);
   text-align: left;
@@ -656,6 +657,7 @@ body {
 }
 
 #map {
+  margin-top: 0.5rem;
   height: 52vh; /* ปรับความสูงของแผนที่ให้เต็มหน้าจอ */
   width: 100%;
   /* background-color: var(--nav-bg);
@@ -849,6 +851,7 @@ label.swal2-checkbox {
   border-bottom: none !important;
   border-left: none !important;
 }
+
 
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
