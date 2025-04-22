@@ -401,7 +401,7 @@
 
 
 
-    // ดึงข้อมูลรูปภาพจาก localStorage
+  // ดึงข้อมูลรูปภาพจาก localStorage
     const avatarSrc = localStorage.getItem("upic");
     const avatarSrcx = localStorage.getItem("yourpic");
 
@@ -409,9 +409,11 @@
     if (avatarSrc) {
       // ตั้งค่าให้รูปภาพ avatar
       document.getElementById("avatar").src = avatarSrc;
+    } else if (avatarSrcx)  {
+      document.getElementById("avatar").src = avatarSrcx; 
     } else {
       // กรณีที่ไม่มีรูปภาพใน localStorage
-      document.getElementById("avatar").src = avatarSrcx; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
+      document.getElementById("avatar").src = 'https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5'; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
     }
 
     // แท็ป และ ย่อลง
