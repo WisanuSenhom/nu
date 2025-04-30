@@ -244,7 +244,7 @@ L.control.layers(baseMaps).addTo(map);
         `<div class="popup-content">
           <p><i class="fa-solid fa-hospital"></i> <strong>${feature.properties.NAME}</strong> </p>
           <p><i class="fas fa-route"></i> ห่างจากคุณ: <strong> ${distanceKm}</strong> กม.</p>
-          <p><i class="fa-solid fa-car"></i> นำทางด้วย
+          <p><i class="fa-solid fa-car"></i> นำทางด้วย<br>
             <a href="${ggMapUrl}" target="_blank">
               <i class="fa-solid fa-location-dot"></i> Google Maps
             </a> | 
