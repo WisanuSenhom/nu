@@ -174,6 +174,95 @@ L.control.layers(baseMaps).addTo(map);
   const distanceInMeters = userLatLng.distanceTo(destinationLatLng);
   const distanceInKilometers = (distanceInMeters / 1000).toFixed(2);
 
+  // โหลดและแสดงข้อมูล GeoJSON
+ fetch("bk_health_centers.geojson")
+ .then(response => response.json())
+ .then(data => {
+   console.log(data);
+
+   // กรองเฉพาะข้อมูลของจังหวัดบึงกาฬ
+   const buengKanDistricts = data.features.filter(
+     f => f.properties.PROVCODE === "38"
+   );
+
+   // แสดงผลแต่ละจุดด้วย circleMarker
+   L.geoJSON(buengKanDistricts, {
+    pointToLayer: function (feature, latlng) {
+      // กำหนดสีตาม TYPECODE
+      let color = "#FF6600"; // สีเริ่มต้น (กรณี TYPECODE ไม่ตรงเงื่อนไขใด ๆ)
+
+      switch (feature.properties.TYPECODE) {
+        case "T1":
+          color = "#800080"; // สำนักงานสาธารณสุขจังหวัด (สสจ.)
+          break;
+        case "T2":
+          color = "#0000FF"; // สำนักงานสาธารณสุขอำเภอ (สสอ.)
+          break;
+        case "T3":
+          color = "#1E90FF"; //  รพ.สต.
+          break;
+        case "T4":
+          color = "#006400"; // โรงพยาบาลทั่วไป (รพท.)
+          break;
+        case "T5":
+          color = "#006400"; //  โรงพยาบาลชุมชน (รพช.)
+          break;
+        case "T8":
+          color = "#00FF00"; //  ศูนย์สุขภาพชุมชน / เรือนจำ
+          break;
+        default:
+          color = "#999999"; //  กรณีไม่รู้ประเภท
+      }
+      
+  
+      return L.circleMarker(latlng, {
+        radius: 8,
+        fillColor: color,
+        color: color,
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.7
+      });
+    },
+    onEachFeature: function (feature, layer) {
+           // พิกัดของหน่วยงาน
+           const featureLat = feature.geometry.coordinates[1];
+           const featureLon = feature.geometry.coordinates[0];
+          const featureLatLng = L.latLng(
+            featureLat,
+            featureLon
+          );
+          const ggMapUrl = `https://www.google.co.th/maps/dir/${lat},${lon}/${featureLat},${featureLon}`;
+          const appleMapUrl = `https://maps.apple.com/?saddr=${lat},${lon}&daddr=${featureLat},${featureLon}`;          
+          
+        // คำนวณระยะทาง
+        const distanceMeters = userLatLng.distanceTo(featureLatLng);
+        const distanceKm = (distanceMeters / 1000).toFixed(2);
+
+       // แสดง popup
+       layer.bindPopup(
+        `<div class="popup-content">
+          <p><i class="fa-solid fa-hospital"></i> <strong>${feature.properties.NAME}</strong> </p>
+          <p><i class="fas fa-route"></i> ห่างจากคุณ: <strong> ${distanceKm}</strong> กม.</p>
+          <p><i class="fa-solid fa-car"></i> นำทางด้วย
+            <a href="${ggMapUrl}" target="_blank">
+              <i class="fa-solid fa-location-dot"></i> Google Maps
+            </a> | 
+            <a href="${appleMapUrl}" target="_blank">
+              <i class="fa-brands fa-apple"></i> Apple Maps
+            </a>
+          </p>
+        </div>`
+      );
+      
+      
+    }
+  }).addTo(map);
+  
+  })   .catch(error => {
+    console.error("Error fetching GeoJSON data:", error);
+  });
+
   // เพิ่มวงกลมแสดงรัศมี
   L.circle([destinationLat, destinationLon], {
     color: "green",
