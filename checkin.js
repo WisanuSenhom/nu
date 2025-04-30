@@ -109,7 +109,7 @@ async function initializeMap(
   officer
 ) {
   // สร้างแผนที่ใหม่
-  map = L.map("map").setView([lat, lon], 12);
+  map = L.map("map").setView([lat, lon], 11);
 
   // เพิ่มแผนที่พื้นฐาน 
 // ✅ 1. OpenStreetMap (OSM)
