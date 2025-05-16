@@ -140,11 +140,11 @@ var esriImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servi
 
 // 📌 เลเยอร์แผนที่หลัก
 var baseMaps = {
-  "OpenStreetMap": osm,
-  "OpenTopoMap": opentopomap,
-  "Google Maps": googleMaps,
-  "CartoDB Light": cartoLight,
-  "ESRI World Imagery": esriImagery
+  "ค่าเริ่มต้น": osm,
+  "แผนที่ภูมิประเทศ": opentopomap,
+  "แผนที่กูเกิล": googleMaps,
+  "แผนที่สว่าง": cartoLight,
+  "ภาพถ่ายดาวเทียม": esriImagery
 };
 
    // ✅ เช็คว่าใน localStorage มีการบันทึกแผนที่ที่เลือกหรือไม่
