@@ -799,13 +799,27 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
 
-    Swal.fire({
-      title: "กรุณารอสักครู่...<br>ระบบกำลังรับส่งข้อมูลเพื่อประมวลผล",
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+Swal.fire({
+  title: "ระบบกำลังบันทึกข้อมูลการลงเวลา<br>กรุณารอสักครู่",
+  allowOutsideClick: false,
+  showConfirmButton: false,
+  didOpen: () => {
+    Swal.showLoading();
+
+    // ตั้ง timeout เปลี่ยนข้อความ
+    window.swalTimeout1 = setTimeout(() => {
+      Swal.update({
+        title: "ขณะนี้มีการใช้งานระบบจำนวนมาก<br>กำลังเปลี่ยนเส้นทางการเชื่อมต่อ",
+      });
+
+      window.swalTimeout2 = setTimeout(() => {
+        Swal.update({
+          title: "ระบบกำลังดำเนินการต่อ<br>ใกล้เสร็จสิ้นแล้ว กรุณารอสักครู่",
+        });
+      }, 3000);
+    }, 3000);
+  },
+});
 
     // เลือก URL ตามค่า db1
     let url;
@@ -831,6 +845,8 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
     data.res.forEach((datas) => {
       // ปิดการแสดงสถานะการโหลด
+      clearTimeout(window.swalTimeout1);
+clearTimeout(window.swalTimeout2);
       Swal.close();
 
       let iconx = datas.icon;
