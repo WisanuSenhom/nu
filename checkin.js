@@ -178,7 +178,6 @@ L.control.layers(baseMaps).addTo(map);
  fetch("bk_health_centers.geojson")
  .then(response => response.json())
  .then(data => {
-   console.log(data);
 
    // กรองเฉพาะข้อมูลของจังหวัดบึงกาฬ
    const buengKanDistricts = data.features.filter(
@@ -762,7 +761,7 @@ async function generateSecureCode() {
 }
 
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
-async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
+async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
   try {
     // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
     const uuid = localStorage.getItem("uuid");
@@ -808,8 +807,18 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
       },
     });
 
+    // เลือก URL ตามค่า db1
+    let url;
+    if (db1 === "bkn01") {
+      url = "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
+    } else if (db1 === "sk01") {
+      url = "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+    } else {
+      url = "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+    }
+
     const response = await fetch(
-      `https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
+      `${url}?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
     );
 
     if (!response.ok) {
@@ -831,7 +840,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
       Swal.fire({
         icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
         title: header,
-        text: data.message || text, // ข้อความที่ได้รับจาก API หรือจากแต่ละ entry
+        text: data.message || text,
         confirmButtonText: "ตกลง",
         allowOutsideClick: false,
         customClass: {
@@ -842,7 +851,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
               ? "text-danger"
               : iconx === "warning"
               ? "text-warning"
-              : "text-info", // Default to "text-info" for other cases
+              : "text-info",
           content: "text-muted",
           confirmButton:
             iconx === "success"
@@ -851,12 +860,12 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
               ? "btn btn-danger"
               : iconx === "warning"
               ? "btn btn-warning"
-              : "btn btn-info", // Default to "btn btn-info" for other cases
+              : "btn btn-info",
         },
       }).then((result) => {
         if (result.isConfirmed) {
           const cktoday = new Date();
-          const ckfd = cktoday.toLocaleDateString("th-TH"); // รูปแบบวันที่แบบไทย
+          const ckfd = cktoday.toLocaleDateString("th-TH");
           const hours = cktoday.getHours().toString().padStart(2, "0");
           const minutes = cktoday.getMinutes().toString().padStart(2, "0");
           const seconds = cktoday.getSeconds().toString().padStart(2, "0");
@@ -880,21 +889,20 @@ async function processCheckinOrCheckout(ctype, latitude, longitude,staff) {
             liff.closeWindow();
           } catch (error) {
             console.error("Failed to close window, refreshing...");
-            window.location.reload(); // รีเฟรชหน้าแทน
+            window.location.reload();
           }
-          // ใช้ timeout เพื่อรีเฟรชหน้า
+
           setTimeout(() => {
-            location.reload(); // Refresh if liff.closeWindow() does not work
-          }, 500); // ปรับเวลา (500ms)
+            location.reload();
+          }, 500);
         }
       });
     });
   } catch (error) {
-    // หากเกิดข้อผิดพลาด
     Swal.fire({
       icon: "error",
       title: "เกิดข้อผิดพลาด",
-      text: error.message || error, // ข้อความผิดพลาด
+      text: error.message || error,
       confirmButtonText: "ตกลง",
     });
   } finally {
