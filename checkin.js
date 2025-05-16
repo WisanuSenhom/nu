@@ -799,27 +799,54 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
 
-Swal.fire({
-  title: "ระบบกำลังบันทึกข้อมูลการลงเวลา<br>กรุณารอสักครู่",
-  allowOutsideClick: false,
-  showConfirmButton: false,
-  didOpen: () => {
-    Swal.showLoading();
+let swalTimers = []; // เก็บ setTimeout
 
-    // ตั้ง timeout เปลี่ยนข้อความ
-    window.swalTimeout1 = setTimeout(() => {
-      Swal.update({
-        title: "ขณะนี้มีการใช้งานระบบจำนวนมาก<br>กำลังเปลี่ยนเส้นทางการเชื่อมต่อ",
-      });
+    // เริ่ม Swal แสดงข้อความระหว่างรอ
+    Swal.fire({
+      html: `<i class="fas fa-user-shield fa-2x text-primary mb-2"></i><br>กำลังยืนยันตัวตนของคุณ`,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+    
+        // เพิ่มข้อความขั้นตอนแบบต่อเนื่อง
+        swalTimers.push(setTimeout(() => {
+          Swal.update({
+            html: `<i class="fas fa-server fa-2x text-secondary mb-2"></i><br>กำลังเชื่อมต่อกับเซิร์ฟเวอร์`,
+          });
+          Swal.showLoading();
+    
+          swalTimers.push(setTimeout(() => {
+            Swal.update({
+              html: `<i class="fas fa-network-wired fa-2x text-warning mb-2"></i><br>ขณะนี้มีการใช้งานจำนวนมาก<br>(ระบบกำลังสลับไปยังเซิร์ฟเวอร์สำรอง)`,
+            });
+            Swal.showLoading();
+    
+            swalTimers.push(setTimeout(() => {
+              Swal.update({
+                html: `<i class="fas fa-database fa-2x text-success mb-2"></i><br>กำลังบันทึกข้อมูล...`,
+              });
+              Swal.showLoading();
+    
+              swalTimers.push(setTimeout(() => {
+                Swal.update({
+                  html: `<i class="fas fa-reply fa-2x text-info mb-2"></i><br>ระบบกำลังตอบกลับจากเซิร์ฟเวอร์`,
+                });
+                Swal.showLoading();
+    
+                swalTimers.push(setTimeout(() => {
+                  Swal.update({
+                    html: `<i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i><br>ดำเนินการใกล้เสร็จสิ้น<br>กรุณารอสักครู่`,
 
-      window.swalTimeout2 = setTimeout(() => {
-        Swal.update({
-          title: "ระบบกำลังดำเนินการต่อ<br>ใกล้เสร็จสิ้นแล้ว กรุณารอสักครู่",
-        });
-      }, 3000);
-    }, 3000);
-  },
-});
+                  });
+                  Swal.showLoading();
+                }, 3000));
+              }, 3000));
+            }, 3000));
+          }, 2000));
+        }, 2000));
+      }
+    });
 
     // เลือก URL ตามค่า db1
     let url;
@@ -845,9 +872,10 @@ Swal.fire({
     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
     data.res.forEach((datas) => {
       // ปิดการแสดงสถานะการโหลด
-      clearTimeout(window.swalTimeout1);
-clearTimeout(window.swalTimeout2);
-      Swal.close();
+  // ✅ เคลียร์ timeout ทุกอันหลัง fetch เสร็จ
+  swalTimers.forEach((t) => clearTimeout(t));
+  swalTimers = [];
+Swal.close();
 
       let iconx = datas.icon;
       let header = datas.header;
