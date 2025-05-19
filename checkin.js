@@ -60,8 +60,6 @@ function stopLocationTracking() {
   }
 }
 
-
-
 function showError(error) {
   let title = "เกิดข้อผิดพลาด";
   let text = "ขออภัยในความไม่สะดวก กรุณาลองใหม่อีกครั้ง";
@@ -72,8 +70,6 @@ function showError(error) {
       title = "การขออนุญาตถูกปฏิเสธ";
       text =
         "ดูเหมือนว่าคุณปฏิเสธการให้สิทธิ์ในการเข้าถึงตำแหน่งของคุณ กรุณาเปิดการอนุญาตเพื่อให้สามารถใช้งานฟังก์ชันนี้ได้";
-      // footer =
-      //   '<a href="chrome://settings/content/location" target="_blank">คลิกที่นี่เพื่อเปิดการตั้งค่า</a>';
       break;
     case error.POSITION_UNAVAILABLE:
       title = "ไม่สามารถเข้าถึงข้อมูลตำแหน่ง";
@@ -95,9 +91,20 @@ function showError(error) {
     title,
     text,
     footer,
+    showCancelButton: true,
+    confirmButtonText: "ตกลง",
+    cancelButtonText: "สแกน QR Code",
     allowOutsideClick: false,
   }).then((result) => {
-    if (result.isConfirmed) location.reload();
+    if (result.isConfirmed) {
+      location.reload();
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      // เปิดแท็บ #srqrcode
+      const srTab = document.querySelector('[data-bs-target="#srqrcode"]');
+      if (srTab) {
+        srTab.click(); // คลิกแท็บให้เหมือนผู้ใช้กด
+      }
+    }
   });
 }
 
@@ -603,7 +610,7 @@ async function checkin() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      html: 'กรุณาลองใหม่อีกครั้ง<br>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+      html: `<p>กรุณากดปุ่ม <strong> <i class="fa-solid fa-location-dot"></i> พิกัด </strong></p> <br><p>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้</p>`,
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -676,7 +683,7 @@ async function checkout() {
     Swal.fire({
       icon: "warning",
       title: "ขณะนี้ระบบกำลังรับค่าพิกัดจากอุปกรณ์",
-      html: 'กรุณาลองใหม่อีกครั้ง<br>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้',
+      html: `<p>กรุณากดปุ่ม <strong> <i class="fa-solid fa-location-dot"></i> พิกัด </strong></p> <br><p>หากรับค่าพิกัดไม่ได้ ท่านสามารถแสกน QR-code จากหัวหน้าของคุณได้</p>`,
       confirmButtonText: "ตกลง",
       allowOutsideClick: false,
       customClass: {
@@ -788,8 +795,10 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     }
 
     const secureCode = await generateSecureCode();
-    let typea = document.querySelector("#typea").value || 'ปกติ';
-    let nte = document.querySelector("#otherDetails").value || (typeof staff !== 'undefined' ? staff : '');
+    let typea = document.querySelector("#typea").value || "ปกติ";
+    let nte =
+      document.querySelector("#otherDetails").value ||
+      (typeof staff !== "undefined" ? staff : "");
 
     if (typea === "อื่นๆ" && !nte) {
       throw new Error("อื่นๆ โปรดระบุ");
@@ -799,7 +808,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
     let todayx = todays.toLocaleTimeString("th-TH");
 
-let swalTimers = []; // เก็บ setTimeout
+    let swalTimers = []; // เก็บ setTimeout
 
     // เริ่ม Swal แสดงข้อความระหว่างรอ
     Swal.fire({
@@ -808,54 +817,66 @@ let swalTimers = []; // เก็บ setTimeout
       showConfirmButton: false,
       didOpen: () => {
         Swal.showLoading();
-    
+
         // เพิ่มข้อความขั้นตอนแบบต่อเนื่อง
-        swalTimers.push(setTimeout(() => {
-          Swal.update({
-            html: `<i class="fas fa-server fa-2x text-secondary mb-2"></i><br>กำลังเชื่อมต่อกับเซิร์ฟเวอร์`,
-          });
-          Swal.showLoading();
-    
-          swalTimers.push(setTimeout(() => {
+        swalTimers.push(
+          setTimeout(() => {
             Swal.update({
-              html: `<i class="fas fa-network-wired fa-2x text-warning mb-2"></i><br>ขณะนี้มีการใช้งานจำนวนมาก<br>(ระบบกำลังสลับไปยังเซิร์ฟเวอร์สำรอง)`,
+              html: `<i class="fas fa-server fa-2x text-secondary mb-2"></i><br>กำลังเชื่อมต่อกับเซิร์ฟเวอร์`,
             });
             Swal.showLoading();
-    
-            swalTimers.push(setTimeout(() => {
-              Swal.update({
-                html: `<i class="fas fa-database fa-2x text-success mb-2"></i><br>กำลังบันทึกข้อมูล...`,
-              });
-              Swal.showLoading();
-    
-              swalTimers.push(setTimeout(() => {
+
+            swalTimers.push(
+              setTimeout(() => {
                 Swal.update({
-                  html: `<i class="fas fa-reply fa-2x text-info mb-2"></i><br>ระบบกำลังตอบกลับจากเซิร์ฟเวอร์`,
+                  html: `<i class="fas fa-network-wired fa-2x text-warning mb-2"></i><br>ขณะนี้ระบบทำงานช้า<br>(ระบบกำลังสลับไปยังเซิร์ฟเวอร์สำรอง)`,
                 });
                 Swal.showLoading();
-    
-                swalTimers.push(setTimeout(() => {
-                  Swal.update({
-                    html: `<i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i><br>ดำเนินการใกล้เสร็จสิ้น<br>กรุณารอสักครู่`,
 
-                  });
-                  Swal.showLoading();
-                }, 3000));
-              }, 3000));
-            }, 3000));
-          }, 2000));
-        }, 2000));
-      }
+                swalTimers.push(
+                  setTimeout(() => {
+                    Swal.update({
+                      html: `<i class="fas fa-database fa-2x text-success mb-2"></i><br>กำลังบันทึกข้อมูล...`,
+                    });
+                    Swal.showLoading();
+
+                    swalTimers.push(
+                      setTimeout(() => {
+                        Swal.update({
+                          html: `<i class="fas fa-reply fa-2x text-info mb-2"></i><br>ระบบกำลังตอบกลับจากเซิร์ฟเวอร์`,
+                        });
+                        Swal.showLoading();
+
+                        swalTimers.push(
+                          setTimeout(() => {
+                            Swal.update({
+                              html: `<i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i><br>ดำเนินการใกล้เสร็จสิ้น<br>กรุณารอสักครู่`,
+                            });
+                            Swal.showLoading();
+                          }, 3000)
+                        );
+                      }, 3000)
+                    );
+                  }, 3000)
+                );
+              }, 5000)
+            );
+          }, 2000)
+        );
+      },
     });
 
     // เลือก URL ตามค่า db1
     let url;
     if (db1 === "bkn01") {
-      url = "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
+      url =
+        "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
     } else if (db1 === "sk01") {
-      url = "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+      url =
+        "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
     } else {
-      url = "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+      url =
+        "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
     }
 
     const response = await fetch(
@@ -872,10 +893,10 @@ let swalTimers = []; // เก็บ setTimeout
     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
     data.res.forEach((datas) => {
       // ปิดการแสดงสถานะการโหลด
-  // ✅ เคลียร์ timeout ทุกอันหลัง fetch เสร็จ
-  swalTimers.forEach((t) => clearTimeout(t));
-  swalTimers = [];
-Swal.close();
+      // ✅ เคลียร์ timeout ทุกอันหลัง fetch เสร็จ
+      swalTimers.forEach((t) => clearTimeout(t));
+      swalTimers = [];
+      Swal.close();
 
       let iconx = datas.icon;
       let header = datas.header;
@@ -884,7 +905,7 @@ Swal.close();
       Swal.fire({
         icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
         title: header,
-        text: data.message || text,
+        html: data.message || text,
         confirmButtonText: "ตกลง",
         allowOutsideClick: false,
         customClass: {
@@ -943,10 +964,14 @@ Swal.close();
       });
     });
   } catch (error) {
+    swalTimers.forEach((t) => clearTimeout(t));
+    swalTimers = [];
+    Swal.close();
+
     Swal.fire({
       icon: "error",
       title: "เกิดข้อผิดพลาด",
-      text: error.message || error,
+      html: error.message || error,
       confirmButtonText: "ตกลง",
     });
   } finally {
