@@ -968,7 +968,7 @@ div.dt-button-collection {
   gap: 10px; /* ระยะห่างระหว่างองค์ประกอบ */
 }
 
-#reportBtn {
+#reportBtn, #summaryBtn{
   background-color: var(--background-color); /* สีเหลืองสด */
   color: var(--text-color); /* สีดำ */
   border-radius: 8px;
@@ -980,7 +980,7 @@ div.dt-button-collection {
   margin-bottom: 20px;
 }
 
-#reportBtn:hover {
+#reportBtn:hover, #summaryBtn:hover {
   background-color: var(--button-hover-bg); /* สีเหลืองเข้ม */
   color: var(--background-color); /* สีเหลืองอ่อน */
   box-shadow: 0 6px 8px var(--nav-shadow);
