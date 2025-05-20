@@ -1159,53 +1159,61 @@ console.log(gas + qdata);
 
 // รายงานและสถิติ
 
+
 document.addEventListener("DOMContentLoaded", function () {
-  setupYearMonthSelectors();
+  setupYearMonthSelectors("report-year", "report-month");
+  setupYearMonthSelectors("summary-year", "summary-month");
 });
 
-function setupYearMonthSelectors() {
+function setupYearMonthSelectors(yearId, monthId) {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear(); // ปี ค.ศ.
-  const selectYear = document.getElementById("year");
-  const selectMonth = document.getElementById("month");
+  const selectYear = document.getElementById(yearId);
+  const selectMonth = document.getElementById(monthId);
 
-  // รายชื่อเดือนภาษาไทย
   const monthNames = [
-      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน",
+    "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม",
+    "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม",
   ];
 
-  // แสดง 2 ปี (ปีปัจจุบันและปีก่อนหน้า) ในรูปแบบ พ.ศ. แต่ใช้ค่า ค.ศ.
   for (let i = 0; i < 2; i++) {
-      const yearCE = currentYear - i; // ปี ค.ศ.
-      const yearBE = yearCE + 543; // แปลงเป็น พ.ศ.
-      let option = new Option(yearBE, yearCE);
-      selectYear.add(option);
+    const yearCE = currentYear - i;
+    const yearBE = yearCE + 543;
+    let option = new Option(yearBE, yearCE);
+    selectYear.add(option);
   }
 
-  // เพิ่มเดือน พร้อมชื่อเต็มภาษาไทย
   for (let i = 0; i < 12; i++) {
-      let monthValue = (i + 1).toString().padStart(2, "0");
-      let option = new Option(monthNames[i], monthValue);
-      selectMonth.add(option);
+    let monthValue = (i + 1).toString().padStart(2, "0");
+    let option = new Option(monthNames[i], monthValue);
+    selectMonth.add(option);
   }
 
-  // ตั้งค่าค่าปัจจุบันเป็นเดือนและปีนี้
   selectYear.value = currentYear;
   selectMonth.value = (currentDate.getMonth() + 1).toString().padStart(2, "0");
 }
 
 function reportdata() {
-  let yearCE = document.getElementById("year").value; // ได้ค่า ค.ศ.
-  let month = document.getElementById("month").value;
-  let formattedDate = yearCE + month; // yyyymm
-  fetchReportData(formattedDate,month,yearCE); // เรียกใช้ชื่อใหม่
+  let yearCE = document.getElementById("report-year").value;
+  let month = document.getElementById("report-month").value;
+  let formattedDate = yearCE + month;
+  fetchReportData(formattedDate, month, yearCE);
 }
 
-async function fetchReportData(formattedDate,month,yearCE) {
+function summarydata() {
+  let yearCE = document.getElementById("summary-year").value;
+  let month = document.getElementById("summary-month").value.padStart(2, "0");
+  let formattedMonth = `${yearCE}-${month}`;
+  fetchSummaryData(formattedMonth);
+}
+
+
+async function fetchReportData(formattedDate, month, yearCE) {
   const cid = localStorage.getItem("cidhash");
   const db1 = localStorage.getItem("db1");
-  var apiUrl = 'https://script.google.com/macros/s/AKfycbwjLcT7GFTETdwRt_GfU6j-8poTK6_t400RPLa4cMY72Ih3EYAWQIDyFQV0et7lMQG2LQ/exec';
+  var apiUrl =
+    "https://script.google.com/macros/s/AKfycbwjLcT7GFTETdwRt_GfU6j-8poTK6_t400RPLa4cMY72Ih3EYAWQIDyFQV0et7lMQG2LQ/exec";
 
   var queryParams = `?startdate=${formattedDate}&cid=${cid}&db=${db1}`;
 
@@ -1213,226 +1221,355 @@ async function fetchReportData(formattedDate,month,yearCE) {
   document.getElementById("loadingSpinner").style.display = "block";
 
   await fetch(apiUrl + queryParams)
-      .then(response => response.json())
-      .then(data => {
-          const reporttb = document.getElementById("reportdata");
-          reporttb.innerHTML = "";
-          let datartb = '';
+    .then((response) => response.json())
+    .then((data) => {
+      const reporttb = document.getElementById("reportdata");
+      reporttb.innerHTML = "";
+      let datartb = "";
 
-          let totalDays = 0;
-          let weekdays = 0;
-          let weekends = 0;
-          let normalWork = 0;
-          let offsiteWork = 0;
-          let holidayWork = 0;
-          let officialWork = 0;
-          let otherWork = 0;
-          let requestCount = 0; // จำนวนที่มีคำขอ
-          let actualWorkDays = 0;
-          let approvedRequests = 0;
-          let verifiedCount = 0;
-          let workDaysWithoutRequest = 0;
+      let totalDays = 0;
+      let weekdays = 0;
+      let weekends = 0;
+      let normalWork = 0;
+      let offsiteWork = 0;
+      let holidayWork = 0;
+      let officialWork = 0;
+      let otherWork = 0;
+      let requestCount = 0; // จำนวนที่มีคำขอ
+      let actualWorkDays = 0;
+      let approvedRequests = 0;
+      let verifiedCount = 0;
+      let workDaysWithoutRequest = 0;
 
-          data.tst.forEach(function (tst) {
-              // ข้ามข้อมูลที่ไม่มีค่า (null, undefined, ว่าง)
-              if (!tst.datein || !tst.typein) return;
+      data.tst.forEach(function (tst) {
+        // ข้ามข้อมูลที่ไม่มีค่า (null, undefined, ว่าง)
+        if (!tst.datein || !tst.typein) return;
 
-              totalDays++;
+        totalDays++;
 
-              const date = new Date(tst.datein);
-              const dayOfWeek = date.getDay();
-              if (dayOfWeek === 0 || dayOfWeek === 6) {
-                  weekends++;
-              } else {
-                  weekdays++;
-              }
+        const date = new Date(tst.datein);
+        const dayOfWeek = date.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          weekends++;
+        } else {
+          weekdays++;
+        }
 
-              switch(tst.typein) {
-                  case 'ปกติ': normalWork++; break;
-                  case 'นอกสถานที่': offsiteWork++; break;
-                  case 'วันหยุด': holidayWork++; break;
-                  case 'ไปราชการ': officialWork++; break;
-                  case 'อื่นๆ': otherWork++; break;
-              }
+        switch (tst.typein) {
+          case "ปกติ":
+            normalWork++;
+            break;
+          case "นอกสถานที่":
+            offsiteWork++;
+            break;
+          case "วันหยุด":
+            holidayWork++;
+            break;
+          case "ไปราชการ":
+            officialWork++;
+            break;
+          case "อื่นๆ":
+            otherWork++;
+            break;
+        }
 
-              // นับเฉพาะรายการที่มีค่าคำขอจริง ๆ
-              if (tst.reqdate && tst.reqdate.trim() !== "") {
-                  requestCount++;
-              }
+        // นับเฉพาะรายการที่มีค่าคำขอจริง ๆ
+        if (tst.reqdate && tst.reqdate.trim() !== "") {
+          requestCount++;
+        }
 
-              datartb += `<tr>
-                  <td>${tst.day}</td>
-                  <td>${tst.datein}</td>
-                  <td>${tst.timein}</td>
-                  <td>${tst.name}</td>
-                  <td>${tst.subname}</td>
-                  <td>${tst.typein}</td>
-                  <td>${tst.disin}</td>
-                  <td>${tst.timeout}</td>
-                  <td>${tst.disout}</td>
-                  <td>${tst.notein}</td>
-                  <td>${tst.request || "-"}</td>
-                  <td>${tst.reqdate}</td>
-                  <td>${tst.reqtime}</td>
-                  <td>${tst.permitdate}</td>
-                  <td>${tst.permittime}</td>
-                  <td>${tst.permitname}</td>
-                  <td>${tst.permit_note}</td>
-                  <td>${tst.verified}</td>
-                  <td>${tst.verifiedname}</td>
-                  <td>${tst.verified_note}</td>
-                  <td>${tst.verifieddate}</td>
-                  <td>${tst.verifiedtime}</td>
-                  <td>${tst.ref}</td>
-              </tr>`;
-          });
-
-          reporttb.innerHTML = datartb;
-
-                        actualWorkDays = (normalWork + offsiteWork + officialWork + otherWork)-holidayWork;
-
-              approvedRequests = data.tst.filter(d => d.permitdate && d.permitdate.trim() !== "").length;
-
-              verifiedCount = data.tst.filter(d => d.verified && d.verified.trim() !== "" && d.verified.trim() !== "รอตรวจสอบ" ).length;
-
-              workDaysWithoutRequest = totalDays - requestCount; 
-
-          const statistics = `          
-          <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
-          <p class="stat-item"><i class="fa-solid fa-calendar-days"></i> รวมทั้งหมด :  <span>${totalDays}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-user-check"></i> วันทำการ : <span>${actualWorkDays}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-business-time"></i> วันจันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-calendar-week"></i> วันเสาร์-อาทิตย์ :  <span>${weekends}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-circle-check"></i> ทันเวลา : <span>${workDaysWithoutRequest}</span> วัน</p>
-      
-          <h4 class="stat-title"><i class="fa-solid fa-briefcase"></i> ประเภทการปฏิบัติงาน</h4>
-          <p class="stat-item"><i class="fa-solid fa-check-circle"></i> ปกติ :  <span>${normalWork}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-building"></i> นอกสถานที่ :  <span>${offsiteWork}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-star"></i> วันหยุด :  <span>${holidayWork}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-file-signature"></i> ไปราชการ :  <span>${officialWork}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-ellipsis"></i> อื่นๆ :  <span>${otherWork}</span> วัน</p>
-      
-          <h4 class="stat-title"><i class="fa-solid fa-envelope"></i> ข้อมูลคำขอ/การตรวจสอบ</h4>
-          <p class="stat-item"><i class="fa-solid fa-envelope-open-text"></i> ยื่นคำขอ :  <span>${requestCount}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-stamp"></i> อนุมัติแล้ว : <span>${approvedRequests}</span> วัน</p>
-          <p class="stat-item"><i class="fa-solid fa-user-shield"></i> ตรวจสอบแล้ว : <span>${verifiedCount}</span> วัน</p>
-      `;
-      document.getElementById("statistics").innerHTML = statistics;
-  
-      
-
-          document.getElementById("dreportdata").style.display = "table";
-          document.getElementById("loadingSpinner").style.display = "none";
-          sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWork, holidayWork, officialWork, otherWork, requestCount,month,yearCE);
-
-          if ($.fn.dataTable.isDataTable('#dreportdata')) {
-              $('#dreportdata').DataTable().clear().destroy();
-          }
-
-          $('#dreportdata').DataTable({
-              "data": data.tst,
-              "columns": [
-                  { "data": 'day' },
-                  { "data": 'datein' },
-                  { "data": 'timein' },
-                  { "data": 'timeout' },
-                  { "data": 'name' },
-                  { "data": 'subname' },
-                  { "data": 'typein' },
-                  { "data": 'disin' },               
-                  { "data": 'disout' },
-                  { "data": 'notein' },
-                  { "data": 'request' },
-                  { "data": 'reqdate' },
-                  { "data": 'reqtime' },
-                  { "data": 'permitdate' },
-                  { "data": 'permittime' },
-                  { "data": 'permitname' },
-                  { "data": 'permit_note' },
-                  { "data": 'verified' },
-                  { "data": 'verifiedname' },
-                  { "data": 'verified_note' },
-                  { "data": 'verifieddate' },
-                  { "data": 'verifiedtime' },
-                  { "data": 'ref' }
-              ],
-              "language": {
-                  "url": 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json',
-              },
-              "processing": true,
-              "responsive": true,
-              "autoFill": true,
-              "order": [[22, 'asc'], [5, 'asc']],
-              "colReorder": true,
-              "fixedHeader": true,
-              "select": true,
-              "keys": true,
-              "dom": 'lBfrtip',
-              "lengthMenu": [ [10, 30, 50, 100, 150, -1], [10, 30, 50, 100, 150, "ทั้งหมด"] ],
-              "buttons": ['copy', 'csv', 'excel', 'print', 'colvis' ],
-              "pageLength": 30,
-          });
-      })
-      .catch(error => {
-          document.getElementById("loadingSpinner").style.display = "none";
-          console.error("Error fetching data:", error);
+        datartb += `<tr>
+                <td>${tst.day}</td>
+                <td>${tst.datein}</td>
+                <td>${tst.timein}</td>
+                <td>${tst.name}</td>
+                <td>${tst.subname}</td>
+                <td>${tst.typein}</td>
+                <td>${tst.disin}</td>
+                <td>${tst.timeout}</td>
+                <td>${tst.disout}</td>
+                <td>${tst.notein}</td>
+                <td>${tst.request || "-"}</td>
+                <td>${tst.reqdate}</td>
+                <td>${tst.reqtime}</td>
+                <td>${tst.permitdate}</td>
+                <td>${tst.permittime}</td>
+                <td>${tst.permitname}</td>
+                <td>${tst.permit_note}</td>
+                <td>${tst.verified}</td>
+                <td>${tst.verifiedname}</td>
+                <td>${tst.verified_note}</td>
+                <td>${tst.verifieddate}</td>
+                <td>${tst.verifiedtime}</td>
+                <td>${tst.ref}</td>
+            </tr>`;
       });
+
+      reporttb.innerHTML = datartb;
+
+      actualWorkDays =
+        normalWork + offsiteWork + officialWork + otherWork - holidayWork;
+
+      approvedRequests = data.tst.filter(
+        (d) => d.permitdate && d.permitdate.trim() !== ""
+      ).length;
+
+      verifiedCount = data.tst.filter(
+        (d) =>
+          d.verified &&
+          d.verified.trim() !== "" &&
+          d.verified.trim() !== "รอตรวจสอบ"
+      ).length;
+
+      workDaysWithoutRequest = totalDays - requestCount;
+
+      const statistics = `          
+        <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
+        <p class="stat-item"><i class="fa-solid fa-calendar-days"></i> รวมทั้งหมด :  <span>${totalDays}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-user-check"></i> วันทำการ : <span>${actualWorkDays}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-business-time"></i> วันจันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-calendar-week"></i> วันเสาร์-อาทิตย์ :  <span>${weekends}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-circle-check"></i> ทันเวลา : <span>${workDaysWithoutRequest}</span> วัน</p>
+    
+        <h4 class="stat-title"><i class="fa-solid fa-briefcase"></i> ประเภทการปฏิบัติงาน</h4>
+        <p class="stat-item"><i class="fa-solid fa-check-circle"></i> ปกติ :  <span>${normalWork}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-building"></i> นอกสถานที่ :  <span>${offsiteWork}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-star"></i> วันหยุด :  <span>${holidayWork}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-file-signature"></i> ไปราชการ :  <span>${officialWork}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-ellipsis"></i> อื่นๆ :  <span>${otherWork}</span> วัน</p>
+    
+        <h4 class="stat-title"><i class="fa-solid fa-envelope"></i> ข้อมูลคำขอ/การตรวจสอบ</h4>
+        <p class="stat-item"><i class="fa-solid fa-envelope-open-text"></i> ยื่นคำขอ :  <span>${requestCount}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-stamp"></i> อนุมัติแล้ว : <span>${approvedRequests}</span> วัน</p>
+        <p class="stat-item"><i class="fa-solid fa-user-shield"></i> ตรวจสอบแล้ว : <span>${verifiedCount}</span> วัน</p>
+    `;
+      document.getElementById("statistics").innerHTML = statistics;
+
+      document.getElementById("dreportdata").style.display = "table";
+      document.getElementById("loadingSpinner").style.display = "none";
+      sendMsgToTelegram(
+        totalDays,
+        weekdays,
+        weekends,
+        normalWork,
+        offsiteWork,
+        holidayWork,
+        officialWork,
+        otherWork,
+        requestCount,
+        month,
+        yearCE
+      );
+
+      if ($.fn.dataTable.isDataTable("#dreportdata")) {
+        $("#dreportdata").DataTable().clear().destroy();
+      }
+
+      $("#dreportdata").DataTable({
+        data: data.tst,
+        columns: [
+          { data: "day" },
+          { data: "datein" },
+          { data: "timein" },
+          { data: "timeout" },
+          { data: "name" },
+          { data: "subname" },
+          { data: "typein" },
+          { data: "disin" },
+          { data: "disout" },
+          { data: "notein" },
+          { data: "request" },
+          { data: "reqdate" },
+          { data: "reqtime" },
+          { data: "permitdate" },
+          { data: "permittime" },
+          { data: "permitname" },
+          { data: "permit_note" },
+          { data: "verified" },
+          { data: "verifiedname" },
+          { data: "verified_note" },
+          { data: "verifieddate" },
+          { data: "verifiedtime" },
+          { data: "ref" },
+        ],
+        language: {
+          url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
+        },
+        processing: true,
+        responsive: true,
+        autoFill: true,
+        order: [
+          [22, "asc"],
+          [5, "asc"],
+        ],
+        colReorder: true,
+        fixedHeader: true,
+        select: true,
+        keys: true,
+        dom: "lBfrtip",
+        lengthMenu: [
+          [10, 30, 50, 100, 150, -1],
+          [10, 30, 50, 100, 150, "ทั้งหมด"],
+        ],
+        buttons: ["copy", "csv", "excel", "print", "colvis"],
+        pageLength: 30,
+      });
+    })
+    .catch((error) => {
+      document.getElementById("loadingSpinner").style.display = "none";
+      console.error("Error fetching data:", error);
+    });
 }
 
-
-function sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWork, holidayWork, officialWork, otherWork, requestCount, month, yearCE) {
+function sendMsgToTelegram(
+  totalDays,
+  weekdays,
+  weekends,
+  normalWork,
+  offsiteWork,
+  holidayWork,
+  officialWork,
+  otherWork,
+  requestCount,
+  month,
+  yearCE
+) {
   const chatId = localStorage.getItem("chatId");
   const botToken = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
 
   // ฟังก์ชันเพื่อแปลงหมายเลขเดือนเป็นชื่อเดือนภาษาไทย
   function getThaiMonth(month) {
     const months = [
-      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", 
-      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+      "มกราคม",
+      "กุมภาพันธ์",
+      "มีนาคม",
+      "เมษายน",
+      "พฤษภาคม",
+      "มิถุนายน",
+      "กรกฎาคม",
+      "สิงหาคม",
+      "กันยายน",
+      "ตุลาคม",
+      "พฤศจิกายน",
+      "ธันวาคม",
     ];
-    return months[month - 1];  // ปรับให้ตรงกับการนับเดือนที่ 1 ถึง 12
+    return months[month - 1]; // ปรับให้ตรงกับการนับเดือนที่ 1 ถึง 12
   }
 
   const thaimonth = getThaiMonth(month);
 
   const yearCEInt = parseInt(yearCE, 10); // แปลง yearCE ให้เป็นตัวเลข
-  const yearBE = yearCEInt + 543;  // บวก 543 เพื่อแปลงปี ค.ศ. เป็นปี พ.ศ.
+  const yearBE = yearCEInt + 543; // บวก 543 เพื่อแปลงปี ค.ศ. เป็นปี พ.ศ.
 
   const statisticsx = `
 
-  <strong>ข้อมูลการลงเวลา </strong>
-  <strong>ประจำเดือน ${thaimonth} พ.ศ. ${yearBE}</strong>
+<strong>ข้อมูลการลงเวลา </strong>
+<strong>ประจำเดือน ${thaimonth} พ.ศ. ${yearBE}</strong>
 
-  รวมทั้งหมด:  <strong>${totalDays}</strong> วัน
-  จันทร์-ศุกร์:  <strong>${weekdays}</strong> วัน
-  เสาร์-อาทิตย์:  <strong>${weekends}</strong> วัน
-  
-  <strong>ประเภทการปฏิบัติงาน</strong>
-  ปกติ:  <strong>${normalWork}</strong> วัน
-  นอกสถานที่:  <strong>${offsiteWork}</strong> วัน
-  วันหยุด:  <strong>${holidayWork}</strong> วัน
-  ไปราชการ:  <strong>${officialWork}</strong> วัน
-  อื่นๆ:  <strong>${otherWork}</strong> วัน
-  
-  <strong>ข้อมูลคำขอ</strong>
-  ยื่นคำขอ:  <strong>${requestCount}</strong> วัน
+รวมทั้งหมด:  <strong>${totalDays}</strong> วัน
+จันทร์-ศุกร์:  <strong>${weekdays}</strong> วัน
+เสาร์-อาทิตย์:  <strong>${weekends}</strong> วัน
 
-  `;
+<strong>ประเภทการปฏิบัติงาน</strong>
+ปกติ:  <strong>${normalWork}</strong> วัน
+นอกสถานที่:  <strong>${offsiteWork}</strong> วัน
+วันหยุด:  <strong>${holidayWork}</strong> วัน
+ไปราชการ:  <strong>${officialWork}</strong> วัน
+อื่นๆ:  <strong>${otherWork}</strong> วัน
 
-  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(statisticsx)}&parse_mode=HTML`;
+<strong>ข้อมูลคำขอ</strong>
+ยื่นคำขอ:  <strong>${requestCount}</strong> วัน
+
+`;
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(
+    statisticsx
+  )}&parse_mode=HTML`;
 
   fetch(url)
-      .then(response => response.json())
-      .then(data => {
-          if (data.ok) {
-              console.log("Message sent successfully");
-          } else {
-              console.error("Failed to send message", data);
-          }
-      })
-      .catch(error => console.error("Error sending message to Telegram", error));
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.ok) {
+        console.log("Message sent successfully");
+      } else {
+        console.error("Failed to send message", data);
+      }
+    })
+    .catch((error) =>
+      console.error("Error sending message to Telegram", error)
+    );
 }
 
+// ฟังก์ชันหลักที่ดึงข้อมูลและสร้าง DataTable
+async function fetchSummaryData(formattedMonth) {
+  const role = localStorage.getItem("role");
+  const db1 = localStorage.getItem("db1");
+  const office = localStorage.getItem("office");
+  const apiUrl = "https://script.google.com/macros/s/AKfycbzpcaGG9gXkA_Liu4zkbGFGMg-CDhWFFkc2oxJKNRg0BTVj9TODjptKkDb8n4HrfL4J/exec";
+  const queryParams = `?month=${formattedMonth}&user=${role}&db=${db1}&unit=${office}`;
+
+  document.getElementById("loadingSpinnerx").style.display = "block";
+
+  try {
+    const response = await fetch(apiUrl + queryParams);
+    const result = await response.json();
+    const rawData = result.data;
+    const days = result.days;
+
+    const dayNames = ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."];
+    const baseDate = new Date(formattedMonth + "-01");
+
+    const columns = [
+      { title: "ชื่อ", data: "name" },
+      { title: "หน่วยงาน", data: "unit" },
+      { title: "รวม", data: "total" },
+      ...days.map((d) => {
+        const day = parseInt(d);
+        const dateObj = new Date(baseDate.getFullYear(), baseDate.getMonth(), day);
+        const dayName = dayNames[dateObj.getDay()];
+        return {
+          title: `${dayName}${day}`,
+          data: day.toString()
+        };
+      })
+    ];
+
+    if ($.fn.dataTable.isDataTable("#dsummarydata")) {
+      $("#dsummarydata").DataTable().clear().destroy();
+    }
+
+    $("#dsummarydata").DataTable({
+      data: rawData,
+      columns: columns,
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
+      },
+      processing: true,
+      responsive: true,
+    
+      autoFill: true,
+      order: [[1,0, "asc"]],
+      colReorder: true,
+      fixedHeader: true,
+      select: true,
+      keys: true,
+      dom: "lBfrtip",
+      lengthMenu: [
+        [10, 30, 50, 100, 150, -1],
+        [10, 30, 50, 100, 150, "ทั้งหมด"],
+      ],
+      buttons: ["copy", "csv", "excel", "print", "colvis"],
+      pageLength: 100,
+    });
+
+    document.getElementById("dsummarydata").style.display = "table";
+
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    document.getElementById("loadingSpinnerx").style.display = "none";
+  }
+}
 
 
 function clearTableData() {
