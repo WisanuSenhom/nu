@@ -130,6 +130,12 @@
         <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab"
           aria-controls="report" aria-selected="false"><i class="fa-solid fa-table"></i> Report</button>
       </li>
+              <li class="nav-item" role="presentation">
+        <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button"
+          role="tab" aria-controls="summary" aria-selected="false">
+          <i class="fa-solid fa-list-check"></i> Summary
+        </button>
+      </li>
     </ul>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -176,20 +182,20 @@
 
       </div>
 
-       <!-- รายงาน -->
-      <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+      <!-- รายงาน -->
+<div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+  <div class="form-container">
+    <label for="report-month">เดือน</label>
+    <select id="report-month"></select>
 
-        <div class="form-container">
-          <label for="month">เดือน</label>
-          <select id="month"></select>
+    <label for="report-year">พ.ศ.</label>
+    <select id="report-year"></select>
+  </div>
+  <button id="reportBtn" name="reportBtn" onclick="reportdata()">
+    <i class="fa-solid fa-magnifying-glass"></i> ดูรายงาน
+  </button>
 
-          <label for="year">พ.ศ.</label>
-          <select id="year"></select>
-
-        </div>
-        <button id="reportBtn" name="reportBtn" onclick="reportdata()"><i class="fa-solid fa-magnifying-glass"></i> ดูรายงาน</button>
-
-          <div id="loadingSpinner" style="display: none;">
+        <div id="loadingSpinner" style="display: none;">
           <div class="spinner-grow text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
@@ -285,8 +291,57 @@
             </tr>
           </tfoot>
         </table>
+      </div>
 
+      <!-- สรุป -->
+      <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+        <div class="form-container">
+          <label for="summary-month">เดือน</label>
+          <select id="summary-month"></select>
+      
+          <label for="summary-year">พ.ศ.</label>
+          <select id="summary-year"></select>
+        </div>
+        <button id="summaryBtn" name="summaryBtn" onclick="summarydata()">
+          <i class="fa-solid fa-magnifying-glass"></i> ดูสถิติ
+        </button>
 
+        <div id="loadingSpinnerx" style="display: none;">
+          <div class="spinner-grow text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-danger" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-warning" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="spinner-grow text-dark" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div class="d-flex justify-content-center align-items-center">
+            <strong role="status"><i class="fa-solid fa-cloud-arrow-down"></i> Loading...</strong>
+          </div>
+        </div>
+
+        <!-- <div id="statistics"></div> -->
+        <table id="dsummarydata" class="table-striped table-bordered table-hover display nowrap" style="display: none;">
+          <thead></thead>
+        </table>
+      
+        
       </div>
 
     </div>
@@ -432,7 +487,7 @@
             trackerBar.style.display = "flex"; // รีเซ็ตค่าให้ถูกต้อง
           }
 
-          // ตรวจสอบว่าเป็นแท็บ #srqrcode หรือไม่
+   // ตรวจสอบว่าเป็นแท็บ #srqrcode หรือไม่
           if (target === "#srqrcode") {
             startScan();
           } else {
@@ -441,8 +496,12 @@
           if (target === "#report") {
             // reportdata();
           } else {
-            // clearTableData();
           }
+          if (target === "#summary") {
+            // sumarydata();
+          } else {
+          }
+            
         });
       });
     });
