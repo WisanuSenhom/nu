@@ -1521,7 +1521,7 @@ async function fetchSummaryData(formattedMonth) {
 
     const columns = [
       { title: "ชื่อ", data: "name" },
-      { title: "หน่วยงาน", data: "unit" },
+      { title: "หน่วยงาน/กลุ่มงาน", data: "unit" },
       { title: "รวม", data: "total" },
       ...days.map((d) => {
         const day = parseInt(d);
