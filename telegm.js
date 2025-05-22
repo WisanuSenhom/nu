@@ -32,14 +32,14 @@ function getchatID() {
   //        </a>`,
     }).then((result) => {
       if (result.isConfirmed) {
-        getLatestUpdate();
+        showTelegramGuideSteps();
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         // เมื่อกดปุ่มยกเลิก ให้เปลี่ยนหน้าไปยัง index.html
         window.location.href = "index.html";
       }
     });
   } else {
-    getLatestUpdate();
+    showTelegramGuideSteps();
   }
 }
 
@@ -239,74 +239,83 @@ async function handleTelegramCallback(){
         confirmButtonColor: "#0ef",
     });
     }
-  } else {
-
-
-    const steps = [1,2,2.1,2.2,3,"END" ] 
-    const Queue = Swal.mixin({
-      progressSteps: steps,
-      confirmButtonText: 'ถัดไป >',
-      showClass: { backdrop: 'swal2-noanimation' },
-      hideClass: { backdrop: 'swal2-noanimation' },
-    })
-    
-    ;(async () => {
-      await Queue.fire({
-        title: '1️⃣ ป้อน <b>เบอร์โทรศัพท์</b> ที่ลงทะเบียนกับ Telegram (+66)<br> กดปุ่ม NEXT',
-        html: `<img src="https://lh5.googleusercontent.com/d/1kz55Gewy-1WH1jRlhiW4v6U5EoqqHww0" alt="ตัวอย่างการกดยืนยันใน Telegram" 
-        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
-        currentProgressStep: 0,
-      })
-      await Queue.fire({
-        title: '2️⃣ กด <b> Confirm</b> ที่การแจ้งเตือน<br>',
-        html: `<img src="https://lh5.googleusercontent.com/d/132Snp9ebrhkdl7aSz3NXy21RilIluxbO" alt="ตัวอย่างการกดยืนยันใน Telegram" 
-        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
-        currentProgressStep: 1,
-      })
-      await Queue.fire({
-        html: `หาก Telegram ไม่แจ้งเตือน เปิดแอพ/แชท Telegram <br>
-        <img src="https://lh5.googleusercontent.com/d/1MA-oSuWWLdixZXEK2ChzfEBxitWRJ6O0" alt="ตัวอย่างการกดยืนยันใน Telegram" 
-        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
-        currentProgressStep: 2,
-      })
-      await Queue.fire({
-        html: `กด <b>ปุ่ม Confirm</b> ในแชท "Telegram" <br>
-        <img src="https://lh5.googleusercontent.com/d/1GKlu8MJkJoBzePGG7LV_Id7GD9mvbMzd" alt="ตัวอย่างการกดยืนยันใน Telegram" 
-        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
-        currentProgressStep: 3,
-      })
-      await Queue.fire({
-        title: '3️⃣ เปิดแอพลงเวลาแล้ว กด <b> ยืนยัน</b> <br>',
-        html: ` <img src="https://lh5.googleusercontent.com/d/1v0azTKUmDwu7nmphiPpeJtpbJ-0F8fa2" alt="ตัวอย่างการกดยืนยันใน Telegram" 
-        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
-        currentProgressStep: 4,
-      })
-      await Queue.fire({
-        title: 'วิธีใช้เพิ่มเติม',
-        html: `
-          <p style="text-align: left;">
-            <a href="javascript:void(0);" onclick="checkAppTelegram()" style="color: lightblue;">
-                 ตรวจสอบการติดตั้ง Telegram 
-               </a><br>
-            <a href="https://youtube.com/shorts/U1Eto_Sl2FE?feature=share" style="color: lightblue;">
-                 🎥 วิดีโอสอนเชื่อมต่อ Telegram กับระบบลงเวลา
-               </a><br>
-            <a href="https://t.me/TimestampNotifybot" target="_blank" style="color: lightblue;">
-                 💬 เปิดแชท Telegram
-               </a><br>
-            <a href="https://t.me/setlanguage/thaith" target="_blank" style="color: lightblue;">
-                 🌍 ตั้งค่า Telegram เป็นภาษาไทย
-               </a>
-          </p>
-        `,
-        currentProgressStep: 5,  
-        confirmButtonText: 'ตกลง',
-      }).then(() => {
-        getchatID(); 
-      })
-    })() 
+  }else{
+    getchatID()
   }
 }
+
+
+function showTelegramGuideSteps() {
+  const steps = [1, 2, 2.1, 2.2, 3, "END"];
+  const Queue = Swal.mixin({
+    progressSteps: steps,
+    confirmButtonText: 'ถัดไป >',
+    showClass: { backdrop: 'swal2-noanimation' },
+    hideClass: { backdrop: 'swal2-noanimation' },
+  });
+
+  (async () => {
+    await Queue.fire({
+      title: '1️⃣ ป้อน <b>เบอร์โทรศัพท์</b> ที่ลงทะเบียนกับ Telegram (+66)<br> กดปุ่ม NEXT',
+      html: `<img src="https://lh5.googleusercontent.com/d/1kz55Gewy-1WH1jRlhiW4v6U5EoqqHww0" alt="ตัวอย่างการกดยืนยันใน Telegram" 
+        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
+      currentProgressStep: 0,
+    });
+
+    await Queue.fire({
+      title: '2️⃣ กด <b> Confirm</b> ที่การแจ้งเตือน<br>',
+      html: `<img src="https://lh5.googleusercontent.com/d/132Snp9ebrhkdl7aSz3NXy21RilIluxbO" alt="ตัวอย่างการกดยืนยันใน Telegram" 
+        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
+      currentProgressStep: 1,
+    });
+
+    await Queue.fire({
+      html: `หาก Telegram ไม่แจ้งเตือน เปิดแอพ/แชท Telegram <br>
+        <img src="https://lh5.googleusercontent.com/d/1MA-oSuWWLdixZXEK2ChzfEBxitWRJ6O0" alt="ตัวอย่างการกดยืนยันใน Telegram" 
+        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
+      currentProgressStep: 2,
+    });
+
+    await Queue.fire({
+      html: `กด <b>ปุ่ม Confirm</b> ในแชท "Telegram" <br>
+        <img src="https://lh5.googleusercontent.com/d/1GKlu8MJkJoBzePGG7LV_Id7GD9mvbMzd" alt="ตัวอย่างการกดยืนยันใน Telegram" 
+        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
+      currentProgressStep: 3,
+    });
+
+    await Queue.fire({
+      title: '3️⃣ เปิดแอพลงเวลาแล้ว กด <b> ยืนยัน</b> <br>',
+      html: ` <img src="https://lh5.googleusercontent.com/d/1v0azTKUmDwu7nmphiPpeJtpbJ-0F8fa2" alt="ตัวอย่างการกดยืนยันใน Telegram" 
+        style="width: 100%; max-width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">`,
+      currentProgressStep: 4,
+    });
+
+    await Queue.fire({
+      title: 'วิธีใช้เพิ่มเติม',
+      html: `
+        <p style="text-align: left;">
+          <p><a href="javascript:void(0);" onclick="checkAppTelegram()" style="color: lightblue;">
+               ตรวจสอบการติดตั้ง Telegram 
+             </a></p>
+         <p> <a href="https://youtube.com/shorts/U1Eto_Sl2FE?feature=share" style="color: lightblue;">
+               🎥 วิดีโอสอนเชื่อมต่อ Telegram กับระบบลงเวลา
+             </a></p>
+        <p>  <a href="https://t.me/TimestampNotifybot" target="_blank" style="color: lightblue;">
+               💬 เปิดแชท Telegram
+             </a></p>
+          <p><a href="https://t.me/setlanguage/thaith" target="_blank" style="color: lightblue;">
+               🌍 ตั้งค่า Telegram เป็นภาษาไทย
+             </a></p>
+        </p>
+      `,
+      currentProgressStep: 5,
+      confirmButtonText: 'ตกลง',
+    }).then(() => {
+      getLatestUpdate();
+    });
+  })();
+}
+
 
 function coseWindow() {
   // Redirect to index.html
