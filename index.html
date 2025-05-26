@@ -2,68 +2,73 @@
 <html lang="th-TH">
 
 <head>
-    <!-- ✅ Required Meta Tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล">
-  
-    <!-- ✅ PWA Support -->
-    <meta name="theme-color" content="#ffffff">
-    <meta name="msapplication-navbutton-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="ระบบลงเวลาปฏิบัติงาน">
-    <meta name="application-name" content="ระบบลงเวลาปฏิบัติงาน">
-  
-    <!-- ✅ Cache Control (ป้องกันแคช) -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-  
-    <!-- ✅ Preconnect for faster loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.datatables.net">
-    <link rel="preconnect" href="https://script.google.com">
-  
-    <!-- ✅ Web App Manifest -->
-    <link rel="manifest" href="manifest.json">
-  
-    <!-- ✅ Favicon & Apple Touch Icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5">
-    <link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5">
-  
-    <!-- ✅ Google Fonts (ลดเวลาโหลด + ป้องกัน FOUT) -->
-    <!-- นำเข้าฟอนต์จาก Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Itim&family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Niramit:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Pattaya&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-  
-    <!-- ✅ Bootstrap -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-  
-    <!-- ✅ Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  
-    <!-- ✅ Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  
-    <!-- ✅ DataTable CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-  
-    <!-- ✅ Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-  
-    <!-- ✅ JavaScript files (โหลดแบบ async/defer) -->
-    <script async src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script defer src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  
+  <!-- ✅ Required Meta Tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="ระบบลงเวลาปฏิบัติงาน สำหรับการลงเวลา การตรวจสอบการลงเวลา และการจัดการข้อมูล">
 
-    <title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
+  <!-- ✅ PWA Support -->
+  <meta name="theme-color" content="#ffffff">
+  <meta name="msapplication-navbutton-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ระบบลงเวลาปฏิบัติงาน">
+  <meta name="application-name" content="ระบบลงเวลาปฏิบัติงาน">
+
+  <!-- ✅ Cache Control (ป้องกันแคช) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- ✅ Preconnect for faster loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://cdn.datatables.net">
+  <link rel="preconnect" href="https://script.google.com">
+
+  <!-- ✅ Web App Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ✅ Favicon & Apple Touch Icon -->
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5">
+  <link rel="shortcut icon" href="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5">
+
+  <!-- ✅ Google Fonts (ลดเวลาโหลด + ป้องกัน FOUT) -->
+  <!-- นำเข้าฟอนต์จาก Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Itim&family=K2D:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Niramit:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Pattaya&family=Roboto:ital,wght@0,100..900;1,100..900&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Taviraj:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+
+  <!-- ✅ Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+  <!-- ✅ Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- ✅ Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+  <!-- ✅ DataTable CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+  <!-- ✅ Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- ✅ JavaScript files (โหลดแบบ async/defer) -->
+  <script async src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+
+  <title>ระบบลงเวลาปฏิบัติงาน | SK_BK_Time</title>
 </head>
 
 <body>
@@ -80,14 +85,15 @@
       <!-- <a href="#">พิกัด</a> -->
       <a href="javascript:void(0);" onclick="openWebAdmin()"><i class="fas fa-chart-bar"></i> รายงาน</a>
       <a href="javascript:void(0);" onclick="openWeb5s()"><i class="fas fa-folder"></i> 5ส.</a>
-         <a href="authen.html"><i class="fab fa-telegram"></i> เชื่อมต่อ Telegram</a>
+      <a href="authen.html"><i class="fab fa-telegram"></i> เชื่อมต่อ Telegram</a>
       <a href="javascript:void(0);" onclick="googlelogin()"><i class="fa-brands fa-google"></i> เชื่อมต่อ Google</a>
       <a href="javascript:void(0);" onclick="uploadImage()"><i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</a>
       <a href="javascript:void(0);" onclick="aboutme()"><i class="fas fa-user"></i> ฉัน</a>
       <a href="javascript:void(0);" onclick="editpic()"><i class="fas fa-image"></i> รูปโปรไฟล์</a>
       <a href="javascript:void(0);" onclick="requestReceive()"><i class="fa-regular fa-file-lines"></i> คำขอกู้คืน</a>
       <a href="javascript:void(0);" onclick="logupdate()"><i class="fas fa-history"></i> บันทึก</a>
-         <a href="https://drive.google.com/file/d/1vv9PcsMhtZrztWn3daz13PQUH2Pko71x/view?usp=drive_link" target="_blank"><i class="fas fa-book"></i> วิธีใช้</a>
+      <a href="https://drive.google.com/file/d/1vv9PcsMhtZrztWn3daz13PQUH2Pko71x/view?usp=drive_link" target="_blank"><i
+          class="fas fa-book"></i> วิธีใช้</a>
       <a href="javascript:void(0);" onclick="clearLocal()"><i class="fas fa-sync-alt"></i> ออก</a>
     </div>
 
@@ -95,21 +101,21 @@
       <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar"
         id="avatar" onclick="editpic()">
 
-     <span class="notify-toggle" id="notify-toggle">
-  <i class="fa-solid fa-bell"></i>
-  <span class="notify-badge" id="notify-badge"></span>
-</span>
+      <span class="notify-toggle" id="notify-toggle">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notify-badge" id="notify-badge"></span>
+      </span>
 
-        
-<div id="notify-menu" class="notify-menu">
-  <p id="no-time-log"><i class="fas fa-clock"></i> การตรวจสอบเบื้องต้นไม่พบการลงเวลาปฏิบัติงานในวันนี้</p>
-  <p id="has-time-log"><i class="fas fa-check-circle"></i> คุณได้ลงเวลาปฏิบัติงานในวันนี้แล้ว</p>
-</div>
-        
+
+      <div id="notify-menu" class="notify-menu">
+        <p id="no-time-log"><i class="fas fa-clock"></i> การตรวจสอบเบื้องต้นไม่พบการลงเวลาปฏิบัติงานในวันนี้</p>
+        <p id="has-time-log"><i class="fas fa-check-circle"></i> คุณได้ลงเวลาปฏิบัติงานในวันนี้แล้ว</p>
+      </div>
+
       <span class="theme-toggle" id="theme-toggle"><i class="fa-solid fa-moon"></i></span>
       <span class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></span>
     </div>
-    
+
   </nav>
 
   <div id="mainContent" class="container">
@@ -130,7 +136,7 @@
         <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab"
           aria-controls="report" aria-selected="false"><i class="fa-solid fa-table"></i> Report</button>
       </li>
-              <li class="nav-item" role="presentation">
+      <li class="nav-item" role="presentation">
         <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button"
           role="tab" aria-controls="summary" aria-selected="false">
           <i class="fa-solid fa-list-check"></i> Summary
@@ -142,29 +148,28 @@
         <!-- <h1>Welcome to Work Tracker</h1> -->
 
 
-        <iframe title="datetime"
-          src=""
-          frameborder="0" width="276" height="46" allowtransparency="true" style="pointer-events: none;"></iframe>
+        <iframe title="datetime" src="" frameborder="0" width="276" height="46" allowtransparency="true"
+          style="pointer-events: none;"></iframe>
 
-          <div id="log">
-            <label for="typea"><i class="fa-solid fa-list"></i> ลักษณะการปฏิบัติงาน:</label>
-            <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
-              <option value="ปกติ">ทำงานตามปกติ</option>
-              <option value="นอกสถานที่">ออกปฏิบัติงานนอกสถานที่</option>
-              <option value="วันหยุด">ปฏิบัติงานในวันหยุด (เสาร์-อาทิตย์ หรือวันหยุดราชการ)</option>
-              <option value="ไปราชการ">ไปราชการ (เช่น ประชุม อบรม ฯลฯ)</option>
-              <option value="อื่นๆ">อื่นๆ (โปรดระบุรายละเอียด)</option>
-            </select>
-          
-            <div id="otherInput">
-              <label for="otherDetails"><i class="fas fa-info-circle"></i> รายละเอียดเพิ่มเติม:</label>
-              <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" />
-          
-              <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
-              <input type="text" id="llon" name="llon" placeholder="ลองจิจูด" hidden />
-            </div>
+        <div id="log">
+          <label for="typea"><i class="fa-solid fa-list"></i> ลักษณะการปฏิบัติงาน:</label>
+          <select id="typea" name="CheckIn" required onchange="handleOtherOption()">
+            <option value="ปกติ">ทำงานตามปกติ</option>
+            <option value="นอกสถานที่">ออกปฏิบัติงานนอกสถานที่</option>
+            <option value="วันหยุด">ปฏิบัติงานในวันหยุด (เสาร์-อาทิตย์ หรือวันหยุดราชการ)</option>
+            <option value="ไปราชการ">ไปราชการ (เช่น ประชุม อบรม ฯลฯ)</option>
+            <option value="อื่นๆ">อื่นๆ (โปรดระบุรายละเอียด)</option>
+          </select>
+
+          <div id="otherInput">
+            <label for="otherDetails"><i class="fas fa-info-circle"></i> รายละเอียดเพิ่มเติม:</label>
+            <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" />
+
+            <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
+            <input type="text" id="llon" name="llon" placeholder="ลองจิจูด" hidden />
           </div>
-          
+        </div>
+
 
         <div id="map"></div>
       </div>
@@ -173,7 +178,8 @@
 
         <div class="content-wrapper">
           <div id="reader"></div>
-          <button id="button-qr" onclick="toggleQRCode()" class="btn btn-primary">สร้าง <i class="fa-solid fa-qrcode"></i> QR Code</button>
+          <button id="button-qr" onclick="toggleQRCode()" class="btn btn-primary">สร้าง <i
+              class="fa-solid fa-qrcode"></i> QR Code</button>
           <div id="qrcode"></div>
           <P></P>
           <p><i class="fas fa-book-open"></i> วิธีใช้ : แสกน QR Code จากหัวหน้าของคุณ</p>
@@ -183,17 +189,26 @@
       </div>
 
       <!-- รายงาน -->
-<div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-  <div class="form-container">
-    <label for="report-month">เดือน</label>
-    <select id="report-month"></select>
+      <div class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
+        <div class="form-container">
+          <label for="report-month">เดือน</label>
+          <select id="report-month"></select>
 
-    <label for="report-year">พ.ศ.</label>
-    <select id="report-year"></select>
-  </div>
-  <button id="reportBtn" name="reportBtn" onclick="reportdata()">
-    <i class="fa-solid fa-magnifying-glass"></i> ดูรายงาน
-  </button>
+          <label for="report-year">พ.ศ.</label>
+          <select id="report-year"></select>
+        </div>
+        <div class="center-container">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="responsiveSwitchMain" checked />
+            <label class="form-check-label" for="responsiveSwitchMain" id="responsiveLabelMain">
+              แสดงข้อมูลแบบย่อ (กดปุ่ม <i class="fa-solid fa-play"></i> เพื่อดูรายละเอียด)
+            </label>
+          </div>
+        </div>
+        
+        <button id="reportBtn" name="reportBtn" onclick="reportdata()">
+          <i class="fa-solid fa-magnifying-glass"></i> ดูรายงาน
+        </button>
 
         <div id="loadingSpinner" style="display: none;">
           <div class="spinner-grow text-primary" role="status">
@@ -298,10 +313,22 @@
         <div class="form-container">
           <label for="summary-month">เดือน</label>
           <select id="summary-month"></select>
-      
+
           <label for="summary-year">พ.ศ.</label>
           <select id="summary-year"></select>
         </div>
+
+        <div class="center-container">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="responsiveSwitchAlt" checked />
+            <label class="form-check-label" for="responsiveSwitchAlt" id="responsiveLabelAlt">
+              แสดงข้อมูลแบบย่อ (กดปุ่ม <i class="fa-solid fa-play"></i> เพื่อดูรายละเอียด)
+            </label>
+          </div>
+        </div>
+           
+        
+
         <button id="summaryBtn" name="summaryBtn" onclick="summarydata()">
           <i class="fa-solid fa-magnifying-glass"></i> สรุป(ในหน่วยงาน/กลุ่มงาน)
         </button>
@@ -340,8 +367,6 @@
         <table id="dsummarydata" class="table-striped table-bordered table-hover display nowrap" style="display: none;">
           <thead></thead>
         </table>
-      
-        
       </div>
 
     </div>
@@ -359,34 +384,40 @@
     <button id="imapBtn" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> พิกัด</button>
   </div>
 
-<!-- jQuery -->
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+  <!-- jQuery -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
 
-<!-- DataTable JS -->
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.dataTables.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js" defer></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js" defer></script>
-<script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js" defer></script>
+  <!-- DataTable JS -->
+  <script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"
+    defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.dataTables.min.js"
+    defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js" defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js" defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js" defer></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/colreorder/1.7.0/js/dataTables.colReorder.min.js"
+    defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"
+    defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"
+    defer></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"
+    defer></script>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
-<!-- Bootstrap 5 JS (with Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous" defer></script>
-<!-- OAuth -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<!-- Custom JS -->
-<script src="checkin.js" defer></script>
-<script src="app.js" defer></script>
+  <!-- Bootstrap 5 JS (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"
+    defer></script>
+  <!-- OAuth -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Custom JS -->
+  <script src="checkin.js" defer></script>
+  <script src="app.js" defer></script>
 
   <script>
     // Handle "Other" option in select dropdown
@@ -456,7 +487,7 @@
 
 
 
-  // ดึงข้อมูลรูปภาพจาก localStorage
+    // ดึงข้อมูลรูปภาพจาก localStorage
     const avatarSrc = localStorage.getItem("upic");
     const avatarSrcx = localStorage.getItem("yourpic");
 
@@ -464,8 +495,8 @@
     if (avatarSrc) {
       // ตั้งค่าให้รูปภาพ avatar
       document.getElementById("avatar").src = avatarSrc;
-    } else if (avatarSrcx)  {
-      document.getElementById("avatar").src = avatarSrcx; 
+    } else if (avatarSrcx) {
+      document.getElementById("avatar").src = avatarSrcx;
     } else {
       // กรณีที่ไม่มีรูปภาพใน localStorage
       document.getElementById("avatar").src = 'https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5'; // ใส่รูปภาพที่เป็นค่าเริ่มต้น
@@ -487,7 +518,7 @@
             trackerBar.style.display = "flex"; // รีเซ็ตค่าให้ถูกต้อง
           }
 
-   // ตรวจสอบว่าเป็นแท็บ #srqrcode หรือไม่
+          // ตรวจสอบว่าเป็นแท็บ #srqrcode หรือไม่
           if (target === "#srqrcode") {
             startScan();
           } else {
@@ -501,7 +532,7 @@
             // sumarydata();
           } else {
           }
-            
+
         });
       });
     });
@@ -549,6 +580,32 @@
         }
       });
     });
+
+    document.addEventListener("DOMContentLoaded", () => {
+  const switchMain = document.getElementById("responsiveSwitchMain");
+  const labelMain = document.getElementById("responsiveLabelMain");
+
+  const switchAlt = document.getElementById("responsiveSwitchAlt");
+  const labelAlt = document.getElementById("responsiveLabelAlt");
+
+  switchMain.addEventListener("change", () => {
+    if (switchMain.checked) {
+      labelMain.innerHTML = 'แสดงข้อมูลแบบย่อ (กดปุ่ม <i class="fa-solid fa-play"></i> เพื่อดูรายละเอียด)';
+    } else {
+      labelMain.innerHTML = 'แสดงข้อมูลเต็มแถวทั้งหมด';
+    }
+  });
+
+  switchAlt.addEventListener("change", () => {
+    if (switchAlt.checked) {
+      labelAlt.innerHTML = 'แสดงข้อมูลแบบย่อ (กดปุ่ม <i class="fa-solid fa-play"></i> เพื่อดูรายละเอียด)';
+    } else {
+      labelAlt.innerHTML = 'แสดงข้อมูลเต็มแถวทั้งหมด';
+    }
+  });
+});
+
+
 
   </script>
 
