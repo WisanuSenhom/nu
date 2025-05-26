@@ -1243,7 +1243,9 @@ function reportdata() {
   let monthName = monthSelect.options[monthSelect.selectedIndex].text; // ชื่อเดือน (ภาษาไทย)
   let formattedDate = yearCE + month;
   let yearTH = parseInt(yearCE) + 543;
-  fetchReportData(formattedDate, monthName, yearTH);
+  const isResponsiveMain = document.getElementById("responsiveSwitchMain").checked;
+
+  fetchReportData(formattedDate, monthName, yearTH,isResponsiveMain);
 }
 
 function summarydata() {
@@ -1255,11 +1257,13 @@ function summarydata() {
   let formattedMonth = `${yearCE}-${month}`;
   let yearTH = parseInt(yearCE) + 543;
 
+  const isResponsiveAlt = document.getElementById("responsiveSwitchAlt").checked;
+
   // เรียกใช้ชื่อเดือนด้วย
-  fetchSummaryData(formattedMonth, monthName, yearTH);
+  fetchSummaryData(formattedMonth, monthName, yearTH,isResponsiveAlt);
 }
 
-async function fetchReportData(formattedDate, monthName, yearTH) {
+async function fetchReportData(formattedDate, monthName, yearTH, responsiveSwitchMain) {
   const cid = localStorage.getItem("cidhash");
   const db1 = localStorage.getItem("db1");
   const yourname = localStorage.getItem("name");
@@ -1375,8 +1379,19 @@ async function fetchReportData(formattedDate, monthName, yearTH) {
 
       workDaysWithoutRequest = totalDays - requestCount;
 
+      // สร้างวันที่ปัจจุบัน
+const now = new Date();
+const day = now.getDate();
+const month = now.getMonth() + 1;
+const yearTHNow = now.getFullYear() + 543;
+const hours = now.getHours().toString().padStart(2, '0');
+const minutes = now.getMinutes().toString().padStart(2, '0');
+
+// แปลงรูปแบบวันที่เป็น "ข้อมูล ณ วันที่ 26/05/2568 เวลา 14:30 น."
+const currentDateTime = `ข้อมูล ณ วันที่ ${day}/${month}/${yearTHNow} เวลา ${hours}:${minutes} น.`;
+
       const statistics = `          
-        <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา</h4>
+        <h4 class="stat-title"><i class="fa-solid fa-clock"></i> ข้อมูลการลงเวลา ประจำเดือน ${monthName} พ.ศ. ${yearTH}</h4>
         <p class="stat-item"><i class="fa-solid fa-calendar-days"></i> รวมทั้งหมด :  <span>${totalDays}</span> วัน</p>
         <p class="stat-item"><i class="fa-solid fa-user-check"></i> วันทำการ : <span>${actualWorkDays}</span> วัน</p>
         <p class="stat-item"><i class="fa-solid fa-business-time"></i> วันจันทร์-ศุกร์ :  <span>${weekdays}</span> วัน</p>
@@ -1394,13 +1409,29 @@ async function fetchReportData(formattedDate, monthName, yearTH) {
         <p class="stat-item"><i class="fa-solid fa-envelope-open-text"></i> ยื่นคำขอ :  <span>${requestCount}</span> วัน</p>
         <p class="stat-item"><i class="fa-solid fa-stamp"></i> อนุมัติแล้ว : <span>${approvedRequests}</span> วัน</p>
         <p class="stat-item"><i class="fa-solid fa-user-shield"></i> ตรวจสอบแล้ว : <span>${verifiedCount}</span> วัน</p>
-    `;
+
+        <h4 class="stat-title"></h4>
+        <p class="stat-item"><i class="fa-solid fa-calendar-check"></i> ${currentDateTime}</p>
+
+          `;
       document.getElementById("statistics").innerHTML = statistics;
 
       document.getElementById("dreportdata").style.display = "table";
       document.getElementById("loadingSpinner").style.display = "none";
 
-      sendMsgToTelegram(totalDays, weekdays, weekends, normalWork,  offsiteWork,  holidayWork,   officialWork,  otherWork,  requestCount,  monthName, yearTH );
+      sendMsgToTelegram(
+        totalDays,
+        weekdays,
+        weekends,
+        normalWork,
+        offsiteWork,
+        holidayWork,
+        officialWork,
+        otherWork,
+        requestCount,
+        monthName,
+        yearTH
+      );
 
       if ($.fn.dataTable.isDataTable("#dreportdata")) {
         $("#dreportdata").DataTable().clear().destroy();
@@ -1437,7 +1468,8 @@ async function fetchReportData(formattedDate, monthName, yearTH) {
           url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
         },
         processing: true,
-        responsive: true,
+        responsive: responsiveSwitchMain,
+        scrollX: !responsiveSwitchMain, 
         autoFill: true,
         order: [
           [22, "asc"],
@@ -1481,7 +1513,19 @@ async function fetchReportData(formattedDate, monthName, yearTH) {
     });
 }
 
-function sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWork, holidayWork, officialWork, otherWork, requestCount, monthName, yearTH) {
+function sendMsgToTelegram(
+  totalDays,
+  weekdays,
+  weekends,
+  normalWork,
+  offsiteWork,
+  holidayWork,
+  officialWork,
+  otherWork,
+  requestCount,
+  monthName,
+  yearTH
+) {
   const chatId = localStorage.getItem("chatId");
   const botToken = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
 
@@ -1509,7 +1553,9 @@ function sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWor
 ยื่นคำขอ: <b>${requestCount}</b> วัน
 `;
 
-  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(statisticsx)}&parse_mode=HTML`;
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(
+    statisticsx
+  )}&parse_mode=HTML`;
 
   fetch(url)
     .then((response) => response.json())
@@ -1520,12 +1566,14 @@ function sendMsgToTelegram(totalDays, weekdays, weekends, normalWork, offsiteWor
         console.error("Failed to send message", data);
       }
     })
-    .catch((error) => console.error("Error sending message to Telegram", error));
+    .catch((error) =>
+      console.error("Error sending message to Telegram", error)
+    );
 }
 
-
 // ฟังก์ชันหลักที่ดึงข้อมูลและสร้าง DataTable
-async function fetchSummaryData(formattedMonth, monthName, yearTH) {
+
+async function fetchSummaryData(formattedMonth, monthName, yearTH, isResponsiveAlt) {
   const role = localStorage.getItem("role");
   const db1 = localStorage.getItem("db1");
   const office = localStorage.getItem("office");
@@ -1575,7 +1623,8 @@ async function fetchSummaryData(formattedMonth, monthName, yearTH) {
         url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
       },
       processing: true,
-      responsive: true,
+      responsive: isResponsiveAlt,
+  scrollX: !isResponsiveAlt, 
 
       autoFill: true,
       order: [[1, 0, "asc"]],
