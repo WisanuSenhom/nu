@@ -1025,3 +1025,34 @@ div.dt-button-collection {
   padding-left: 10px; /* ระยะห่างด้านหน้า (ก่อนตัวอักษร) */
   padding-right: 5px; /* ระยะห่างด้านหลัง (หลังตัวอักษร) */
 }
+
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ระยะห่างระหว่าง toggle กับ label */
+}
+
+.form-check-input {
+  background-color: var(--background-color);
+  border-color: var(--border-color);
+}
+
+.form-check-input:checked {
+  background-color: var(--secondary-text-color) !important; /* สีฟ้า */
+  border-color: var(--text-color) !important;
+}
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem var(--background-color-rgb);
+}
+
+.form-check-input:checked::before {
+  background-color: var(--text-color) !important;
+}
