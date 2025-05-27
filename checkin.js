@@ -27,7 +27,7 @@ async function getLocation() {
             icon: "success",
             title: "พร้อม"
           });
-          
+          checkRetryParams();
           alertUpdate();
         },
         (error) => {
@@ -768,9 +768,269 @@ async function generateSecureCode() {
 }
 
 // ฟังก์ชันที่ใช้สำหรับการลงเวลา
-async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
+
+// async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
+//   try {
+//     // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
+//     const uuid = localStorage.getItem("uuid");
+//     const cidhash = localStorage.getItem("cidhash");
+//     const userid = localStorage.getItem("userid");
+//     const name = localStorage.getItem("name");
+//     const mainsub = localStorage.getItem("mainsub");
+//     const office = localStorage.getItem("office");
+//     const latx = localStorage.getItem("oflat");
+//     const longx = localStorage.getItem("oflong");
+//     const db1 = localStorage.getItem("db1");
+//     const token = localStorage.getItem("token");
+//     const docno = localStorage.getItem("docno");
+//     const job = localStorage.getItem("job");
+//     const boss = localStorage.getItem("boss");
+//     const ceo = localStorage.getItem("ceo");
+//     const refid = localStorage.getItem("refid");
+//     const chatId = localStorage.getItem("chatId");
+
+//     if (!refid || !cidhash || !userid || !name) {
+//       throw new Error(
+//         "ไม่พบข้อมูลที่จำเป็นในการลงเวลา กรุณาลองใหม่หรือลงชื่อออกแล้วเข้าสู่ระบบใหม่"
+//       );
+//     }
+
+//     const secureCode = await generateSecureCode();
+//     let typea = document.querySelector("#typea").value || "ปกติ";
+//     let nte =
+//       document.querySelector("#otherDetails").value ||
+//       (typeof staff !== "undefined" ? staff : "");
+
+//     if (typea === "อื่นๆ" && !nte) {
+//       throw new Error("อื่นๆ โปรดระบุ");
+//     }
+
+//     let todays = new Date();
+//     todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+//     let todayx = todays.toLocaleTimeString("th-TH");
+
+//     let swalTimers = []; // เก็บ setTimeout
+
+//     // เริ่ม Swal แสดงข้อความระหว่างรอ
+//     Swal.fire({
+//       html: `<i class="fas fa-user-shield fa-2x text-primary mb-2"></i><br>กำลังยืนยันตัวตนของคุณ`,
+//       allowOutsideClick: false,
+//       showConfirmButton: false,
+//       didOpen: () => {
+//         Swal.showLoading();
+
+//         // เพิ่มข้อความขั้นตอนแบบต่อเนื่อง
+//         swalTimers.push(
+//           setTimeout(() => {
+//             Swal.update({
+//               html: `<i class="fas fa-server fa-2x text-secondary mb-2"></i><br>กำลังเชื่อมต่อกับเซิร์ฟเวอร์`,
+//             });
+//             Swal.showLoading();
+
+//             swalTimers.push(
+//               setTimeout(() => {
+//                 Swal.update({
+//                   html: `<i class="fas fa-network-wired fa-2x text-warning mb-2"></i><br>ขณะนี้ระบบทำงานช้า<br>(ระบบกำลังสลับไปยังเซิร์ฟเวอร์สำรอง)`,
+//                 });
+//                 Swal.showLoading();
+
+//                 swalTimers.push(
+//                   setTimeout(() => {
+//                     Swal.update({
+//                       html: `<i class="fas fa-database fa-2x text-success mb-2"></i><br>กำลังบันทึกข้อมูล...`,
+//                     });
+//                     Swal.showLoading();
+
+//                     swalTimers.push(
+//                       setTimeout(() => {
+//                         Swal.update({
+//                           html: `<i class="fas fa-reply fa-2x text-info mb-2"></i><br>ระบบกำลังตอบกลับจากเซิร์ฟเวอร์`,
+//                         });
+//                         Swal.showLoading();
+
+//                         swalTimers.push(
+//                           setTimeout(() => {
+//                             Swal.update({
+//                               html: `<i class="fas fa-hourglass-half fa-2x text-warning mb-2"></i><br>ดำเนินการใกล้เสร็จสิ้น<br>กรุณารอสักครู่`,
+//                             });
+//                             Swal.showLoading();
+//                           }, 3000)
+//                         );
+//                       }, 3000)
+//                     );
+//                   }, 3000)
+//                 );
+//               }, 5000)
+//             );
+//           }, 2000)
+//         );
+//       },
+//     });
+
+//     // เลือก URL ตามค่า db1
+//     let url;
+//     if (db1 === "bkn01") {
+//       url =
+//         "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
+//     } else if (db1 === "sk01") {
+//       url =
+//         "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+//     } else {
+//       url =
+//         "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+//     }
+
+//     console.log(
+//       `${url}?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
+//     );
+
+
+    
+//     const response = await fetch(
+//       `${url}?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`Failed to process: ${response.statusText}`);
+//     }
+
+//     // แปลงข้อมูลที่ได้รับจาก API
+//     const data = await response.json();
+
+//     // ตรวจสอบข้อมูลใน data.res และแสดง Swal
+//     data.res.forEach((datas) => {
+//       // ปิดการแสดงสถานะการโหลด
+//       // ✅ เคลียร์ timeout ทุกอันหลัง fetch เสร็จ
+//       swalTimers.forEach((t) => clearTimeout(t));
+//       swalTimers = [];
+//       Swal.close();
+
+//       let iconx = datas.icon;
+//       let header = datas.header;
+//       let text = datas.text;
+
+//       Swal.fire({
+//         icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
+//         title: header,
+//         html: data.message || text,
+//         confirmButtonText: "ตกลง",
+//         allowOutsideClick: false,
+//         customClass: {
+//           title:
+//             iconx === "success"
+//               ? "text-success"
+//               : iconx === "error"
+//               ? "text-danger"
+//               : iconx === "warning"
+//               ? "text-warning"
+//               : "text-info",
+//           content: "text-muted",
+//           confirmButton:
+//             iconx === "success"
+//               ? "btn btn-success"
+//               : iconx === "error"
+//               ? "btn btn-danger"
+//               : iconx === "warning"
+//               ? "btn btn-warning"
+//               : "btn btn-info",
+//         },
+//       }).then((result) => {
+//         if (result.isConfirmed) {
+//           const cktoday = new Date();
+//           const ckfd = cktoday.toLocaleDateString("th-TH");
+//           const hours = cktoday.getHours().toString().padStart(2, "0");
+//           const minutes = cktoday.getMinutes().toString().padStart(2, "0");
+//           const seconds = cktoday.getSeconds().toString().padStart(2, "0");
+//           const ckfdtime = `${hours}:${minutes}:${seconds}`;
+
+//           if (iconx === "success" && ctype === "In") {
+//             localStorage.setItem("datecheck", ckfd);
+//             localStorage.setItem("datetimecheck", ckfdtime);
+//           } else if (
+//             (iconx === "info" && ctype === "Out") ||
+//             (iconx === "success" && ctype === "Out") ||
+//             (iconx === "warning" && ctype === "Out")
+//           ) {
+//             localStorage.setItem("datecheck", ckfd);
+//             localStorage.setItem("datecheckout", ckfd);
+//             localStorage.setItem("datetimecheckout", ckfdtime);
+//           }
+
+//           try {
+//             window.close();
+//             liff.closeWindow();
+//           } catch (error) {
+//             console.error("Failed to close window, refreshing...");
+//             window.location.reload();
+//           }
+
+//           setTimeout(() => {
+//             location.reload();
+//           }, 500);
+//         }
+//       });
+//     });
+//   } catch (error) {
+//     swalTimers.forEach((t) => clearTimeout(t));
+//     swalTimers = [];
+//     Swal.close();
+
+//     Swal.fire({
+//       icon: "error",
+//       title: "เกิดข้อผิดพลาด",
+//       html: error.message || error,
+//       confirmButtonText: "ตกลง",
+//     });
+//   } finally {
+//     // ดำเนินการเมื่อเสร็จสิ้น
+//   }
+// }
+
+// เรียกใช้เมื่อโหลดหน้าเว็บเพื่อเช็ค retry
+function checkRetryParams() {
+  const retryParams = localStorage.getItem("pendingRetryParams");
+  if (!retryParams) return;
+
+  const params = new URLSearchParams(retryParams);
+  const ctype = params.get("ctype");   // In หรือ Out
+  const lat   = params.get("lat");
+  const long  = params.get("long");
+  const nte   = params.get("nte");
+  const typea   = params.get("typea");
+  const stampx   = params.get("stampx");
+
+  // แปลง ctype → ภาษาไทย
+  const ctypeLabel = ctype === "In"
+    ? "มา"
+    : ctype === "Out"
+      ? "กลับ"
+      : ctype || "-";
+
+  Swal.close();
+  Swal.fire({
+    icon: "info",
+    title: "พบข้อมูลที่ส่งไม่สำเร็จ",
+    html: `การลงเวลา: <b>${ctypeLabel}</b><br>
+    ประเภท: <b>${typea}</b><br>
+    วันเวลา: <b>${stampx}</b><br>
+    ต้องการดำเนินการส่งข้อมูลเดิมหรือไม่?`,
+    showCancelButton: true,
+    confirmButtonText: "ดำเนินการ",
+    cancelButtonText: "ยกเลิก",
+    allowOutsideClick: false,
+    confirmButtonColor: "#0277bd",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      processCheckinOrCheckout(ctype, lat, long, nte, true); // isRetry = true
+    }
+  });
+}
+
+
+async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRetry = false) {
+  let swalTimers = []; // เก็บ setTimeout
+
   try {
-    // ตรวจสอบว่า localStorage มีข้อมูลครบถ้วนหรือไม่
     const uuid = localStorage.getItem("uuid");
     const cidhash = localStorage.getItem("cidhash");
     const userid = localStorage.getItem("userid");
@@ -789,26 +1049,57 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     const chatId = localStorage.getItem("chatId");
 
     if (!refid || !cidhash || !userid || !name) {
-      throw new Error(
-        "ไม่พบข้อมูลที่จำเป็นในการลงเวลา กรุณาลองใหม่หรือลงชื่อออกแล้วเข้าสู่ระบบใหม่"
-      );
+      throw new Error("ไม่พบข้อมูลที่จำเป็นในการลงเวลา กรุณาลองใหม่หรือลงชื่อออกแล้วเข้าสู่ระบบใหม่");
     }
 
     const secureCode = await generateSecureCode();
-    let typea = document.querySelector("#typea").value || "ปกติ";
-    let nte =
-      document.querySelector("#otherDetails").value ||
-      (typeof staff !== "undefined" ? staff : "");
+    let typea = document.querySelector("#typea")?.value || "ปกติ";
+    let nte = document.querySelector("#otherDetails")?.value || (typeof staff !== "undefined" ? staff : "");
 
     if (typea === "อื่นๆ" && !nte) {
       throw new Error("อื่นๆ โปรดระบุ");
     }
 
-    let todays = new Date();
-    todays.toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
-    let todayx = todays.toLocaleTimeString("th-TH");
+    const now = new Date();
+    const bangkokTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }));
+    
+    const year = bangkokTime.getFullYear();
+    const month = String(bangkokTime.getMonth() + 1).padStart(2, "0");
+    const date = String(bangkokTime.getDate()).padStart(2, "0");
+    const hours = String(bangkokTime.getHours()).padStart(2, "0");
+    const minutes = String(bangkokTime.getMinutes()).padStart(2, "0");
+    const seconds = String(bangkokTime.getSeconds()).padStart(2, "0");
+    
 
-    let swalTimers = []; // เก็บ setTimeout
+    const todayx = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
+
+    let params;
+    if (isRetry) {
+      const retryString = localStorage.getItem("pendingRetryParams");
+      if (!retryString) throw new Error("ไม่พบข้อมูล Retry ที่เก็บไว้");
+      params = new URLSearchParams(retryString);
+    } else {
+      params = new URLSearchParams({
+        ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        boss, ceo, lat: latitude, long: longitude, typea, nte, stampx: todayx,
+        refid, token, job, docno, secureCode, chatId
+      });
+    }
+    
+
+    // เลือก URL
+    let url;
+    if (isRetry) {
+      url = "https://script.google.com/macros/s/AKfycbzIjG5vSo3eI6pt8B6Y97ZhmlmJ8FWjRFYE5PUEZ83Fs73nnqoc3TiaZlYXAUKhNjea/exec";
+    } else if (db1 === "bkn01") {
+      url = "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
+    } else if (db1 === "sk01") {
+      url = "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+    } else {
+      url = "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+    }
+
+    const fetchUrl = `${url}?${params.toString()}`;
 
     // เริ่ม Swal แสดงข้อความระหว่างรอ
     Swal.fire({
@@ -866,94 +1157,91 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
       },
     });
 
-    // เลือก URL ตามค่า db1
-    let url;
-    if (db1 === "bkn01") {
-      url =
-        "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
-    } else if (db1 === "sk01") {
-      url =
-        "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
-    } else {
-      url =
-        "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
-    }
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
 
-    const response = await fetch(
-      `${url}?ctype=${ctype}&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&token=${token}&job=${job}&docno=${docno}&secureCode=${secureCode}&chatId=${chatId}`
-    );
+    let response;
+    try {
+      response = await fetch(fetchUrl, { signal: controller.signal });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        localStorage.setItem("pendingRetryParams", params.toString());
+        throw new Error("การเชื่อมต่อนานเกิน 20 วินาที กรุณาลองใหม่ภายหลัง");
+      } else {
+        throw error;
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to process: ${response.statusText}`);
     }
 
-    // แปลงข้อมูลที่ได้รับจาก API
     const data = await response.json();
-
-    // ตรวจสอบข้อมูลใน data.res และแสดง Swal
-    data.res.forEach((datas) => {
-      // ปิดการแสดงสถานะการโหลด
-      // ✅ เคลียร์ timeout ทุกอันหลัง fetch เสร็จ
-      swalTimers.forEach((t) => clearTimeout(t));
+    swalTimers.forEach((t) => clearTimeout(t));
       swalTimers = [];
       Swal.close();
 
+    data.res.forEach((datas) => {
+     
       let iconx = datas.icon;
-      let header = datas.header;
-      let text = datas.text;
-
-      Swal.fire({
-        icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
-        title: header,
-        html: data.message || text,
-        confirmButtonText: "ตกลง",
-        allowOutsideClick: false,
-        customClass: {
-          title:
-            iconx === "success"
-              ? "text-success"
-              : iconx === "error"
-              ? "text-danger"
-              : iconx === "warning"
-              ? "text-warning"
-              : "text-info",
-          content: "text-muted",
-          confirmButton:
-            iconx === "success"
-              ? "btn btn-success"
-              : iconx === "error"
-              ? "btn btn-danger"
-              : iconx === "warning"
-              ? "btn btn-warning"
-              : "btn btn-info",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const cktoday = new Date();
-          const ckfd = cktoday.toLocaleDateString("th-TH");
-          const hours = cktoday.getHours().toString().padStart(2, "0");
-          const minutes = cktoday.getMinutes().toString().padStart(2, "0");
-          const seconds = cktoday.getSeconds().toString().padStart(2, "0");
-          const ckfdtime = `${hours}:${minutes}:${seconds}`;
-
-          if (iconx === "success" && ctype === "In") {
-            localStorage.setItem("datecheck", ckfd);
-            localStorage.setItem("datetimecheck", ckfdtime);
-          } else if (
-            (iconx === "info" && ctype === "Out") ||
-            (iconx === "success" && ctype === "Out") ||
-            (iconx === "warning" && ctype === "Out")
-          ) {
-            localStorage.setItem("datecheck", ckfd);
-            localStorage.setItem("datecheckout", ckfd);
-            localStorage.setItem("datetimecheckout", ckfdtime);
-          }
+            let header = datas.header;
+            let text = datas.text;
+      
+            Swal.fire({
+              icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
+              title: header,
+              html: data.message || text,
+              confirmButtonText: "ตกลง",
+              allowOutsideClick: false,
+              customClass: {
+                title:
+                  iconx === "success"
+                    ? "text-success"
+                    : iconx === "error"
+                    ? "text-danger"
+                    : iconx === "warning"
+                    ? "text-warning"
+                    : "text-info",
+                content: "text-muted",
+                confirmButton:
+                  iconx === "success"
+                    ? "btn btn-success"
+                    : iconx === "error"
+                    ? "btn btn-danger"
+                    : iconx === "warning"
+                    ? "btn btn-warning"
+                    : "btn btn-info",
+              },
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const cktoday = new Date();
+                const ckfd = cktoday.toLocaleDateString("th-TH");
+                const hours = cktoday.getHours().toString().padStart(2, "0");
+                const minutes = cktoday.getMinutes().toString().padStart(2, "0");
+                const seconds = cktoday.getSeconds().toString().padStart(2, "0");
+                const ckfdtime = `${hours}:${minutes}:${seconds}`;
+      
+                if (iconx === "success" && ctype === "In") {
+                  localStorage.setItem("datecheck", ckfd);
+                  localStorage.setItem("datetimecheck", ckfdtime);
+                  localStorage.removeItem("pendingRetryParams");
+                } else if (
+                  (iconx === "info" && ctype === "Out") ||
+                  (iconx === "success" && ctype === "Out") ||
+                  (iconx === "warning" && ctype === "Out")
+                ) {
+                  localStorage.setItem("datecheck", ckfd);
+                  localStorage.setItem("datecheckout", ckfd);
+                  localStorage.setItem("datetimecheckout", ckfdtime);
+                  localStorage.removeItem("pendingRetryParams");
+                }
 
           try {
             window.close();
             liff.closeWindow();
-          } catch (error) {
-            console.error("Failed to close window, refreshing...");
+          } catch {
             window.location.reload();
           }
 
@@ -967,17 +1255,20 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff) {
     swalTimers.forEach((t) => clearTimeout(t));
     swalTimers = [];
     Swal.close();
-
     Swal.fire({
       icon: "error",
       title: "เกิดข้อผิดพลาด",
-      html: error.message || error,
-      confirmButtonText: "ตกลง",
+      text: error.message || error,
+      allowOutsideClick: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload(); // เพิ่มตรงนี้
+      }
     });
-  } finally {
-    // ดำเนินการเมื่อเสร็จสิ้น
   }
 }
+
+
 
 function checkinfo() {
   let today = new Date();
@@ -1079,35 +1370,35 @@ function alertUpdate() {
  // console.log("logUpdate from localStorage:", logUpdate); // ตรวจสอบค่าใน console
 
   // หากค่า logUpdate ไม่เท่ากับ 1 หรือไม่มี logUpdate
-  if (logUpdate !== "1" || !logUpdate) {
-  //  console.log("ข้อมูลยังไม่ได้รับการอัปเดต"); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
+  // if (logUpdate !== "1" || !logUpdate) {
+  // //  console.log("ข้อมูลยังไม่ได้รับการอัปเดต"); // ตรวจสอบว่าผ่านเงื่อนไขนี้หรือไม่
 
-    // แสดง Swal.fire
-    Swal.fire({
-      title: "แจ้งเตือนการปรับปรุง",
-      html: `<div style="text-align: left;">
-      <ol style="padding-left: 20px; line-height: 1.8;">
-        <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
-        <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
-        <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
-      </ol>
-    </div>
+  //   // แสดง Swal.fire
+  //   Swal.fire({
+  //     title: "แจ้งเตือนการปรับปรุง",
+  //     html: `<div style="text-align: left;">
+  //     <ol style="padding-left: 20px; line-height: 1.8;">
+  //       <li>สามารถเปลี่ยนสีธีมได้ โดยกดปุ่ม <i class="fa-solid fa-sun"></i> ข้างปุ่ม <i class="fa-solid fa-bars"></i></li>
+  //       <li>กำหนดภาพพื้นหลังได้ โดยกดปุ่ม <i class="fa-solid fa-bars"></i> เลือกเมนู <i class="fa-solid fa-gear"></i> ตั้งค่าภาพพื้นหลัง</li>
+  //       <li>สามารถย่อหรือแสดงส่วนแสดงแผนที่ได้</li>
+  //     </ol>
+  //   </div>
     
-    `,
-      input: "checkbox", // ตัวเลือกแสดง checkbox
-      inputPlaceholder: "ไม่ต้องแสดงอีก", // ข้อความใน input
-      confirmButtonText: "รับทราบ",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
-        if (result.value) {
-          // ถ้าเลือกไม่ให้แสดงอีก
-          localStorage.setItem("logUpdate", "1");
-        //  console.log("logUpdate set to 1"); // ตรวจสอบว่าได้ตั้งค่าแล้ว
-        }
-      }
-    });
-  }
+  //   `,
+  //     input: "checkbox", // ตัวเลือกแสดง checkbox
+  //     inputPlaceholder: "ไม่ต้องแสดงอีก", // ข้อความใน input
+  //     confirmButtonText: "รับทราบ",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       // เมื่อผู้ใช้กดรับทราบ ให้บันทึกค่า logUpdate = 1
+  //       if (result.value) {
+  //         // ถ้าเลือกไม่ให้แสดงอีก
+  //         localStorage.setItem("logUpdate", "1");
+  //       //  console.log("logUpdate set to 1"); // ตรวจสอบว่าได้ตั้งค่าแล้ว
+  //       }
+  //     }
+  //   });
+  // }
 }
 
 // สร้าง QR-code
