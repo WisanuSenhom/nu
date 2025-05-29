@@ -992,14 +992,33 @@ function checkRetryParams() {
   if (!retryParams) return;
 
   const params = new URLSearchParams(retryParams);
-  const ctype = params.get("ctype");   // In หรือ Out
+  const ctype = params.get("ctype");
   const lat   = params.get("lat");
   const long  = params.get("long");
   const nte   = params.get("nte");
-  const typea   = params.get("typea");
-  const stampx   = params.get("stampx");
+  const typea = params.get("typea");
+  const stampx = params.get("stampx");
 
-  // แปลง ctype → ภาษาไทย
+  // ตรวจสอบว่า stampx เป็นวันเดียวกับวันนี้หรือไม่
+  const now = new Date();
+  const bangkokTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Bangkok" }));
+
+  const year = bangkokTime.getFullYear();
+  const month = String(bangkokTime.getMonth() + 1).padStart(2, "0");
+  const date = String(bangkokTime.getDate()).padStart(2, "0");
+
+  // ดึงเฉพาะส่วนวันที่จาก stampx สมมติว่า format เป็น "YYYY/MM/DD HH:mm:ss"
+  const stampDatePart = stampx ? stampx.split(" ")[0] : "";
+
+  const todayDateString = `${year}/${month}/${date}`;
+
+  // ถ้า stampx ไม่ใช่วันเดียวกับวันนี้ ให้เคลียร์ข้อมูล retry
+  if (stampDatePart !== todayDateString) {
+    localStorage.removeItem("pendingRetryParams");
+    localStorage.removeItem("checkRetryCount");
+    return;
+  }
+
   const ctypeLabel = ctype === "In"
     ? "มา"
     : ctype === "Out"
@@ -1021,13 +1040,38 @@ function checkRetryParams() {
     confirmButtonColor: "#0277bd",
   }).then((result) => {
     if (result.isConfirmed) {
-      processCheckinOrCheckout(ctype, lat, long, nte, true); // isRetry = true
+      let retryCheckCount = parseInt(localStorage.getItem("checkRetryCount") || "0", 10);
+      retryCheckCount += 1;
+      localStorage.setItem("checkRetryCount", retryCheckCount.toString());
+
+      if (retryCheckCount > 1) {
+        Swal.fire({
+          icon: "warning",
+          title: "แจ้งเตือน",
+          html: `ระบบพยายามส่งข้อมูลซ้ำเป็นจำนวน ${retryCheckCount} ครั้ง<br>
+         เนื่องจากระบบทำงานช้า<br>
+         ภายในวันนี้ท่านสามารถดำเนินการส่งข้อมูลในเวลาใดก็ได้<br>(หากลงเวลามาให้ดำเนินการก่อนลงเวลากลับ)<br>
+         ระบบได้จำค่าเวลาที่ท่านลงเวลาก่อนหน้านี้ไว้เรียบร้อยแล้ว`,
+          confirmButtonText: "ดำเนินการ",
+          cancelButtonText: "ภายหลัง",
+          showCancelButton: true,
+          allowOutsideClick: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            processCheckinOrCheckout(ctype, lat, long, nte, true, retryCheckCount);
+          } else {
+          
+          }
+        });
+      } else {
+        processCheckinOrCheckout(ctype, lat, long, nte, true, retryCheckCount);
+      }
     }
   });
 }
 
 
-async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRetry = false) {
+async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRetry = false, retryCount = 1) {
   let swalTimers = []; // เก็บ setTimeout
 
   try {
@@ -1158,7 +1202,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     });
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const timeout = setTimeout(() => controller.abort(), 40000 * retryCount);
 
     let response;
     try {
@@ -1166,7 +1210,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     } catch (error) {
       if (error.name === "AbortError") {
         localStorage.setItem("pendingRetryParams", params.toString());
-        throw new Error("การเชื่อมต่อนานเกิน  30 วินาที กรุณาลองใหม่ภายหลัง");
+        throw new Error("การเชื่อมต่อนานเกินไป กรุณาลองใหม่ภายหลัง");
       } else {
         throw error;
       }
@@ -1227,6 +1271,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
                   localStorage.setItem("datecheck", ckfd);
                   localStorage.setItem("datetimecheck", ckfdtime);
                   localStorage.removeItem("pendingRetryParams");
+                  localStorage.removeItem("checkRetryCount");
                 } else if (
                   (iconx === "info" && ctype === "Out") ||
                   (iconx === "success" && ctype === "Out") ||
@@ -1236,6 +1281,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
                   localStorage.setItem("datecheckout", ckfd);
                   localStorage.setItem("datetimecheckout", ckfdtime);
                   localStorage.removeItem("pendingRetryParams");
+                  localStorage.removeItem("checkRetryCount");
                 }
 
           try {
@@ -1752,6 +1798,3 @@ function onScanFailure() {
   //   showConfirmButton: false,
   // });
 }
-
-
-
