@@ -1293,7 +1293,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
                 ) {
                   localStorage.setItem("datecheck", ckfd);
                   localStorage.setItem("datecheckout", ckfd);
-                  localStorage.setItem("datetimecheckout", timeOnlye);
+                  localStorage.setItem("datetimecheckout", timeOnly);
                   localStorage.removeItem("pendingRetryParams");
                   localStorage.removeItem("checkRetryCount");
                 }
