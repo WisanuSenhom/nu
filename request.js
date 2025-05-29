@@ -1215,7 +1215,7 @@ function checkRetryParams() {
       let retryCheckCount = parseInt(localStorage.getItem("checkRetryCount") || "0", 10);
       retryCheckCount += 1;
       localStorage.setItem("checkRetryCount", retryCheckCount.toString());
-
+    
       if (retryCheckCount > 1) {
         Swal.fire({
           icon: "warning",
@@ -1224,15 +1224,15 @@ function checkRetryParams() {
          เนื่องจากระบบทำงานช้า<br>
          ภายในวันนี้ท่านสามารถดำเนินการส่งข้อมูลในเวลาใดก็ได้<br>(หากลงเวลามาให้ดำเนินการก่อนลงเวลากลับ)<br>
          ระบบได้จำค่าเวลาที่ท่านลงเวลาก่อนหน้านี้ไว้เรียบร้อยแล้ว`,
-          confirmButtonText: "ตกลง",
-          cancelButtonText: "ลองอีกครั้ง",
+          confirmButtonText: "ดำเนินการ",
+          cancelButtonText: "ภายหลัง",
           showCancelButton: true,
           allowOutsideClick: false,
         }).then((result) => {
           if (result.isConfirmed) {
-            console.log("ผู้ใช้ ตกลง");
-          } else {
             processCheckinOrCheckout(ctype, lat, long, nte, true, retryCheckCount);
+          } else {
+          
           }
         });
       } else {
