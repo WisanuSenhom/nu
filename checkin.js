@@ -1047,7 +1047,7 @@ function checkRetryParams() {
       if (retryCheckCount > 1) {
         Swal.fire({
           icon: "warning",
-          title: "แจ้งเตือน",
+          title: "ขออภัยในความไม่สะดวกในการใช้งาน",
           html: `ระบบพยายามส่งข้อมูลซ้ำเป็นจำนวน ${retryCheckCount} ครั้ง<br>
          เนื่องจากระบบทำงานช้า<br>
          ภายในวันนี้ท่านสามารถดำเนินการส่งข้อมูลในเวลาใดก็ได้<br>(หากลงเวลามาให้ดำเนินการก่อนลงเวลากลับ)<br>
@@ -1060,7 +1060,8 @@ function checkRetryParams() {
           if (result.isConfirmed) {
             processCheckinOrCheckout(ctype, lat, long, nte, true, retryCheckCount);
           } else {
-          
+           retryCheckCount = Math.max(0, retryCheckCount - 1);
+  localStorage.setItem("checkRetryCount", retryCheckCount.toString());
           }
         });
       } else {
