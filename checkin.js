@@ -1158,7 +1158,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     });
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
+    const timeout = setTimeout(() => controller.abort(), 30000);
 
     let response;
     try {
@@ -1166,7 +1166,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     } catch (error) {
       if (error.name === "AbortError") {
         localStorage.setItem("pendingRetryParams", params.toString());
-        throw new Error("การเชื่อมต่อนานเกิน 20 วินาที กรุณาลองใหม่ภายหลัง");
+        throw new Error("การเชื่อมต่อนานเกิน  30 วินาที กรุณาลองใหม่ภายหลัง");
       } else {
         throw error;
       }
