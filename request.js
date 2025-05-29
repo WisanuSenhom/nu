@@ -1158,6 +1158,27 @@ collapsibleMenu.onclick = function() {
 };
 
 
+async function generateSecureCode() {
+  const date = new Date();
+  const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+  const secretKey = "Impermanent_Suffering_Egolessness";
+
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secretKey),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
+  const code = Array.from(new Uint8Array(signature))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return code;
+}
+
+
 // เรียกใช้เมื่อโหลดหน้าเว็บเพื่อเช็ค retry
 function checkRetryParams() {
   const retryParams = localStorage.getItem("pendingRetryParams");
@@ -1215,7 +1236,7 @@ function checkRetryParams() {
       let retryCheckCount = parseInt(localStorage.getItem("checkRetryCount") || "0", 10);
       retryCheckCount += 1;
       localStorage.setItem("checkRetryCount", retryCheckCount.toString());
-    
+
       if (retryCheckCount > 1) {
         Swal.fire({
           icon: "warning",
@@ -1306,15 +1327,31 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
 
     // เลือก URL
     let url;
+
     if (isRetry) {
-      url = "https://script.google.com/macros/s/AKfycbzIjG5vSo3eI6pt8B6Y97ZhmlmJ8FWjRFYE5PUEZ83Fs73nnqoc3TiaZlYXAUKhNjea/exec";
-    } else if (db1 === "bkn01") {
-      url = "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
-    } else if (db1 === "sk01") {
-      url = "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+      switch (db1) {
+        case "bkn01":
+          url = "https://script.google.com/macros/s/AKfycbyTnF-_JBeih89p5L4h8tj4DY0VM4LymcI6HrM5h5rDdCt6WJ-YiAjXT9ui7ip35P4V7Q/exec";
+          break;
+        case "sk01":
+          url = "https://script.google.com/macros/s/AKfycbzBbkwKk3YKH4zYERvnMUp2GxGCJ9XRVUBv38yFQ9U6l0HtRbLjczYER9XV4c1de5czHA/exec";
+          break;
+        default:
+          url = "https://script.google.com/macros/s/AKfycbzIjG5vSo3eI6pt8B6Y97ZhmlmJ8FWjRFYE5PUEZ83Fs73nnqoc3TiaZlYXAUKhNjea/exec";
+      }
     } else {
-      url = "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+      switch (db1) {
+        case "bkn01":
+          url = "https://script.google.com/macros/s/AKfycbzqlvr7DeGl7rOB5hGVSMnUKdTAo3ddudvxzv4xNWgSq-rrnvgP-3EodZQ1iIUdXsfz/exec";
+          break;
+        case "sk01":
+          url = "https://script.google.com/macros/s/AKfycbwUVnQTg9Zfk-wf9sZ4u21CvI3ozfrp3hoM0Dhs6J5a3YDEQQ8vkaz61I-mTmfBtXWuLA/exec";
+          break;
+        default:
+          url = "https://script.google.com/macros/s/AKfycbwBXn6VhbTiN2eOvwZudXXd1ngEu3ONwAAVSnNG1VsXthQqBGENRloS6zU_34SqRLsH/exec";
+      }
     }
+    
 
     const fetchUrl = `${url}?${params.toString()}`;
 
@@ -1405,6 +1442,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
       let iconx = datas.icon;
             let header = datas.header;
             let text = datas.text;
+            let timeOnly = datas.timeOnly;
       
             Swal.fire({
               icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
@@ -1435,14 +1473,10 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
               if (result.isConfirmed) {
                 const cktoday = new Date();
                 const ckfd = cktoday.toLocaleDateString("th-TH");
-                const hours = cktoday.getHours().toString().padStart(2, "0");
-                const minutes = cktoday.getMinutes().toString().padStart(2, "0");
-                const seconds = cktoday.getSeconds().toString().padStart(2, "0");
-                const ckfdtime = `${hours}:${minutes}:${seconds}`;
       
                 if (iconx === "success" && ctype === "In") {
                   localStorage.setItem("datecheck", ckfd);
-                  localStorage.setItem("datetimecheck", ckfdtime);
+                  localStorage.setItem("datetimecheck", timeOnly);
                   localStorage.removeItem("pendingRetryParams");
                   localStorage.removeItem("checkRetryCount");
                 } else if (
@@ -1452,7 +1486,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
                 ) {
                   localStorage.setItem("datecheck", ckfd);
                   localStorage.setItem("datecheckout", ckfd);
-                  localStorage.setItem("datetimecheckout", ckfdtime);
+                  localStorage.setItem("datetimecheckout", timeOnlye);
                   localStorage.removeItem("pendingRetryParams");
                   localStorage.removeItem("checkRetryCount");
                 }
@@ -1486,24 +1520,3 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     });
   }
 }
-
-async function generateSecureCode() {
-  const date = new Date();
-  const data = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
-  const secretKey = "Impermanent_Suffering_Egolessness";
-
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secretKey),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
-  const code = Array.from(new Uint8Array(signature))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return code;
-}
-
