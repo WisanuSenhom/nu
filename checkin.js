@@ -1035,7 +1035,7 @@ function checkRetryParams() {
     ต้องการดำเนินการส่งข้อมูลเดิมหรือไม่?`,
     showCancelButton: true,
     confirmButtonText: "ดำเนินการ",
-    cancelButtonText: "ยกเลิก",
+    cancelButtonText: "ภายหลัง",
     allowOutsideClick: false,
     confirmButtonColor: "#0277bd",
   }).then((result) => {
