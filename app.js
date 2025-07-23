@@ -1052,7 +1052,7 @@ async function requestReceive() {
   const refid = localStorage.getItem("refid");
   const byName = localStorage.getItem("name");
   const role = localStorage.getItem("role");
-  if (role !== "ceo" && role !== "boss" && role !== "admin"  && role !== "dev") {
+  if (role === "user") {
     Swal.fire("ผิดพลาด!", "ท่านไม่มีสิทธิ์ในการเข้าถึงเมนูนี้!", "error");
     return;
   }
