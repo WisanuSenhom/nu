@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ป้อน รหัส เพื่อโหลดข้อมูล</title>
+</head>
+<body>
+  <h2>กรอก รหัส เพื่อดึงข้อมูลจาก API</h2>
+  <input type="text" id="userId" placeholder="กรอกรหัส" style="width: 100%; max-width: 400px;">
+  <br><br>
+  <button onclick="loadData()">โหลดข้อมูล</button>
+
+  <p id="status"></p>
+
+  <script>
+    function saveUserToLocalStorage(user) {
+      for (let key in user) {
+        localStorage.setItem(key, user[key]);
+      }
+    }
+
+    function loadData() {
+      const id = document.getElementById('userId').value.trim();
+      const statusEl = document.getElementById('status');
+
+      if (!id) {
+        statusEl.textContent = '⚠️ กรุณากรอก รหัส ก่อน';
+        return;
+      }
+
+      const apiUrl = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${id}`;
+
+      statusEl.textContent = '⏳ กำลังโหลดข้อมูล...';
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
+          return response.json();
+        })
+        .then(data => {
+          localStorage.clear();
+
+          if (Array.isArray(data.user)) {
+            data.user.forEach(saveUserToLocalStorage);
+            statusEl.textContent = '✅ โหลดข้อมูลสำเร็จ กำลังไปยัง index.html...';
+
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 1000);
+          } else {
+            statusEl.textContent = '⚠️ ไม่พบข้อมูล user ที่ถูกต้องใน API';
+          }
+        })
+        .catch(error => {
+          statusEl.textContent = '❌ เกิดข้อผิดพลาด: ' + error.message;
+        });
+    }
+  </script>
+</body>
+</html>
