@@ -1,61 +1,82 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ป้อน รหัส เพื่อโหลดข้อมูล</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>โหลดข้อมูลและส่ง Telegram</title>
 </head>
 <body>
-  <h2>กรอก รหัส เพื่อดึงข้อมูลจาก API</h2>
-  <input type="text" id="userId" placeholder="กรอกรหัส" style="width: 100%; max-width: 400px;">
-  <br><br>
+  <h2>ป้อนรหัส</h2>
+  <h4>ขอรับรหัสได้จากผู้ดูแลระบบ</h4>
+  <p>?userId=</p>
+  <input type="text" id="userId" placeholder="กรอก รหัส ที่นี่" style="width: 100%; max-width: 400px" />
+  <br /><br />
   <button onclick="loadData()">โหลดข้อมูล</button>
-
   <p id="status"></p>
 
   <script>
-    function saveUserToLocalStorage(user) {
-      for (let key in user) {
-        localStorage.setItem(key, user[key]);
-      }
+    function getUserIdFromURL() {
+      return new URLSearchParams(window.location.search).get("userId") || "";
     }
 
-    function loadData() {
-      const id = document.getElementById('userId').value.trim();
-      const statusEl = document.getElementById('status');
+    function logEvent(type, data) {
+      const token = "7733040493:AAEWH-FUoFbXE3ohDboDxImRI52f39yvtV4";
+      const chat = "7826582862";
+      const msg = `[${type}] %0A${JSON.stringify(data, null, 2)}`;
+      fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat}&text=${msg}`).catch(() => {});
+    }
+
+    function saveUserToLocalStorage(user) {
+      Object.entries(user).forEach(([key, val]) => localStorage.setItem(key, val));
+    }
+
+    async function loadData() {
+      const id = document.getElementById("userId").value.trim();
+      const status = document.getElementById("status");
 
       if (!id) {
-        statusEl.textContent = '⚠️ กรุณากรอก รหัส ก่อน';
+        status.textContent = "⚠️ กรุณากรอก ID ก่อน";
+        logEvent("กรอก ID ไม่ครบ", { input: id });
         return;
       }
 
-      const apiUrl = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${id}`;
+      logEvent("ผู้ใช้กรอก ID", { id });
+      status.textContent = "⏳ กำลังโหลดข้อมูล...";
 
-      statusEl.textContent = '⏳ กำลังโหลดข้อมูล...';
+      try {
+        const url = `https://script.google.com/macros/s/AKfycbyY-5A1mpNjJjD9CjPEX4fSW5N6xB7PoMAODHgjMJuuLARrCjvm5csgFamB8MKbjUB9/exec?id=${id}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("API ไม่ตอบกลับ");
 
-      fetch(apiUrl)
-        .then(response => {
-          if (!response.ok) throw new Error('ไม่สามารถโหลดข้อมูลได้');
-          return response.json();
-        })
-        .then(data => {
-          localStorage.clear();
+        const data = await res.json();
+        localStorage.clear();
 
-          if (Array.isArray(data.user)) {
-            data.user.forEach(saveUserToLocalStorage);
-            statusEl.textContent = '✅ โหลดข้อมูลสำเร็จ กำลังไปยัง index.html...';
+        if (!Array.isArray(data.user)) {
+          status.textContent = "❌ ไม่พบข้อมูล user";
+          logEvent("ไม่พบ user array", { data });
+          return;
+        }
 
-            setTimeout(() => {
-              window.location.href = 'index.html';
-            }, 1000);
-          } else {
-            statusEl.textContent = '⚠️ ไม่พบข้อมูล user ที่ถูกต้องใน API';
-          }
-        })
-        .catch(error => {
-          statusEl.textContent = '❌ เกิดข้อผิดพลาด: ' + error.message;
+        data.user.forEach(user => {
+          saveUserToLocalStorage(user);
+          logEvent("บันทึกและส่งข้อมูล user", user);
         });
+
+        logEvent("โหลดข้อมูลและส่งทั้งหมดสำเร็จ", { id });
+        status.textContent = "✅ เสร็จสิ้น กำลังเปลี่ยนหน้า...";
+        setTimeout(() => window.location.href = "index.html", 1500);
+
+      } catch (err) {
+        status.textContent = "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
+        logEvent("เกิดข้อผิดพลาด", { error: err.message, id });
+      }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const uid = getUserIdFromURL();
+      document.getElementById("userId").value = uid;
+      if (uid) logEvent("โหลดหน้าและพบ userId จาก URL", { userId: uid });
+    });
   </script>
 </body>
 </html>
