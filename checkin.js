@@ -1280,6 +1280,12 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
               if (result.isConfirmed) {
                 const cktoday = new Date();
                 const ckfd = cktoday.toLocaleDateString("th-TH");
+
+                    // จัดเก็บ สถานะการลงเวลาใน checkEntries
+                     const newEntry = {todayx,ctype,typea,nte,iconx,text};
+                      checkEntries.push(newEntry);
+                      saveCheckEntries();
+                      updateCheckReport();
       
                 if (iconx === "success" && ctype === "In") {
                   localStorage.setItem("datecheck", ckfd);
@@ -1812,3 +1818,171 @@ function onScanFailure() {
   //   showConfirmButton: false,
   // });
 }
+
+// รายงาน สถานะ
+
+function saveCheckEntries() {
+    localStorage.setItem("checkEntries", JSON.stringify(checkEntries));
+}
+
+function loadCheckEntries() {
+    const saved = localStorage.getItem("checkEntries");
+    return saved ? JSON.parse(saved) : [];
+}
+
+let checkReportVisible = false;
+window.checkEntries = loadCheckEntries();
+
+const checkToggleReportBtn = document.getElementById("checkToggleReportBtn");
+const checkReportBody = document.getElementById("checkReportBody");
+const checkReportTableWrapper = document.getElementById("checkReportTableWrapper");
+
+let dataTable;
+
+function formatThaiDate(dateString) {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    const thaiMonths = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+    const day = date.getDate();
+    const month = thaiMonths[date.getMonth()];
+    const year = (date.getFullYear() + 543).toString().slice(-2);
+    return `${day} ${month} ${year}`;
+}
+
+function formatTime(dateString) {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    const hours = date.getHours().toString().padStart(2,"0");
+    const minutes = date.getMinutes().toString().padStart(2,"0");
+    return `${hours}:${minutes}`;
+}
+
+
+
+// ล้างข้อมูลเก่ากว่า 90 วันอัตโนมัติ
+function removeOldEntries() {
+    const now = new Date();
+    const daysLimit = 30;
+
+    checkEntries = checkEntries.filter(entry => {
+        if (!entry.todayx) return false;
+        const entryDate = new Date(entry.todayx);
+        const diffDays = (now - entryDate) / (1000 * 60 * 60 * 24);
+        return diffDays <= daysLimit;
+    });
+
+    saveCheckEntries();
+}
+
+// อัปเดตตาราง DataTable
+function updateCheckReport() {
+    if (dataTable) dataTable.destroy();
+    checkReportBody.innerHTML = "";
+
+    removeOldEntries(); // ล้างเก่าก่อนแสดง
+
+    if (checkEntries.length === 0) {
+        const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+    `;
+    checkReportBody.appendChild(row);
+    } else {
+        checkEntries.forEach((entry, index) => {
+            let ctypeText = entry.ctype === "In" ? "มา" : entry.ctype === "Out" ? "กลับ" : entry.ctype || "-";
+            let iconxText = entry.iconx === "success" ? "สำเร็จ"
+                : entry.iconx === "warning" ? "คำเตือน"
+                : entry.iconx === "info" ? "ข้อมูล"
+                : entry.iconx === "danger" || entry.iconx === "error" ? "ผิดพลาด"
+                : entry.iconx || "-";
+
+            let statusColor;
+            switch (iconxText) {
+                case "สำเร็จ": statusColor = "text-success"; break;
+                case "ผิดพลาด": statusColor = "text-danger"; break;
+                case "คำเตือน": statusColor = "text-warning"; break;
+                case "ข้อมูล": statusColor = "text-info"; break;
+                default: statusColor = "text-secondary";
+            }
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${formatThaiDate(entry.todayx)}</td>
+                <td>${formatTime(entry.todayx)}</td>
+                <td class="${statusColor}">${iconxText}</td>
+                <td>${ctypeText}</td>
+                <td>${entry.typea || "-"}</td>
+                <td>${entry.nte || "-"}</td>
+                <td>${entry.text || "-"}</td>
+            `;
+            checkReportBody.appendChild(row);
+        });
+    }
+
+    // init DataTable
+    dataTable = $('#checkReportTable').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
+        },
+        order: [[0, "desc"], [1, "desc"]], // เรียงวันที่+เวลา ใหม่→เก่า
+        pageLength: 30,
+        lengthMenu: [
+            [10, 30, 50, 100, 150, -1],
+            [10, 30, 50, 100, 150, "ทั้งหมด"]
+        ],
+        responsive: true,
+        dom: "lBfrtip",
+    });
+}
+
+// ปุ่มเคลียร์ข้อมูล
+document.getElementById("clearCheckEntriesBtn").addEventListener("click", () => {
+    Swal.fire({
+        title: "ยืนยันการล้างข้อมูล?",
+        text: "ข้อมูล Log ในเครื่องของคุณจะถูกลบ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "ลบ",
+        cancelButtonText: "ยกเลิก",
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // ล้างข้อมูล
+            checkEntries = [];
+            saveCheckEntries();
+            updateCheckReport();
+
+            // แจ้งลบเรียบร้อย
+            Swal.fire({
+                icon: "success",
+                title: "ล้างข้อมูลเรียบร้อย",
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                // รีเฟรชหน้า
+                location.reload();
+            });
+        }
+    });
+});
+
+
+
+checkToggleReportBtn.addEventListener("click", () => {
+    checkReportVisible = !checkReportVisible;
+    checkReportTableWrapper.style.display = checkReportVisible ? "block" : "none";
+    checkToggleReportBtn.innerHTML = checkReportVisible
+        ? '<i class="fas fa-eye-slash me-1"></i> ซ่อนรายงาน'
+        : '<i class="fas fa-eye me-1"></i> แสดงรายงาน';
+            if (checkReportVisible) {
+        // เรียกอัปเดต DataTable ทุกครั้งก่อนแสดง
+        updateCheckReport();
+    }
+});
+
