@@ -1056,3 +1056,17 @@ div.dt-button-collection {
 .form-check-input:checked::before {
   background-color: var(--text-color) !important;
 }
+
+.checkReport {
+  max-width: 100%;
+  margin: 1rem auto;
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 0.25rem var(--shadow-color);
+  text-align: left;
+}
+
+#checkToggleReportBtn {
+  margin-left: 1rem; /* ปรับค่าตามต้องการ */
+}
