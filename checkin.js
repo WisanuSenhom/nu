@@ -1228,6 +1228,7 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
       if (error.name === "AbortError") {
         localStorage.setItem("pendingRetryParams", params.toString());
         throw new Error("การเชื่อมต่อนานเกินไป กรุณาลองใหม่ภายหลัง");
+        
       } else {
         throw error;
       }
@@ -1945,7 +1946,7 @@ function updateCheckReport() {
 document.getElementById("clearCheckEntriesBtn").addEventListener("click", () => {
     Swal.fire({
         title: "ยืนยันการล้างข้อมูล?",
-        text: "ข้อมูล Log ในเครื่องของคุณจะถูกลบ",
+        text: "ข้อมูลประวัติในเครื่อง(Local Storage) ของคุณจะถูกลบ",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "ลบ",
@@ -1972,17 +1973,4 @@ document.getElementById("clearCheckEntriesBtn").addEventListener("click", () => 
     });
 });
 
-
-
-checkToggleReportBtn.addEventListener("click", () => {
-    checkReportVisible = !checkReportVisible;
-    checkReportTableWrapper.style.display = checkReportVisible ? "block" : "none";
-    checkToggleReportBtn.innerHTML = checkReportVisible
-        ? '<i class="fas fa-eye-slash me-1"></i> ซ่อนรายงาน'
-        : '<i class="fas fa-eye me-1"></i> แสดงรายงาน';
-            if (checkReportVisible) {
-        // เรียกอัปเดต DataTable ทุกครั้งก่อนแสดง
-        updateCheckReport();
-    }
-});
 
