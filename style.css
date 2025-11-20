@@ -217,6 +217,15 @@ nav .logo {
   cursor: pointer;
 }
 
+.logo i {
+    color: black; 
+    text-shadow: 
+        .5px .5px 0 white,
+        -.5px .5px 0 white,
+        .5px -.5px 0 white,
+        -.5px -.5px 0 white;
+}
+
 nav .logo:hover {
   color: var(--text-color); /* เปลี่ยนสีเมื่อ hover */
   transform: scale(1.2); /* ขยายเล็กน้อย */
@@ -1070,3 +1079,4 @@ div.dt-button-collection {
 #checkToggleReportBtn {
   margin-left: 1rem; /* ปรับค่าตามต้องการ */
 }
+
