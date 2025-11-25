@@ -1080,3 +1080,83 @@ div.dt-button-collection {
   margin-left: 1rem; /* ปรับค่าตามต้องการ */
 }
 
+
+.otConfigButton {
+  position: absolute;
+  top: 35px;
+  right: 20px;
+}
+
+.otLog,
+.otReport {
+  max-width: 100%;
+  margin: 1rem auto;
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 0.25rem var(--shadow-color);
+  text-align: left;
+}
+
+.otLabel {
+  font-weight: bold;
+  display: inline-block;
+  width: 120px;
+}
+
+#otToggleReportBtn {
+  margin-left: 1rem; /* ปรับค่าตามต้องการ */
+}
+
+/* สไตล์สำหรับ Modal */
+.modal-header {
+  background-color:  var(--background-color) !important;
+}
+
+
+.modal-body {
+  background-color:  var(--nav-bg) !important;
+}
+
+.modal-footer {
+  background-color: var(--background-color) !important;
+}
+
+.form-control {
+  background-color: var(--background-color) !important;
+color: var(--text-color) !important;
+}
+
+
+.timeline {
+  position: relative;
+  margin: 20px 0;
+  padding-left: 40px;
+  border-left: 2px solid #3498db; /* เส้นแนวตั้ง */
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -9px;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background-color: #3498db;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.timeline-content {
+  padding-left: 10px;
+}
+
+.timeline-content p {
+  margin: 0;
+  font-size: 14px;
+}
+
