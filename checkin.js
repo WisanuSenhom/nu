@@ -468,6 +468,9 @@ async function checkonmap() {
     const lat = location.latitude;
     const lon = location.longitude;
 
+    localStorage.setItem("mylat", lat);
+    localStorage.setItem("mylon", lon);
+
     const destinationLat = parseFloat(localStorage.getItem("oflat"));
     const destinationLon = parseFloat(localStorage.getItem("oflong"));
     const officer = localStorage.getItem("office") || "หน่วยงาน";
