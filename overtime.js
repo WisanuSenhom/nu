@@ -1,7 +1,7 @@
 // ------------------------------------------- CONFIG ---------------------------------------------
 
 const userid = localStorage.getItem("refid") || "UNKNOWN";
-const GAS_URL = "https://script.google.com/macros/s/PASTE_YOUR_SCRIPT_URL_HERE/exec";
+// const GAS_URL = "https://script.google.com/macros/s/AKfycbxhNJ_l_zrBYXyU-ktVWC0ZjFJaXmkXEs6BX_quhzEs1ZVp6iNuJ_rKh8hosI-y5JX7DA/exec";
 
 // ------------------------------------------- UTILS ---------------------------------------------
 
@@ -42,68 +42,214 @@ function loadOtEntries() {
     return saved ? JSON.parse(saved) : [];
 }
 
-// ------------------------------------------- AUTO SEND ---------------------------------------------
+// -------------------------------------------------------- ส่งข้อมูล OT ไปยัง GAS --------------------------------------------------------
+function saveOTToGAS(data) {
+    // เพิ่มข้อมูลผู้ใช้
+    data.userName = localStorage.getItem("name") || "unknown";
+    data.userJob = localStorage.getItem("job") || "";
+    data.office = localStorage.getItem("office") || "";
+    data.userID = localStorage.getItem("refid") || "";
+    data.userBoss = localStorage.getItem("boss") || "";
 
-function sendOTDataAutoClose(prevDate, startISO) {
-    const startTime = new Date(startISO);
-    const autoEndTime = localStorage.getItem("otAutoEndTime") || "20:30";
-    const endTime = new Date(`${prevDate}T${autoEndTime}:00`);
-    const durationMs = endTime - startTime;
-    const minutes = Math.floor(durationMs / 60000);
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    const duration = `${hours} ชั่วโมง ${mins} นาที`;
-    const now = new Date();
-    const ref = generateReference(now);
+    console.log("🔧 Data ที่ส่งไป GAS:", data);
 
-    fetch(GAS_URL, {
+    if (!("otAmount" in data)) console.warn("⚠ ไม่มี otAmount ในข้อมูลที่ส่งไป GAS");
+    if (!("totalHours" in data)) console.warn("⚠ ไม่มี totalHours ในข้อมูลที่ส่งไป GAS");
+
+    Swal.fire({
+        title: "กำลังส่งข้อมูล...",
+        text: "กรุณารอสักครู่",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    const urlapidb = "https://script.google.com/macros/s/AKfycbxhNJ_l_zrBYXyU-ktVWC0ZjFJaXmkXEs6BX_quhzEs1ZVp6iNuJ_rKh8hosI-y5JX7DA/exec";
+
+    return fetch(urlapidb, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            staffName: localStorage.getItem("otStaffName") || "-",
-            rate: localStorage.getItem("otRate") || "0",
-            startTime: formatOtTime(startTime),
-            endTime: autoEndTime + ":00",
-            duration,
-            stamp: now.getTime(),
-            date: prevDate,
-            autoClosed: true,
-            reference: ref,
-        }),
+        body: JSON.stringify(data)
     })
-    .then(() => {
-        otEntries.push({
-            stamp: now.getTime(),
-            date: prevDate,
-            start: formatOtTime(startTime),
-            end: autoEndTime + ":00",
-            duration,
-            status: "สำเร็จ",
-            note: "ส่งโดยระบบ (Auto)",
-            reference: ref,
-        });
-        saveOtEntries();
-        updateOtReport();
+    .then(res => {
+        // ล้างสถานะเริ่มงาน
+        localStorage.removeItem("otStartData");
+        otStartTime = null;
+        otEndTime = null;
 
+        Swal.close();
         Swal.fire({
-            icon: "warning",
-            title: "พบการทำงานค้างวัน",
-            html: `ระบบได้ส่งข้อมูลของวันที่ <b>${prevDate}</b><br>โดยสิ้นสุดงานเวลา <b>${autoEndTime}:00</b>`,
-            confirmButtonText: "ตกลง",
-            allowOutsideClick: false,
+            icon: "success",
+            title: "ส่งข้อมูลสำเร็จ",
+            text: "บันทึกข้อมูลเรียบร้อยแล้ว",
+            timer: 1500,
+            showConfirmButton: false,
         });
+        return res;
     })
-    .catch((err) => {
+    .catch(err => {
+        Swal.close();
         Swal.fire({
-            title: "เกิดข้อผิดพลาดในการส่งข้อมูลอัตโนมัติ",
+            title: "ส่งข้อมูลไม่สำเร็จ",
             text: err.message,
             icon: "error",
             allowOutsideClick: false,
         });
+        throw err;
+    });
+}
+
+
+// ฟังก์ชัน global สำหรับอัปเดตรายงาน OT
+
+function updateOtReport() {
+    const otReportBody = document.getElementById("otReportBody");
+    if (!otReportBody) return;
+
+    otReportBody.innerHTML = "";
+    if (!window.otEntries || window.otEntries.length === 0) {
+        otReportBody.innerHTML = '<tr><td colspan="9" class="text-center">ยังไม่มีข้อมูล</td></tr>';
+        return;
+    }
+
+    window.otEntries.forEach((entry, i) => {
+        let statusColor = entry.status === "สำเร็จ" ? "text-success" :
+                          entry.status === "ผิดพลาด" ? "text-danger" : "text-secondary";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${entry.date}</td>
+            <td>${entry.start}</td>
+            <td>${entry.end}</td>
+            <td>${entry.duration}</td>
+            <td class="${statusColor}">${entry.status || "-"}</td>
+            <td>${entry.note || "-"}</td>
+            <td>${entry.reference || "-"}</td>
+            <td>${entry.stamp ? new Date(entry.stamp).toLocaleString("th-TH") : "-"}</td>
+        `;
+        otReportBody.appendChild(row);
+    });
+}
+
+
+// --------------------------------------------- ฟังก์ชันกลางสำหรับส่ง OT และอัปเดตรายงาน ---------------------------------------------
+
+async function submitOTEntry({ startTime, endTime, autoClosed = false, note = "" }) {
+    if (!startTime) return;
+
+    const durationMs = endTime - startTime;
+    const totalMinutes = Math.floor(durationMs / 60000);
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+    const durationStr = `${hours} ชั่วโมง ${mins} นาที`;
+    const rate = parseFloat(localStorage.getItem("otRate") || "0");
+    const totalHours = hours + (mins / 60);
+    const otAmount = (totalHours * rate).toFixed(2);
+
+    const now = new Date();
+    const ref = generateReference(now);
+
+    const data = {
+        staffName: localStorage.getItem("otStaffName") || "-",
+        rate: rate,
+        startTime: formatOtTime(startTime),
+        endTime: endTime instanceof Date ? formatOtTime(endTime) : endTime,
+        duration: durationStr,
+        totalHours: totalHours.toFixed(2),
+        otAmount,
+        stamp: now.getTime(),
+        date: startTime.toISOString().slice(0,10),
+        autoClosed,
+        reference: ref
+    };
+
+    // ✅ เพิ่มหน้าต่างยืนยันก่อนส่ง
+    const { isConfirmed } = await Swal.fire({
+        title: autoClosed ? 'ยืนยันส่ง OT อัตโนมัติ?' : 'ยืนยันส่ง OT?',
+        html: `
+            วันที่: <b>${data.date}</b><br>
+            เวลาเริ่ม: <b>${data.startTime}</b><br>
+            เวลาเลิก: <b>${data.endTime}</b><br>
+            รวมเวลา: <b>${totalHours.toFixed(2)} ชั่วโมง</b><br>
+            ค่าตอบแทน: <b>${otAmount} บาท</b>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'ส่งข้อมูล',
+        cancelButtonText: 'ยกเลิก',
+        allowOutsideClick: false
+    });
+
+    if (!isConfirmed) return; // ถ้ายกเลิก → ออกจากฟังก์ชัน
+
+    // ส่งข้อมูลไป GAS
+    try {
+        await saveOTToGAS(data);
+
+        otEntries.push({
+            stamp: now.getTime(),
+            date: data.date,
+            start: data.startTime,
+            end: data.endTime,
+            duration: durationStr,
+            totalHours: totalHours.toFixed(2),
+            otAmount,
+            status: "สำเร็จ",
+            note: note || (autoClosed ? "ส่งโดยระบบ (Auto)" : "ส่งโดยผู้ใช้"),
+            reference: ref
+        });
+        otDurationText.textContent = durationStr;
+        saveOtEntries();
+        updateOtReport();
+
+        if (autoClosed) {
+            Swal.fire({
+                icon: "warning",
+                title: "พบการทำงานค้างวัน",
+                html: `ระบบได้ส่งข้อมูลของวันที่ <b>${data.date}</b><br>โดยสิ้นสุดงานเวลา <b>${data.endTime}</b><br>
+                       คิดเป็นเวลา <b>${totalHours.toFixed(2)} ชั่วโมง</b><br>
+                       ค้างชำระ <b>${otAmount} บาท</b>`,
+                confirmButtonText: "ตกลง",
+                allowOutsideClick: false,
+            });
+        }
+
+    } catch(err) {
+        Swal.fire({
+            title: "เกิดข้อผิดพลาดในการส่งข้อมูล OT",
+            text: err.message,
+            icon: "error",
+            allowOutsideClick: false,
+        });
+    }
+}
+
+
+
+// ------------------------------------------- AUTO SEND ---------------------------------------------
+
+// ส่งอัตโนมัติเมื่อค้างวัน
+function sendOTDataAutoClose(prevDate, startISO) {
+    const startTime = new Date(startISO);
+    const autoEndTimeStr = localStorage.getItem("otAutoEndTime") || "20:30";
+    const endTime = new Date(`${prevDate}T${autoEndTimeStr}:00`);
+
+    if (isNaN(startTime) || isNaN(endTime)) {
+        console.error("❌ Invalid dates for Auto OT", startISO, prevDate);
+        return;
+    }
+
+    submitOTEntry({
+        startTime,
+        endTime,
+        autoClosed: true,
+        note: "ส่งโดยระบบ (Auto)"
     });
 
     localStorage.removeItem("otStartData");
 }
+
 
 // ------------------------------------------- MAIN ---------------------------------------------
 
@@ -132,31 +278,6 @@ window.addEventListener("load", () => {
     const savedLat = localStorage.getItem("mylat");
     const savedLon = localStorage.getItem("mylon");
 
-    function updateOtReport() {
-        otReportBody.innerHTML = "";
-        if (otEntries.length === 0) {
-            otReportBody.innerHTML = '<tr><td colspan="9" class="text-center">ยังไม่มีข้อมูล</td></tr>';
-            return;
-        }
-        otEntries.forEach((entry, i) => {
-            let statusColor = entry.status === "สำเร็จ" ? "text-success" :
-                              entry.status === "ผิดพลาด" ? "text-danger" : "text-secondary";
-
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${i + 1}</td>
-                <td>${entry.date}</td>
-                <td>${entry.start}</td>
-                <td>${entry.end}</td>
-                <td>${entry.duration}</td>
-                <td class="${statusColor}">${entry.status || "-"}</td>
-                <td>${entry.note || "-"}</td>
-                <td>${entry.reference || "-"}</td>
-                <td>${entry.stamp ? new Date(entry.stamp).toLocaleString("th-TH") : "-"}</td>
-            `;
-            otReportBody.appendChild(row);
-        });
-    }
 
     otToggleReportBtn.addEventListener("click", () => {
         otReportVisible = !otReportVisible;
@@ -166,13 +287,19 @@ window.addEventListener("load", () => {
             : '<i class="fas fa-eye me-1"></i> แสดงรายงาน';
     });
 
-    document.getElementById("otConfigModal").addEventListener("show.bs.modal", () => {
-        otRateInput.value = localStorage.getItem("otRate") || "";
-        otRateDayInput.value = localStorage.getItem("otRateDay") || "";
-        otStaffNameInput.value = localStorage.getItem("otStaffName") || "";
-        otAutoEndTimeInput.value = localStorage.getItem("otAutoEndTime") || "20:30";
-        hourslimitInput.value = localStorage.getItem("hourslimit") || 4;
-    });
+document.getElementById("otConfigModal").addEventListener("show.bs.modal", () => {
+    otRateInput.value = localStorage.getItem("otRate") || "";
+    otRateDayInput.value = localStorage.getItem("otRateDay") || "";
+    otAutoEndTimeInput.value = localStorage.getItem("otAutoEndTime") || "20:30";
+    hourslimitInput.value = localStorage.getItem("hourslimit") || 4;
+
+    loadOtConfigByRefid();
+
+    displayStaffGeneric("otStaffName", "otStaffName", "-- เลือกผู้ควบคุม --");
+    displayStaffGeneric("otApprover", "otApproverName", "-- เลือกผู้อนุมัติ --");
+    displayStaffGeneric("otPayer", "otPayerName", "-- เลือกผู้จ่ายเงิน --");
+});
+
 
     document.getElementById("otSaveConfigBtn").addEventListener("click", () => {
         const name = otStaffNameInput.value.trim();
@@ -180,10 +307,16 @@ window.addEventListener("load", () => {
         const rateDay = otRateDayInput.value.trim();
         const autoEndTime = otAutoEndTimeInput.value.trim();
         const hourslimit = hourslimitInput.value.trim();
+        const approver = document.getElementById("otApprover").value.trim();
+const payer = document.getElementById("otPayer").value.trim();
 
         if (!name)
-            return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกชื่อ", icon: "warning", allowOutsideClick: false });
-          if (!rateDay || isNaN(rateDay) || rateDay <= 0)
+            return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากำหนดผู้ควบคุม", icon: "warning", allowOutsideClick: false });
+        if (!approver)
+  return Swal.fire({ title: "แจ้งเตือน", text: "กรุณาเลือกผู้อนุมัติ", icon: "warning" });
+if (!payer)
+  return Swal.fire({ title: "แจ้งเตือน", text: "กรุณาเลือกผู้จ่ายเงิน", icon: "warning" });
+        if (!rateDay || isNaN(rateDay) || rateDay <= 0)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกอัตราต่อวัน", icon: "warning", allowOutsideClick: false });
         if (!rate || isNaN(rate) || rate <= 0)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกอัตราต่อชั่วโมง", icon: "warning", allowOutsideClick: false });
@@ -194,6 +327,8 @@ window.addEventListener("load", () => {
 
         localStorage.setItem("otAutoEndTime", autoEndTime);
         localStorage.setItem("otStaffName", name);
+        localStorage.setItem("otApproverName", approver);
+localStorage.setItem("otPayerName", payer);
         localStorage.setItem("otRate", rate);
         localStorage.setItem("otRateDay", rateDay);
         localStorage.setItem("hourslimit", hourslimit);
@@ -209,15 +344,64 @@ window.addEventListener("load", () => {
                 document.body.classList.remove("modal-open");
                 document.body.style.overflow = '';
 
-                Swal.fire({
-                    title: "บันทึกข้อมูลแล้ว",
-                    icon: "success",
-                    allowOutsideClick: false,
-                });
+Swal.fire({
+    title: "กำลังบันทึกข้อมูล...",
+    icon: "info",
+    allowOutsideClick: false,
+    showConfirmButton: false
+});
+
+// ดึงค่าเดิมจาก localStorage
+const refid = localStorage.getItem("refid") || "";
+const staffNameLocal = localStorage.getItem("name") || "";
+const staffJobLocal = localStorage.getItem("job") || "";
+
+const data = {
+    otAutoEndTime: autoEndTime,
+    otStaffName: name,
+    otApprover: approver,
+    otPayer: payer,
+    otRate: rate,
+    otRateDay: rateDay,
+    hourslimit: hourslimit,
+    refid,
+    staffName: staffNameLocal,
+    job: staffJobLocal
+};
+
+
+console.log("Data to save to GAS:", data);
+
+// ส่งไปเก็บใน Google Apps Script
+saveToGAS(data).then(() => {
+    Swal.fire({
+        title: "บันทึกข้อมูลเรียบร้อย",
+        icon: "success",
+        allowOutsideClick: false,
+    }).then(() => location.reload());
+});
+
+
             },
             { once: true }
         );
     });
+
+
+    //  ส่งข้อมูล config ไปยัง GAS 
+    function saveToGAS(data) {
+    
+            const urlapidb = "https://script.google.com/macros/s/AKfycbw5jciw6NO_j2ryQgC1EF2DuPt9fN1OrUchjSCuZVNeSNOwa-HvE0kZCqXqADBiK6A/exec";
+     
+
+    return fetch(urlapidb, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+}
+
 
     // โหลดข้อมูลเริ่มงานค้างถ้ามี และตรวจสอบวัน
     const saved = localStorage.getItem("otStartData");
@@ -232,7 +416,9 @@ window.addEventListener("load", () => {
         }
     }
 
-    // ปุ่มเริ่มงาน
+ 
+    // ---------------------------------------------------------------------------- ปุ่มเริ่มงาน ----------------------------------------------------------------------------
+
     otStartBtn.addEventListener("click", async () => {
 
         if (!savedLat && !savedLon) {
@@ -284,12 +470,12 @@ window.addEventListener("load", () => {
             const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
             if (selectedDateOnly > todayDateOnly) {
-              return Swal.fire({
-                title: "ผิดพลาด",
-                text: "ไม่สามารถเลือกวันที่มากกว่าวันนี้ได้",
-                icon: "error",
-                allowOutsideClick: false
-              });
+                return Swal.fire({
+                    title: "ผิดพลาด",
+                    text: "ไม่สามารถเลือกวันที่มากกว่าวันนี้ได้",
+                    icon: "error",
+                    allowOutsideClick: false
+                });
             }
 
             // ห้ามเริ่มงานในช่วงเวลางานปกติ (8:30-16:30)
@@ -300,21 +486,21 @@ window.addEventListener("load", () => {
             const startMinutes = selectedStartTime.getMinutes();
 
             const isWorkingHours = (
-              (selectedDateStr === datechecktoday &&
-                (
-                  (startHours > 8 || (startHours === 8 && startMinutes >= 30)) &&
-                  (startHours < 16 || (startHours === 16 && startMinutes <= 30))
+                (selectedDateStr === datechecktoday &&
+                    (
+                        (startHours > 8 || (startHours === 8 && startMinutes >= 30)) &&
+                        (startHours < 16 || (startHours === 16 && startMinutes <= 30))
+                    )
                 )
-              )
             );
 
             if (isWorkingHours) {
-              return Swal.fire({
-                title: "ไม่สามารถเริ่มงานได้",
-                text: "ไม่อนุญาตให้เริ่มงานโอทีในช่วงเวลาทำงาน (08:30-16:30)",
-                icon: "error",
-                allowOutsideClick: false
-              });
+                return Swal.fire({
+                    title: "ไม่สามารถเริ่มงานได้",
+                    text: "ไม่อนุญาตให้เริ่มงานโอทีในช่วงเวลาทำงาน (08:30-16:30)",
+                    icon: "error",
+                    allowOutsideClick: false
+                });
             }
 
             otStartTime = selectedStartTime;
@@ -341,158 +527,106 @@ window.addEventListener("load", () => {
         }
     });
 
-    // ปุ่มเลิกงาน
-    otEndBtn.addEventListener("click", async () => {
-        if (!otStartTime) {
-            return Swal.fire({
-                title: "แจ้งเตือน",
-                text: "ยังไม่ได้เริ่มงาน",
-                icon: "warning",
-                allowOutsideClick: false,
-            });
-        }
+    // ---------------------------------------------------------------------------- ปุ่มเริ่มเลิกงาน ----------------------------------------------------------------------------
 
-        if (!localStorage.getItem("hourslimit")) {
-            return Swal.fire({
-                title: "แจ้งเตือน",
-                text: "ยังไม่ได้กำหนดจำนวนชั่วโมง",
-                icon: "warning",
-                allowOutsideClick: false,
-            }).then(() => {
-                new bootstrap.Modal(document.getElementById("otConfigModal")).show();
-            });
-        }
-
-        const defaultDateTime = getCurrentDateTimeLocal();
-        const { isConfirmed, value: dateTimeStr } = await Swal.fire({
-            title: "ยืนยันเวลาเลิกงาน",
-            html: `<input type="datetime-local" id="otDateTimePicker" class="swal2-input" value="${defaultDateTime}" />`,
-            showCancelButton: true,
-            confirmButtonText: "เลิกงาน",
-            cancelButtonText: "ยกเลิก",
+otEndBtn.addEventListener("click", async () => {
+    if (!otStartTime) {
+        return Swal.fire({
+            title: "แจ้งเตือน",
+            text: "ยังไม่ได้เริ่มงาน",
+            icon: "warning",
             allowOutsideClick: false,
-            preConfirm: () => document.getElementById("otDateTimePicker").value
         });
+    }
 
-        if (isConfirmed && dateTimeStr) {
-            const selectedEndTime = new Date(dateTimeStr);
+    if (!localStorage.getItem("hourslimit")) {
+        return Swal.fire({
+            title: "แจ้งเตือน",
+            text: "ยังไม่ได้กำหนดจำนวนชั่วโมง",
+            icon: "warning",
+            allowOutsideClick: false,
+        }).then(() => {
+            new bootstrap.Modal(document.getElementById("otConfigModal")).show();
+        });
+    }
 
-            // เช็ควันที่เลิกงานต้องตรงกับวันเริ่มงาน
-            if (
-                selectedEndTime.getFullYear() !== otStartTime.getFullYear() ||
-                selectedEndTime.getMonth() !== otStartTime.getMonth() ||
-                selectedEndTime.getDate() !== otStartTime.getDate()
-            ) {
-                return Swal.fire({
-                    title: "แจ้งเตือน",
-                    text: "วันที่เลิกงานต้องตรงกับวันเริ่มงาน",
-                    icon: "warning",
-                    allowOutsideClick: false,
-                });
-            }
-
-            otEndTime = selectedEndTime;
-
-            const hourslimit = Number(localStorage.getItem("hourslimit"));
-            let durationMs = otEndTime - otStartTime;
-
-            if (durationMs <= 0) {
-                return Swal.fire({
-                    title: "แจ้งเตือน",
-                    text: "เวลาเลิกงานต้องมากกว่าเวลาเริ่มงาน",
-                    icon: "warning",
-                    allowOutsideClick: false,
-                });
-            }
-
-            const durationHrs = durationMs / (60 * 60 * 1000);
-
-            if (durationHrs < hourslimit) {
-                return Swal.fire({
-                    title: "แจ้งเตือน",
-                    text: `เวลาทำงาน ${durationHrs.toFixed(2)} ชั่วโมง ยังไม่ครบ ${hourslimit} ชั่วโมง`,
-                    icon: "warning",
-                    allowOutsideClick: false,
-                });
-            }
-
-            otEndTimeText.textContent = formatOtTime(otEndTime);
-            const totalMinutes = Math.floor(durationMs / 60000);
-            const hours = Math.floor(totalMinutes / 60);
-            const mins = totalMinutes % 60;
-            const duration = `${hours} ชั่วโมง ${mins} นาที`;
-
-            otDurationText.textContent = duration;
-
-            const now = new Date();
-            const ref = generateReference(now);
-
-            otEntries.push({
-                stamp: now.getTime(),
-                date: otStartTime.toISOString().slice(0, 10),
-                start: formatOtTime(otStartTime),
-                end: formatOtTime(otEndTime),
-                duration,
-                status: "กำลังส่งข้อมูล...",
-                note: "ส่งโดยผู้ใช้",
-                reference: ref,
-            });
-            saveOtEntries();
-            updateOtReport();
-
-            fetch(GAS_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    staffName: localStorage.getItem("otStaffName") || "-",
-                    rate: localStorage.getItem("otRate") || "0",
-                    startTime: formatOtTime(otStartTime),
-                    endTime: formatOtTime(otEndTime),
-                    duration,
-                    stamp: now.getTime(),
-                    date: otStartTime.toISOString().slice(0, 10),
-                    reference: ref,
-                }),
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("ไม่สามารถส่งข้อมูลได้");
-                otEntries[otEntries.length - 1].status = "สำเร็จ";
-                saveOtEntries();
-                updateOtReport();
-            })
-            .catch((err) => {
-                otEntries[otEntries.length - 1].status = "ผิดพลาด";
-                saveOtEntries();
-                updateOtReport();
-                Swal.fire({
-                    title: "แจ้งเตือน",
-                    text: `ส่งข้อมูลไม่สำเร็จ: ${err.message}`,
-                    icon: "error",
-                    allowOutsideClick: false,
-                });
-            });
-
-            localStorage.removeItem("otStartData");
-            otStartTime = null;
-            otEndTime = null;
-            // otStartDateText.textContent = "-";
-            // otStartTimeText.textContent = "-";
-            // otEndTimeText.textContent = "-";
-            // otDurationText.textContent = "-";
-        }
+    const defaultDateTime = getCurrentDateTimeLocal();
+    const { isConfirmed, value: dateTimeStr } = await Swal.fire({
+        title: "ยืนยันเวลาเลิกงาน",
+        html: `<input type="datetime-local" id="otDateTimePicker" class="swal2-input" value="${defaultDateTime}" />`,
+        showCancelButton: true,
+        confirmButtonText: "เลิกงาน",
+        cancelButtonText: "ยกเลิก",
+        allowOutsideClick: false,
+        preConfirm: () => document.getElementById("otDateTimePicker").value
     });
 
+    if (isConfirmed && dateTimeStr) {
+        const selectedEndTime = new Date(dateTimeStr);
 
-function formatOtTime(date) {
-    if (!date || isNaN(date)) return "-";
-    const hh = String(date.getHours()).padStart(2, "0");
-    const mm = String(date.getMinutes()).padStart(2, "0");
-    const ss = String(date.getSeconds()).padStart(2, "0");
-    return `${hh}:${mm}:${ss}`;
-}
+        // วันที่ต้องตรงกับวันเริ่มงาน
+        if (
+            selectedEndTime.getFullYear() !== otStartTime.getFullYear() ||
+            selectedEndTime.getMonth() !== otStartTime.getMonth() ||
+            selectedEndTime.getDate() !== otStartTime.getDate()
+        ) {
+            return Swal.fire({
+                title: "แจ้งเตือน",
+                text: "วันที่เลิกงานต้องตรงกับวันเริ่มงาน",
+                icon: "warning",
+                allowOutsideClick: false,
+            });
+        }
 
-    
-    
+        const hourslimit = Number(localStorage.getItem("hourslimit"));
+        const durationMs = selectedEndTime - otStartTime;
+
+        if (durationMs <= 0) {
+            return Swal.fire({
+                title: "แจ้งเตือน",
+                text: "เวลาเลิกงานต้องมากกว่าเวลาเริ่มงาน",
+                icon: "warning",
+                allowOutsideClick: false,
+            });
+        }
+
+        const durationHrs = durationMs / (60 * 60 * 1000);
+        if (durationHrs < hourslimit) {
+            return Swal.fire({
+                title: "แจ้งเตือน",
+                text: `เวลาทำงาน ${durationHrs.toFixed(2)} ชั่วโมง ยังไม่ครบ ${hourslimit} ชั่วโมง`,
+                icon: "warning",
+                allowOutsideClick: false,
+            });
+        }
+
+        otEndTime = selectedEndTime;
+        otEndTimeText.textContent = formatOtTime(otEndTime);
+        
+        // เรียกฟังก์ชันกลาง submitOTEntry
+        await submitOTEntry({
+            startTime: otStartTime,
+            endTime: otEndTime,
+            autoClosed: false,
+            note: "ส่งโดยผู้ใช้"
+        });
+
+    }
+});
+
+
+
+    function formatOtTime(date) {
+        if (!date || isNaN(date)) return "-";
+        const hh = String(date.getHours()).padStart(2, "0");
+        const mm = String(date.getMinutes()).padStart(2, "0");
+        const ss = String(date.getSeconds()).padStart(2, "0");
+        return `${hh}:${mm}:${ss}`;
+    }
+
+
+
+
     // ปุ่มรีเซ็ต
     otResetBtn.addEventListener("click", () => {
         Swal.fire({
@@ -530,19 +664,15 @@ function formatOtTime(date) {
 
 
 
-
-
-
-
 // ------------------------------------------- STAFF LOADER ---------------------------------------------
 
-async function displayStaff() { 
-    const staffSelect = document.getElementById("otStaffName");
-    const savedStaff = localStorage.getItem("otStaffName"); // ชื่อผู้ควบคุมที่เคยเลือก
+async function displayStaffGeneric(selectId, storageKey, placeholderText) {
+    const staffSelect = document.getElementById(selectId);
+    const savedStaff = localStorage.getItem(storageKey);
     const refid = localStorage.getItem("refid");
     const mainsub = localStorage.getItem("mainsub");
+    const office = localStorage.getItem("office");
 
-    // ถ้ามีค่าที่เคยเลือก ให้แสดงใน dropdown ก่อน (ป้องกันว่าง)
     if (savedStaff && staffSelect.options.length === 0) {
         const opt = document.createElement("option");
         opt.value = savedStaff;
@@ -551,11 +681,7 @@ async function displayStaff() {
         staffSelect.appendChild(opt);
     }
 
-    // ถ้ามี option มากกว่า 1 → แปลว่าโหลด API แล้ว → ไม่ต้องโหลดอีก
-    if (staffSelect.options.length > 0) {
-        console.log("Staff already loaded. Skip API.");
-        return;
-    }
+    if (staffSelect.options.length > 0) return;
 
     try {
         Swal.fire({
@@ -564,66 +690,149 @@ async function displayStaff() {
             didOpen: () => Swal.showLoading()
         });
 
-        const response = await fetch(
-            `https://script.google.com/macros/s/AKfycbzlanx_NXl5qy1mlvQP6oMl6zElUxDJ9nLUiZEqIHO0RKP7OcxkHKo5n_XUb-5UEHRN/exec?xmain=${mainsub}&updateby=${localStorage.getItem("name")}`
-        );
+      const isAllOffice = localStorage.getItem("staffScopeAll") === "1";
 
-        if (!response.ok) throw new Error(response.statusText);
+const url =
+  "https://script.google.com/macros/s/AKfycbwX-bK4nJM53d_BGgiJP-vZsTz-t7uu_BIPFFNY-ITxYBGJT9JWfev8jbY_ICleCHwEtA/exec" +
+  `?xmain=${mainsub}` +
+  (isAllOffice ? "" : `&xsub=${office}`);
+
+const response = await fetch(url);
+
 
         const data = await response.json();
         Swal.close();
 
         staffSelect.innerHTML = "";
 
-        // option ว่าง
         const emptyOption = document.createElement("option");
         emptyOption.value = "";
-        emptyOption.textContent = "-- เลือกผู้ควบคุม --";
+        emptyOption.textContent = placeholderText;
         staffSelect.appendChild(emptyOption);
 
-        // เติมข้อมูลจาก API
         data.role.forEach(item => {
             const option = document.createElement("option");
             option.value = item.name;
             option.textContent = item.name;
 
-            // ถ้ามีค่าที่เคยเลือก → เลือกค่านั้น
-            if (savedStaff && savedStaff === item.name) {
-                option.selected = true;
-            }
-            // ถ้ามี refid ให้เลือกตาม refid
-            else if (item.id == refid) {
+            if (savedStaff === item.name || item.id == refid) {
                 option.selected = true;
             }
 
             staffSelect.appendChild(option);
         });
 
-    } catch (error) {
+    } catch (err) {
         Swal.close();
-        Swal.fire("Error", error.message, "error");
+        Swal.fire("Error", err.message, "error");
     }
 }
 
 
-function clearStaff() {
-    // ลบค่าใน localStorage
-    localStorage.removeItem("otStaffName");
+function clearStaffGeneric(selectId, storageKey) {
+    localStorage.removeItem(storageKey);
+    const select = document.getElementById(selectId);
+    select.innerHTML = "";
 
-    // ล้าง dropdown
-    const staffSelect = document.getElementById("otStaffName");
-    staffSelect.innerHTML = "";   // ล้างทั้งหมด
-
-    // แจ้งเตือน
     Swal.fire({
         icon: "info",
         title: "เลือกใหม่",
         timer: 800,
         showConfirmButton: false,
         didClose: () => {
-            // โหลดข้อมูลใหม่จาก API
-            displayStaff();
+            displayStaffGeneric(
+                selectId,
+                storageKey,
+                "-- เลือกใหม่ --"
+            );
         }
     });
 }
 
+
+const staffScopeSwitch = document.getElementById("staffScopeSwitch");
+const staffScopeLabel  = document.getElementById("staffScopeLabel");
+
+// ค่าเริ่มต้น = เฉพาะหน่วยงาน
+const savedScope = localStorage.getItem("staffScopeAll");
+staffScopeSwitch.checked = savedScope === "1";
+updateStaffScopeLabel();
+
+// เมื่อเปลี่ยนสถานะ
+staffScopeSwitch.addEventListener("change", () => {
+    localStorage.setItem(
+        "staffScopeAll",
+        staffScopeSwitch.checked ? "1" : "0"
+    );
+    updateStaffScopeLabel();
+
+    // reload dropdown ทั้งหมด
+    ["otStaffName","otApprover","otPayer"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = "";
+    });
+
+    displayStaffGeneric("otStaffName","otStaffName","-- เลือกผู้ควบคุม --");
+    displayStaffGeneric("otApprover","otApproverName","-- เลือกผู้อนุมัติ --");
+    displayStaffGeneric("otPayer","otPayerName","-- เลือกผู้จ่ายเงิน --");
+});
+
+function updateStaffScopeLabel() {
+    staffScopeLabel.textContent = staffScopeSwitch.checked
+        ? "แสดงตัวเลือกทุกกลุ่มงาน/หน่วยงาน"
+        : "แสดงตัวเลือกเฉพาะกลุ่มงาน/หน่วยงาน";
+}
+
+
+async function loadOtConfigByRefid() {
+  const refid = localStorage.getItem("refid");
+  if (!refid) return;
+
+  const otStaffNameInput = document.getElementById("otStaffName");
+  const otApproverInput = document.getElementById("otApprover");
+  const otPayerInput = document.getElementById("otPayer");
+  const otRateInput = document.getElementById("otRate");
+  const otRateDayInput = document.getElementById("otRateDay");
+  const otAutoEndTimeInput = document.getElementById("otAutoEndTime");
+  const hourslimitInput = document.getElementById("hourslimit");
+
+  // ถ้า localStorage มีค่า → ไม่ต้องโหลด
+  if (localStorage.getItem("otStaffName")) return;
+
+  try {
+    Swal.fire({
+      title: "กำลังโหลดค่าเดิม...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const response = await fetch(`https://script.google.com/macros/s/AKfycbwzkU5vfELuNJYDJq-JLG9UNCWrRQtkH0BedmnlzlKHFKoGTUKDWL5zvbSH0ahg_H4K1Q/exec?type=getOtConfigByRefid&refid=${refid}`);
+    const data = await response.json();
+    Swal.close();
+
+    if (!data.roles || data.roles.length === 0) return;
+
+    const record = data.roles[0];
+
+    // เติม dropdown
+    [ {el: otStaffNameInput, val: record.staffRaw},
+      {el: otApproverInput, val: record.approverRaw},
+      {el: otPayerInput, val: record.payerRaw} ].forEach(o => {
+      const opt = document.createElement("option");
+      opt.value = o.val;
+      opt.textContent = o.val;
+      opt.selected = true;
+      o.el.appendChild(opt);
+    });
+
+    // เติมค่าอื่น ๆ
+    otRateInput.value = record.otRate || "";
+    otRateDayInput.value = record.otRateDay || "";
+    otAutoEndTimeInput.value = record.otAutoEndTime || "20:30";
+    hourslimitInput.value = record.hourslimit || 4;
+
+  } catch (error) {
+    Swal.close();
+    console.error("โหลด OT config ไม่สำเร็จ:", error);
+  }
+}
