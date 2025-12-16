@@ -184,9 +184,8 @@
           </div>
         </div>
 
-
+<!-- แผนที่ -->
         <div id="map"></div>
-
       </div>
 
       <!-- QR Code -->
@@ -207,13 +206,20 @@
 
         <div class="content-wrapper">
           <button id="otConfigBtn" class="btn btn-primary btn-sm otConfigButton" data-bs-toggle="modal"
-            data-bs-target="#otConfigModal" onclick="displayStaff()">
+            data-bs-target="#otConfigModal" >
+            <!-- onclick="displayStaff()" -->
             <i class="fas fa-cog"></i> กำหนดค่า
           </button>
 
-          <h3>ยังไม่เปิดใช้งานจริง อยู่ระหว่างการพัฒนา</h3>
-          <h6>ระบบลงเวลาปฏิบัติงานนอกเวลา (OT)</h6>
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+   สำหรับการบันทึกเวลาปฏิบัติงานล่วงเวลา รายชั่วโมงเท่านั้น
+     หากต้องการบันทึกการทำงาน เต็มวันในวันหยุดในดำเนินการเช่นเดียวกันกับการลงเวลาปฏิบัติงานปกติ
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 
+
+          <h5>ระบบลงเวลาปฏิบัติงานนอกเวลา (OT) ทดสอบ</h5>
+          
           <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
             <button id="otStartBtn" class="btn btn-success">
               <i class="fas fa-play"></i> เริ่มปฏิบัติงาน
@@ -284,8 +290,6 @@
               </table>
             </div>
           </div>
-
-
 
           <!-- สิ้นสุด ot -->
         </div>
@@ -529,15 +533,53 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
+          
+<div class="form-check form-switch mb-2">
+  <input class="form-check-input"
+         type="checkbox"
+         id="staffScopeSwitch" />
+  <label class="form-check-label"
+         for="staffScopeSwitch"
+         id="staffScopeLabel">
+    แสดงตัวเลือกเฉพาะกลุ่มงาน/หน่วยงาน
+  </label>
+</div>
+
+
           <div class="mb-3">
             <label for="otStaffName" class="form-label"> <i class="fa-solid fa-user-clock"></i> ผู้ควบคุม</label>
             <div class="d-flex gap-2">
               <select id="otStaffName" class="form-control"></select>
-              <button class="btn btn-outline-info btn-sm" onclick="clearStaff()">
+              <button class="btn btn-outline-info btn-sm"  onclick="clearStaffGeneric('otStaffName','otStaffName')">
                 <i class="fa-solid fa-folder-open"></i>
               </button>
             </div>
           </div>
+
+          <div class="mb-3">
+  <label class="form-label">
+    <i class="fa-solid fa-user-check"></i> ผู้อนุมัติ
+  </label>
+  <div class="d-flex gap-2">
+    <select id="otApprover" class="form-control"></select>
+    <button class="btn btn-outline-info btn-sm" onclick="clearStaffGeneric('otApprover','otApproverName')">
+      <i class="fa-solid fa-folder-open"></i>
+    </button>
+  </div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">
+    <i class="fa-solid fa-money-check-dollar"></i> ผู้จ่ายเงิน
+  </label>
+  <div class="d-flex gap-2">
+    <select id="otPayer" class="form-control"></select>
+    <button class="btn btn-outline-info btn-sm" onclick="clearStaffGeneric('otPayer','otPayerName')">
+      <i class="fa-solid fa-folder-open"></i>
+    </button>
+  </div>
+</div>
+
 
           <div class="mb-3">
             <label for="otRateDay" class="form-label"><i class="fa-solid fa-baht-sign"></i> อัตราค่าตอบแทน
@@ -549,13 +591,13 @@
               (บาท/ชม.)</label>
             <input type="number" id="otRate" class="form-control" />
           </div>
-          <div class="mb-3">
+          <div class="mb-3" hidden>
             <label for="otAutoEndTime" class="form-label"><i class="fa-regular fa-clock"></i> เวลาสิ้นสุด</label>
             <input type="time" id="otAutoEndTime" class="form-control" />
           </div>
           <div class="mb-3">
-            <label for="hourslimit" class="form-label"><i class="fa-solid fa-clock"></i> จำนวนชั่วโมง</label>
-            <input type="number" id="hourslimit" class="form-control" />
+            <label for="hourslimit" class="form-label"><i class="fa-solid fa-clock"></i> จำนวนชั่วโมง (Limit)</label>
+            <input type="number" min="1" max="18" id="hourslimit" class="form-control" />
           </div>
         </div>
         <div class="modal-footer">
