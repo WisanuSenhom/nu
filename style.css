@@ -939,6 +939,8 @@ td {
   padding: 8px;
   text-align: left;
   font-size: 14px !important;
+  background-color: var(--nav-bg) !important;
+  color: var(--text-color) !important;
 }
 th {
   background-color: var(--nav-bg) !important;
@@ -1084,7 +1086,7 @@ div.dt-button-collection {
 .otConfigButton {
   position: absolute;
   top: 35px;
-  right: 20px;
+  right: 1px;
 }
 
 .otLog,
