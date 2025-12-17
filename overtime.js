@@ -31,6 +31,29 @@ function generateReference(date = new Date()) {
     return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}${userid}`;
 }
 
+// ฟังก์ชันแปลง decimal hours → "ชม. นาที"
+function decimalToHrsMinutes(decimalHrs) {
+  const hours = Math.floor(decimalHrs);
+  const minutes = Math.round((decimalHrs - hours) * 60);
+  return `${hours} ชม. ${minutes} นาที`;
+}
+
+// อ้างอิง input และ display div
+const hoursInput = document.getElementById("hourslimit");
+const hoursDisplay = document.getElementById("hoursDisplay");
+
+// Event: ทุกครั้งที่ผู้ใช้กรอกหรือเปลี่ยนค่า
+hoursInput.addEventListener("input", () => {
+  const val = parseFloat(hoursInput.value);
+
+  if (!isNaN(val) && val >= 1 && val <= 24) {
+    hoursDisplay.textContent = decimalToHrsMinutes(val);
+  } else {
+    hoursDisplay.textContent = ""; // ล้างข้อความหากค่าไม่ถูกต้อง
+  }
+});
+
+
 // ------------------------------------------- STORAGE ---------------------------------------------
 
 function saveOtEntries() {
@@ -103,34 +126,59 @@ function saveOTToGAS(data) {
 // ฟังก์ชัน global สำหรับอัปเดตรายงาน OT
 
 function updateOtReport() {
-    const otReportBody = document.getElementById("otReportBody");
-    if (!otReportBody) return;
+    if (!window.otEntries) window.otEntries = [];
 
-    otReportBody.innerHTML = "";
-    if (!window.otEntries || window.otEntries.length === 0) {
-        otReportBody.innerHTML = '<tr><td colspan="9" class="text-center">ยังไม่มีข้อมูล</td></tr>';
-        return;
+    // ทำลาย DataTable เดิมก่อน (ถ้ามี)
+    if ($.fn.DataTable.isDataTable("#otReport")) {
+        $("#otReport").DataTable().clear().destroy();
     }
 
-    window.otEntries.forEach((entry, i) => {
+    // สร้าง array ของ row
+    const data = window.otEntries.map((entry, i) => {
         let statusColor = entry.status === "สำเร็จ" ? "text-success" :
                           entry.status === "ผิดพลาด" ? "text-danger" : "text-secondary";
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${i + 1}</td>
-            <td>${entry.date}</td>
-            <td>${entry.start}</td>
-            <td>${entry.end}</td>
-            <td>${entry.duration}</td>
-            <td class="${statusColor}">${entry.status || "-"}</td>
-            <td>${entry.note || "-"}</td>
-            <td>${entry.reference || "-"}</td>
-            <td>${entry.stamp ? new Date(entry.stamp).toLocaleString("th-TH") : "-"}</td>
-        `;
-        otReportBody.appendChild(row);
+        return [
+            i + 1,
+            entry.date || "-",
+            entry.start || "-",
+            entry.end || "-",
+            entry.duration || "-",
+            `<span class="${statusColor}">${entry.status || "-"}</span>`,
+            entry.note || "-",
+            entry.reference || "-",
+            entry.stamp ? new Date(entry.stamp).toLocaleString("th-TH") : "-"
+        ];
+    });
+
+    // สร้าง DataTable ใหม่
+    $("#otReport").DataTable({
+        data: data,
+        columns: [
+            { title: "ลำดับ" },
+            { title: "วันที่" },
+            { title: "เริ่ม" },
+            { title: "สิ้นสุด" },
+            { title: "ระยะเวลา" },
+            { title: "สถานะ" },
+            { title: "หมายเหตุ" },
+            { title: "อ้างอิง" },
+            { title: "Stamp" }
+        ],
+                language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
+        },
+        order: [[1, "desc"], [2, "desc"]], // เรียงวันที่+เวลา ใหม่→เก่า
+        pageLength: 30,
+        lengthMenu: [
+            [10, 30, 50, 100, 150, -1],
+            [10, 30, 50, 100, 150, "ทั้งหมด"]
+        ],
+        responsive: true,
+        dom: "lBfrtip",
     });
 }
+
 
 
 // --------------------------------------------- ฟังก์ชันกลางสำหรับส่ง OT และอัปเดตรายงาน ---------------------------------------------
@@ -232,23 +280,28 @@ async function submitOTEntry({ startTime, endTime, autoClosed = false, note = ""
 // ส่งอัตโนมัติเมื่อค้างวัน
 function sendOTDataAutoClose(prevDate, startISO) {
     const startTime = new Date(startISO);
-    const autoEndTimeStr = localStorage.getItem("otAutoEndTime") || "20:30";
-    const endTime = new Date(`${prevDate}T${autoEndTimeStr}:00`);
 
-    if (isNaN(startTime) || isNaN(endTime)) {
-        console.error("❌ Invalid dates for Auto OT", startISO, prevDate);
+    // ดึง hourslimit จาก localStorage (ชั่วโมง)
+    const hourslimit = parseFloat(localStorage.getItem("hourslimit") || "4");
+
+    if (isNaN(startTime) || isNaN(hourslimit)) {
+        console.error("❌ Invalid start time or hourslimit", startISO, hourslimit);
         return;
     }
 
+    // สร้างเวลาเลิกงานจาก start + hourslimit
+    const endTime = new Date(startTime.getTime() + hourslimit * 60 * 60 * 1000);
+
+    // เรียก submitOTEntry ให้ส่งไป GAS
     submitOTEntry({
         startTime,
         endTime,
         autoClosed: true,
         note: "ส่งโดยระบบ (Auto)"
     });
-
-    localStorage.removeItem("otStartData");
+    
 }
+
 
 
 // ------------------------------------------- MAIN ---------------------------------------------
@@ -590,15 +643,17 @@ otEndBtn.addEventListener("click", async () => {
             });
         }
 
-        const durationHrs = durationMs / (60 * 60 * 1000);
-        if (durationHrs < hourslimit) {
-            return Swal.fire({
-                title: "แจ้งเตือน",
-                text: `เวลาทำงาน ${durationHrs.toFixed(2)} ชั่วโมง ยังไม่ครบ ${hourslimit} ชั่วโมง`,
-                icon: "warning",
-                allowOutsideClick: false,
-            });
-        }
+const durationHrs = durationMs / (60 * 60 * 1000);
+
+if (durationHrs < hourslimit) {
+  return Swal.fire({
+    title: "แจ้งเตือน",
+    text: `เวลาทำงาน ${decimalToHrsMinutes(durationHrs)} 
+ยังไม่ครบ ${decimalToHrsMinutes(hourslimit)}`,
+    icon: "warning",
+    allowOutsideClick: false,
+  });
+}
 
         otEndTime = selectedEndTime;
         otEndTimeText.textContent = formatOtTime(otEndTime);
