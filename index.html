@@ -205,20 +205,26 @@
       <div class="tab-pane fade" id="Overtime" role="tabpanel" aria-labelledby="Overtime-tab">
 
         <div class="content-wrapper">
-          <button id="otConfigBtn" class="btn btn-primary btn-sm otConfigButton" data-bs-toggle="modal"
-            data-bs-target="#otConfigModal" >
-            <!-- onclick="displayStaff()" -->
-            <i class="fas fa-cog"></i> กำหนดค่า
-          </button>
+  
 
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
    สำหรับการบันทึกเวลาปฏิบัติงานล่วงเวลา รายชั่วโมงเท่านั้น
-     หากต้องการบันทึกการทำงาน เต็มวันในวันหยุดในดำเนินการเช่นเดียวกันกับการลงเวลาปฏิบัติงานปกติ
+     หากต้องการบันทึกการทำงาน เต็มวันในวันหยุดให้ดำเนินการเช่นเดียวกันกับการลงเวลาปฏิบัติงานปกติ
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
 
-          <h5>ระบบลงเวลาปฏิบัติงานนอกเวลา (OT) ทดสอบ</h5>
+<div class="ot-header">
+  <h5 class="ot-title">ระบบลงเวลาปฏิบัติงานนอกเวลา (OT) ทดสอบ</h5>
+
+  <button id="otConfigBtn"
+    class="btn btn-primary btn-sm"
+    data-bs-toggle="modal"
+    data-bs-target="#otConfigModal">
+    <i class="fas fa-cog"></i> กำหนด
+  </button>
+</div>
+
           
           <div class="d-flex justify-content-center gap-3 my-4 flex-wrap">
             <button id="otStartBtn" class="btn btn-success">
@@ -268,26 +274,24 @@
               </button>
             </div>
             <div id="otReportTableWrapper" class="mt-3 table-responsive" style="display: none;">
-              <table class="table table-bordered table-sm">
-                <thead class="table-light">
-                  <tr>
-                    <th>ลำดับ</th>
-                    <th>วันที่</th>
-                    <th>เริ่ม</th>
-                    <th>เลิก</th>
-                    <th>ระยะเวลา</th>
-                    <th>สถานะ</th>
-                    <th>หมายเหตุ</th>
-                    <th>อ้างอิง</th>
-                    <th>วันเวลาที่ดำเนินการ</th>
-                  </tr>
-                </thead>
-                <tbody id="otReportBody">
-                  <tr>
-                    <td colspan="6" class="text-center">ยังไม่มีข้อมูล</td>
-                  </tr>
-                </tbody>
-              </table>
+   <table id="otReport" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>ลำดับ</th>
+            <th>วันที่</th>
+            <th>เริ่ม</th>
+            <th>สิ้นสุด</th>
+            <th>ระยะเวลา</th>
+            <th>สถานะ</th>
+            <th>หมายเหตุ</th>
+            <th>อ้างอิง</th>
+            <th>Stamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- ข้อมูลจะถูกเติมจาก JS -->
+    </tbody>
+</table>
             </div>
           </div>
 
@@ -597,8 +601,11 @@
           </div>
           <div class="mb-3">
             <label for="hourslimit" class="form-label"><i class="fa-solid fa-clock"></i> จำนวนชั่วโมง (Limit)</label>
-            <input type="number" min="1" max="18" id="hourslimit" class="form-control" />
+            <input type="number" min="1" max="18" step="0.5" id="hourslimit" class="form-control" placeholder="จำนวนชั่วโมงขั้นต่ำ" />
           </div>
+           <div id="hoursDisplay" class="form-text text-primary">
+    <!-- เวลาที่แปลงเป็น ชม. นาที จะโชว์ตรงนี้ -->
+  </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" data-bs-dismiss="modal">
