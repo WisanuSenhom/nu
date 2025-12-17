@@ -1083,11 +1083,21 @@ div.dt-button-collection {
 }
 
 
-.otConfigButton {
-  position: absolute;
-  top: 35px;
-  right: 1px;
+.ot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
+
+.ot-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0; /* สำคัญ */
+  color: var(--text-color);
+}
+
+
 
 .otLog,
 .otReport {
