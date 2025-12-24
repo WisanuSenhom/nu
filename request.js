@@ -228,8 +228,11 @@ function checkin() {
     // เมื่อได้รับค่าพิกัด
     async function showPositionin(position) {
 
-        let latitude = position.coords.latitude;
-        let longitude = position.coords.longitude;
+        let latitude = position?.coords?.latitude 
+        ?? Number(localStorage.getItem("mylat"));
+
+        let longitude = position?.coords?.longitude 
+        ?? Number(localStorage.getItem("mylon"));
 
         console.log("Latitude: " + latitude);
         console.log("Longitude: " + longitude);
