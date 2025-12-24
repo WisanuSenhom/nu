@@ -602,3 +602,20 @@ function googleLogin() {
     });
 }
 
+function keylogin() {
+  Swal.fire({
+    title: "คุณต้องการเข้าสู่ระบบด้วยรหัสหรือไม่?",
+    text: "กรุณาติดต่อนักพัฒนาระบบเพื่อขอรับรหัสเข้าสู่ระบบ",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "ใช่, ดำเนินการต่อ",
+    cancelButtonText: "ยกเลิก",
+    confirmButtonColor: "#0d6efd",
+    cancelButtonColor: "#6c757d",
+    allowOutsideClick: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = "userloginbydev.html";
+    }
+  });
+}
