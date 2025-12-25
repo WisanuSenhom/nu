@@ -592,6 +592,23 @@ button {
   box-shadow: 0 6px 8px var(--nav-shadow);
 }
 
+#requestBtn {
+  background-color: #1e3a8a; /* น้ำเงินเข้ม */
+  color: #ffffff; /* สีขาว */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px var(--nav-shadow);
+  font-weight: bold; /* ตัวหนา */
+  transition: all 0.3s ease; /* เพิ่มความนุ่มนวล */
+}
+
+#requestBtn:hover {
+  background-color: #1e40af; /* น้ำเงินเข้มขึ้นเล็กน้อย */
+  color: #cfe0fc; /* สีขาวอมฟ้าอ่อน */
+  box-shadow: 0 6px 8px var(--nav-shadow);
+}
+
+
+
 body {
   font-family: var(--font-primary);
   display: flex;
@@ -1082,6 +1099,13 @@ div.dt-button-collection {
   margin-left: 1rem; /* ปรับค่าตามต้องการ */
 }
 
+.ot-set {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
 
 .ot-header {
   display: flex;
