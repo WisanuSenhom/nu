@@ -1,4 +1,9 @@
 // ------------------------------------------- CONFIG ---------------------------------------------
+// ====== GLOBAL ======
+let otStartTime = null;
+let otEndTime = null;
+let otReportVisible = false;
+
 
 const userid = localStorage.getItem("refid") || "UNKNOWN";
 // const GAS_URL = "https://script.google.com/macros/s/AKfycbxhNJ_l_zrBYXyU-ktVWC0ZjFJaXmkXEs6BX_quhzEs1ZVp6iNuJ_rKh8hosI-y5JX7DA/exec";
@@ -66,15 +71,20 @@ function loadOtEntries() {
 }
 
 // -------------------------------------------------------- ส่งข้อมูล OT ไปยัง GAS --------------------------------------------------------
-function saveOTToGAS(data) {
+async function saveOTToGAS(data) {
     // เพิ่มข้อมูลผู้ใช้
     data.userName = localStorage.getItem("name") || "unknown";
     data.userJob = localStorage.getItem("job") || "";
     data.office = localStorage.getItem("office") || "";
+    data.mainsub = localStorage.getItem("mainsub") || "";
     data.userID = localStorage.getItem("refid") || "";
     data.userBoss = localStorage.getItem("boss") || "";
-
-    console.log("🔧 Data ที่ส่งไป GAS:", data);
+    data.otstaffName = localStorage.getItem("otStaffName") || "-";
+    data.otapprover = localStorage.getItem("otApproverName") || "-";
+    data.otpayer = localStorage.getItem("otPayerName") || "-";
+    data.otbank = localStorage.getItem("otbank") || "-";
+    
+  
 
     if (!("otAmount" in data)) console.warn("⚠ ไม่มี otAmount ในข้อมูลที่ส่งไป GAS");
     if (!("totalHours" in data)) console.warn("⚠ ไม่มี totalHours ในข้อมูลที่ส่งไป GAS");
@@ -88,13 +98,13 @@ function saveOTToGAS(data) {
 
     const urlapidb = "https://script.google.com/macros/s/AKfycbxhNJ_l_zrBYXyU-ktVWC0ZjFJaXmkXEs6BX_quhzEs1ZVp6iNuJ_rKh8hosI-y5JX7DA/exec";
 
-    return fetch(urlapidb, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    })
-    .then(res => {
+    try {
+        const res = await fetch(urlapidb, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
         // ล้างสถานะเริ่มงาน
         localStorage.removeItem("otStartData");
         otStartTime = null;
@@ -109,8 +119,7 @@ function saveOTToGAS(data) {
             showConfirmButton: false,
         });
         return res;
-    })
-    .catch(err => {
+    } catch (err) {
         Swal.close();
         Swal.fire({
             title: "ส่งข้อมูลไม่สำเร็จ",
@@ -119,7 +128,7 @@ function saveOTToGAS(data) {
             allowOutsideClick: false,
         });
         throw err;
-    });
+    }
 }
 
 
@@ -139,7 +148,7 @@ function updateOtReport() {
                           entry.status === "ผิดพลาด" ? "text-danger" : "text-secondary";
 
         return [
-            i + 1,
+            // i + 1,
             entry.date || "-",
             entry.start || "-",
             entry.end || "-",
@@ -155,7 +164,7 @@ function updateOtReport() {
     $("#otReport").DataTable({
         data: data,
         columns: [
-            { title: "ลำดับ" },
+            // { title: "ลำดับ" },
             { title: "วันที่" },
             { title: "เริ่ม" },
             { title: "สิ้นสุด" },
@@ -168,7 +177,7 @@ function updateOtReport() {
                 language: {
             url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
         },
-        order: [[1, "desc"], [2, "desc"]], // เรียงวันที่+เวลา ใหม่→เก่า
+        order: [[0, "desc"], [1, "desc"]], // เรียงวันที่+เวลา ใหม่→เก่า
         pageLength: 30,
         lengthMenu: [
             [10, 30, 50, 100, 150, -1],
@@ -190,7 +199,7 @@ async function submitOTEntry({ startTime, endTime, autoClosed = false, note = ""
     const totalMinutes = Math.floor(durationMs / 60000);
     const hours = Math.floor(totalMinutes / 60);
     const mins = totalMinutes % 60;
-    const durationStr = `${hours} ชั่วโมง ${mins} นาที`;
+    const durationStr = `${hours} ชม. ${mins} น.`;
     const rate = parseFloat(localStorage.getItem("otRate") || "0");
     const totalHours = hours + (mins / 60);
     const otAmount = (totalHours * rate).toFixed(2);
@@ -199,7 +208,6 @@ async function submitOTEntry({ startTime, endTime, autoClosed = false, note = ""
     const ref = generateReference(now);
 
     const data = {
-        staffName: localStorage.getItem("otStaffName") || "-",
         rate: rate,
         startTime: formatOtTime(startTime),
         endTime: endTime instanceof Date ? formatOtTime(endTime) : endTime,
@@ -307,9 +315,6 @@ function sendOTDataAutoClose(prevDate, startISO) {
 // ------------------------------------------- MAIN ---------------------------------------------
 
 window.addEventListener("load", () => {
-    let otStartTime = null;
-    let otEndTime = null;
-    let otReportVisible = false;
 
     window.otEntries = loadOtEntries();
 
@@ -328,30 +333,35 @@ window.addEventListener("load", () => {
     const otStaffNameInput = document.getElementById("otStaffName");
     const hourslimitInput = document.getElementById("hourslimit");
     const otAutoEndTimeInput = document.getElementById("otAutoEndTime");
+    const otbankInput = document.getElementById("otbank");
     const savedLat = localStorage.getItem("mylat");
     const savedLon = localStorage.getItem("mylon");
 
 
     otToggleReportBtn.addEventListener("click", () => {
         otReportVisible = !otReportVisible;
-        otReportTableWrapper.style.display = otReportVisible ? "block" : "none";
+        otReportTableWrapper.style.display = otReportVisible ? "none" : "block";
         otToggleReportBtn.innerHTML = otReportVisible
             ? '<i class="fas fa-eye-slash me-1"></i> ซ่อนรายงาน'
             : '<i class="fas fa-eye me-1"></i> แสดงรายงาน';
     });
 
-document.getElementById("otConfigModal").addEventListener("show.bs.modal", () => {
+document.getElementById("otConfigModal").addEventListener("show.bs.modal", async () => {
     otRateInput.value = localStorage.getItem("otRate") || "";
     otRateDayInput.value = localStorage.getItem("otRateDay") || "";
     otAutoEndTimeInput.value = localStorage.getItem("otAutoEndTime") || "20:30";
     hourslimitInput.value = localStorage.getItem("hourslimit") || 4;
+    otbankInput.value = localStorage.getItem("otbank") || "";
 
-    loadOtConfigByRefid();
+    // รอ dropdown โหลดเสร็จ
+    await displayStaffGeneric("otStaffName", "otStaffName", "-- เลือกผู้ควบคุม --");
+    await displayStaffGeneric("otApprover", "otApproverName", "-- เลือกผู้อนุมัติ --");
+    await displayStaffGeneric("otPayer", "otPayerName", "-- เลือกผู้จ่ายเงิน --");
 
-    displayStaffGeneric("otStaffName", "otStaffName", "-- เลือกผู้ควบคุม --");
-    displayStaffGeneric("otApprover", "otApproverName", "-- เลือกผู้อนุมัติ --");
-    displayStaffGeneric("otPayer", "otPayerName", "-- เลือกผู้จ่ายเงิน --");
+    // ค่อยโหลดค่า OT config
+    await loadOtConfigByRefid();
 });
+
 
 
     document.getElementById("otSaveConfigBtn").addEventListener("click", () => {
@@ -361,7 +371,8 @@ document.getElementById("otConfigModal").addEventListener("show.bs.modal", () =>
         const autoEndTime = otAutoEndTimeInput.value.trim();
         const hourslimit = hourslimitInput.value.trim();
         const approver = document.getElementById("otApprover").value.trim();
-const payer = document.getElementById("otPayer").value.trim();
+        const payer = document.getElementById("otPayer").value.trim();
+        const otbank = otbankInput.value.trim();
 
         if (!name)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากำหนดผู้ควบคุม", icon: "warning", allowOutsideClick: false });
@@ -373,18 +384,21 @@ if (!payer)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกอัตราต่อวัน", icon: "warning", allowOutsideClick: false });
         if (!rate || isNaN(rate) || rate <= 0)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกอัตราต่อชั่วโมง", icon: "warning", allowOutsideClick: false });
-        if (!autoEndTime)
-            return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากำหนดเวลา", icon: "warning", allowOutsideClick: false });
+        // if (!autoEndTime)
+        //     return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากำหนดเวลา", icon: "warning", allowOutsideClick: false });
         if (!hourslimit || isNaN(hourslimit) || hourslimit < 1 || hourslimit > 24)
             return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกจำนวนชั่วโมง", icon: "warning", allowOutsideClick: false });
+        if (otbank && otbank.length !== 10)
+            return Swal.fire({ title: "แจ้งเตือน", text: "กรุณากรอกหมายเลขบัญชีให้ครบ 10 หลัก หรือไม่กรอก", icon: "warning", allowOutsideClick: false });
 
         localStorage.setItem("otAutoEndTime", autoEndTime);
         localStorage.setItem("otStaffName", name);
         localStorage.setItem("otApproverName", approver);
-localStorage.setItem("otPayerName", payer);
+        localStorage.setItem("otPayerName", payer);
         localStorage.setItem("otRate", rate);
         localStorage.setItem("otRateDay", rateDay);
         localStorage.setItem("hourslimit", hourslimit);
+        localStorage.setItem("otbank", otbank);
 
         const modalEl = document.getElementById("otConfigModal");
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -419,11 +433,12 @@ const data = {
     hourslimit: hourslimit,
     refid,
     staffName: staffNameLocal,
-    job: staffJobLocal
+    job: staffJobLocal,
+    otbank: otbank
 };
 
 
-console.log("Data to save to GAS:", data);
+
 
 // ส่งไปเก็บใน Google Apps Script
 saveToGAS(data).then(() => {
@@ -457,17 +472,23 @@ saveToGAS(data).then(() => {
 
 
     // โหลดข้อมูลเริ่มงานค้างถ้ามี และตรวจสอบวัน
+function restoreOTFromStorage() {
     const saved = localStorage.getItem("otStartData");
-    if (saved) {
-        const data = JSON.parse(saved);
-        if (data.date === getTodayDateString()) {
-            otStartTime = new Date(data.iso);
-            otStartDateText.textContent = data.date;
-            otStartTimeText.textContent = data.time;
-        } else {
-            sendOTDataAutoClose(data.date, data.iso);
-        }
+    if (!saved) return;
+
+    const data = JSON.parse(saved);
+
+    if (data.date === getTodayDateString()) {
+        otStartTime = new Date(data.iso);
+        otStartDateText.textContent = data.date;
+        otStartTimeText.textContent = data.time;
+    } else {
+        sendOTDataAutoClose(data.date, data.iso);
     }
+}
+
+setTimeout(restoreOTFromStorage, 12000);
+
 
  
     // ---------------------------------------------------------------------------- ปุ่มเริ่มงาน ----------------------------------------------------------------------------
@@ -724,9 +745,6 @@ if (durationHrs < hourslimit) {
 async function displayStaffGeneric(selectId, storageKey, placeholderText) {
     const staffSelect = document.getElementById(selectId);
     const savedStaff = localStorage.getItem(storageKey);
-    const refid = localStorage.getItem("refid");
-    const mainsub = localStorage.getItem("mainsub");
-    const office = localStorage.getItem("office");
 
     if (savedStaff && staffSelect.options.length === 0) {
         const opt = document.createElement("option");
@@ -735,7 +753,6 @@ async function displayStaffGeneric(selectId, storageKey, placeholderText) {
         opt.selected = true;
         staffSelect.appendChild(opt);
     }
-
     if (staffSelect.options.length > 0) return;
 
     try {
@@ -745,35 +762,32 @@ async function displayStaffGeneric(selectId, storageKey, placeholderText) {
             didOpen: () => Swal.showLoading()
         });
 
-      const isAllOffice = localStorage.getItem("staffScopeAll") === "1";
+        const mainsub = localStorage.getItem("mainsub");
+        const office = localStorage.getItem("office");
+        const isAllOffice = localStorage.getItem("staffScopeAll") === "1";
 
-const url =
-  "https://script.google.com/macros/s/AKfycbwX-bK4nJM53d_BGgiJP-vZsTz-t7uu_BIPFFNY-ITxYBGJT9JWfev8jbY_ICleCHwEtA/exec" +
-  `?xmain=${mainsub}` +
-  (isAllOffice ? "" : `&xsub=${office}`);
+        const url =
+            "https://script.google.com/macros/s/AKfycbwX-bK4nJM53d_BGgiJP-vZsTz-t7uu_BIPFFNY-ITxYBGJT9JWfev8jbY_ICleCHwEtA/exec" +
+            `?xmain=${mainsub}` +
+            (isAllOffice ? "" : `&xsub=${office}`);
 
-const response = await fetch(url);
-
-
+        const response = await fetch(url);
         const data = await response.json();
         Swal.close();
 
+        // ล้าง dropdown และสร้าง placeholder
         staffSelect.innerHTML = "";
+        const placeholderOption = document.createElement("option");
+        placeholderOption.value = "";
+        placeholderOption.textContent = placeholderText; // "-- เลือกผู้ควบคุม --"
+        placeholderOption.selected = true; // เลือก placeholder เป็นค่าเริ่มต้น
+        staffSelect.appendChild(placeholderOption);
 
-        const emptyOption = document.createElement("option");
-        emptyOption.value = "";
-        emptyOption.textContent = placeholderText;
-        staffSelect.appendChild(emptyOption);
-
+        // เติม option จากข้อมูล
         data.role.forEach(item => {
             const option = document.createElement("option");
             option.value = item.name;
             option.textContent = item.name;
-
-            if (savedStaff === item.name || item.id == refid) {
-                option.selected = true;
-            }
-
             staffSelect.appendChild(option);
         });
 
@@ -782,6 +796,7 @@ const response = await fetch(url);
         Swal.fire("Error", err.message, "error");
     }
 }
+
 
 
 function clearStaffGeneric(selectId, storageKey) {
@@ -850,6 +865,7 @@ async function loadOtConfigByRefid() {
   const otRateDayInput = document.getElementById("otRateDay");
   const otAutoEndTimeInput = document.getElementById("otAutoEndTime");
   const hourslimitInput = document.getElementById("hourslimit");
+  const otbankInput = document.getElementById("otbank");
 
   // ถ้า localStorage มีค่า → ไม่ต้องโหลด
   if (localStorage.getItem("otStaffName")) return;
@@ -885,9 +901,12 @@ async function loadOtConfigByRefid() {
     otRateDayInput.value = record.otRateDay || "";
     otAutoEndTimeInput.value = record.otAutoEndTime || "20:30";
     hourslimitInput.value = record.hourslimit || 4;
+    otbankInput.value = record.otbank || "";
 
   } catch (error) {
     Swal.close();
     console.error("โหลด OT config ไม่สำเร็จ:", error);
   }
 }
+
+// ------------------------------------------- END OF FILE ---------------------------------------------
