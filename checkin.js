@@ -1248,79 +1248,78 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
       swalTimers = [];
       Swal.close();
 
-    data.res.forEach((datas) => {
-     
-      let iconx = datas.icon;
-            let header = datas.header;
-            let text = datas.text;
-            let timeOnly = datas.timeOnly;
-      
-            Swal.fire({
-              icon: iconx || "success", // ใช้ icon ที่ได้รับจาก API ถ้ามี หรือใช้ "success" เป็นค่าเริ่มต้น
-              title: header,
-              html: data.message || text,
-              confirmButtonText: "ตกลง",
-              allowOutsideClick: false,
-              customClass: {
-                title:
-                  iconx === "success"
-                    ? "text-success"
-                    : iconx === "error"
-                    ? "text-danger"
-                    : iconx === "warning"
-                    ? "text-warning"
-                    : "text-info",
-                content: "text-muted",
-                confirmButton:
-                  iconx === "success"
-                    ? "btn btn-success"
-                    : iconx === "error"
-                    ? "btn btn-danger"
-                    : iconx === "warning"
-                    ? "btn btn-warning"
-                    : "btn btn-info",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-                const cktoday = new Date();
-                const ckfd = cktoday.toLocaleDateString("th-TH");
+data.res.forEach((datas) => {
+  const { icon: iconx, header, text, timeOnly } = datas;
 
-                    // จัดเก็บ สถานะการลงเวลาใน checkEntries
-                     const newEntry = {todayx,ctype,typea,nte,iconx,text};
-                      checkEntries.push(newEntry);
-                      saveCheckEntries();
-                      updateCheckReport();
-      
-                if (iconx === "success" && ctype === "In") {
-                  localStorage.setItem("datecheck", ckfd);
-                  localStorage.setItem("datetimecheck", timeOnly);
-                  localStorage.removeItem("pendingRetryParams");
-                  localStorage.removeItem("checkRetryCount");
-                } else if (
-                  (iconx === "info" && ctype === "Out") ||
-                  (iconx === "success" && ctype === "Out") ||
-                  (iconx === "warning" && ctype === "Out")
-                ) {
-                  localStorage.setItem("datecheck", ckfd);
-                  localStorage.setItem("datecheckout", ckfd);
-                  localStorage.setItem("datetimecheckout", timeOnly);
-                  localStorage.removeItem("pendingRetryParams");
-                  localStorage.removeItem("checkRetryCount");
-                }
+  Swal.fire({
+    icon: iconx || "success", // ใช้ icon จาก API หรือ default เป็น success
+    title: header,
+    html: datas.message || text,
+    confirmButtonText: "ตกลง",
+    allowOutsideClick: false,
+    customClass: {
+      title:
+        iconx === "success"
+          ? "text-success"
+          : iconx === "error"
+          ? "text-danger"
+          : iconx === "warning"
+          ? "text-warning"
+          : "text-info",
+      content: "text-muted",
+      confirmButton:
+        iconx === "success"
+          ? "btn btn-success"
+          : iconx === "error"
+          ? "btn btn-danger"
+          : iconx === "warning"
+          ? "btn btn-warning"
+          : "btn btn-info",
+    },
+  }).then((result) => {
+    if (!result.isConfirmed) return;
 
-          try {
-            window.close();
-            liff.closeWindow();
-          } catch {
-            window.location.reload();
-          }
+    const cktoday = new Date();
+    const ckfd = cktoday.toLocaleDateString("th-TH");
 
-          setTimeout(() => {
-            location.reload();
-          }, 500);
-        }
-      });
-    });
+    // จัดเก็บสถานะการเช็คเวลา
+    const newEntry = { todayx, ctype, typea, nte, iconx, text };
+    checkEntries.push(newEntry);
+    saveCheckEntries();
+    updateCheckReport();
+
+    // จัดการ localStorage ตามประเภทและไอคอน
+    if (iconx === "success" && ctype === "In") {
+      localStorage.setItem("datecheck", ckfd);
+      localStorage.setItem("datetimecheck", timeOnly);
+      localStorage.removeItem("pendingRetryParams");
+      localStorage.removeItem("checkRetryCount");
+    } else if (["info", "success", "warning"].includes(iconx) && ctype === "Out") {
+      localStorage.setItem("datecheck", ckfd);
+      localStorage.setItem("datecheckout", ckfd);
+      localStorage.setItem("datetimecheckout", timeOnly);
+      localStorage.removeItem("pendingRetryParams");
+      localStorage.removeItem("checkRetryCount");
+    }
+
+    // ส่งรายงานวันหยุดถ้าเป็น In + วันหยุด
+    try {
+      if (iconx === "success" && ctype === "In" && typea === "วันหยุด") {
+        sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        boss, ceo, latitude, longitude, typea, nte,  todayx,
+        refid, token, job, docno, secureCode, chatId);
+      } else {
+        window.close();
+        liff.closeWindow();
+      }
+    } catch {
+      window.location.reload();
+    }
+
+  });
+});
+
+
   } catch (error) {
     swalTimers.forEach((t) => clearTimeout(t));
     swalTimers = [];
@@ -1976,4 +1975,198 @@ document.getElementById("clearCheckEntriesBtn").addEventListener("click", () => 
     });
 });
 
+
+
+// ==================== ฟังก์ชันส่งรายงานปฏิบัติงานในวันหยุด ====================
+
+// ===================== CONFIG =====================
+const PAYLOAD_KEY = "offDayPayloads";        // payload ค้างก่อนส่ง
+const SUCCESS_KEY = "offDaySuccessLogs";    // payload ส่งสำเร็จ
+const GAS_URL =
+  "https://script.google.com/macros/s/AKfycbxhtJ_nYOJzZ3jVkH8uwzzS2f-BP7MneE9xOOG8Ds7Nifst4UhmuECI26iIVN4DarzE/exec";
+
+let offDayTable = null;
+
+
+// ===================== LOCAL STORAGE UTILS =====================
+function getArray(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function setArray(key, arr) {
+  localStorage.setItem(key, JSON.stringify(arr));
+}
+
+function addToArray(key, obj) {
+  const arr = getArray(key);
+  arr.push(obj);
+  setArray(key, arr);
+}
+
+function clearArray(key) {
+  localStorage.removeItem(key);
+}
+
+
+// ===================== DATATABLE =====================
+function loadOffDayTable() {
+  const data = getArray(SUCCESS_KEY);
+
+  if (offDayTable) {
+    offDayTable.clear().rows.add(data).draw();
+    return;
+  }
+
+  offDayTable = $("#offDayTable").DataTable({
+    data,
+    columns: [
+      { data: "date", title: "วันที่" },
+      { data: "name", title: "ชื่อ" },
+      { data: "office", title: "หน่วยงาน" },
+      { data: "type", title: "ประเภท" },
+      { data: "note", title: "หมายเหตุ" }
+    ],
+    order: [[0, "desc"]],
+    language: {
+      search: "ค้นหา:",
+      lengthMenu: "แสดง _MENU_ รายการ",
+      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+      zeroRecords: "ไม่พบข้อมูล"
+    }
+  });
+}
+
+
+// ===================== SAVE SUCCESS LOG =====================
+function saveSuccessLog(payload) {
+  addToArray(SUCCESS_KEY, {
+    date: payload.todayx || "",
+    name: payload.name || "",
+    office: payload.office || "",
+    type: payload.typea || "",
+    note: payload.nte || "",
+    savedAt: new Date().toISOString()
+  });
+}
+
+
+// ===================== SEND OFF DAY REPORT =====================
+function sendOffDayReport(
+  ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+  boss, ceo, latitude, longitude, typea, nte, todayx,
+  refid, job, chatId
+) {
+
+  const payload = {
+    ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+    boss, ceo, latitude, longitude, typea, nte, todayx,
+    refid, job, chatId,
+    _savedAt: new Date().toISOString()
+  };
+
+  // เก็บ payload ค้าง (array)
+  addToArray(PAYLOAD_KEY, payload);
+
+  Swal.fire({
+    title: "คุณต้องการส่งรายงานปฏิบัติงานในวันหยุดหรือไม่?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "ส่งรายงาน",
+    cancelButtonText: "ยกเลิก",
+    allowOutsideClick: false
+  }).then((res) => {
+    if (!res.isConfirmed) return;
+
+    Swal.fire({
+      title: "กำลังส่งรายงาน...",
+      html: "กรุณารอสักครู่",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        const lastPayload = getArray(PAYLOAD_KEY).slice(-1)[0];
+        saveOffDayToGAS(lastPayload);
+      }
+    });
+  });
+}
+
+
+// ===================== SEND TO GAS =====================
+async function saveOffDayToGAS(payload) {
+
+  if (!payload) {
+    Swal.close();
+    Swal.fire("ไม่พบข้อมูล", "payload ว่าง", "warning");
+    return;
+  }
+
+    if (!payload.name) {
+    Swal.close();
+    Swal.fire("ไม่พบข้อมูล", "payload ว่าง", "warning");
+    return;
+  }
+
+  // เติมข้อมูลจาก localStorage
+  payload.userName    = localStorage.getItem("name") || "unknown";
+  payload.userJob     = localStorage.getItem("job") || "";
+  payload.userID      = localStorage.getItem("refid") || "";
+  payload.userBoss    = localStorage.getItem("boss") || "";
+  payload.otstaffName = localStorage.getItem("otStaffName") || "-";
+  payload.otapprover  = localStorage.getItem("otApproverName") || "-";
+  payload.otpayer     = localStorage.getItem("otPayerName") || "-";
+  payload.otbank      = localStorage.getItem("otbank") || "-";
+  payload.otRateDay   = localStorage.getItem("otRateDay") || "";
+
+  // ตรวจอัตรา OT
+  if (!payload.otRateDay) {
+    Swal.close();
+    Swal.fire({
+      title: "กรุณากำหนดอัตราค่าตอบแทน",
+      icon: "warning",
+      confirmButtonText: "ตกลง"
+    }).then(() => {
+      const modal = new bootstrap.Modal(
+        document.getElementById("otConfigModal")
+      );
+      modal.show();
+    });
+    return;
+  }
+
+  try {
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    // ✅ บันทึกข้อมูลสำเร็จ
+    saveSuccessLog(payload);
+
+    // ล้าง payload ค้าง
+    clearArray(PAYLOAD_KEY);
+
+    Swal.close();
+    Swal.fire({
+      icon: "success",
+      title: "ส่งข้อมูลสำเร็จ",
+      text: "บันทึกข้อมูลเรียบร้อยแล้ว",
+      timer: 1500,
+      showConfirmButton: false,
+      didClose: () => location.reload()
+    });
+
+  } catch (err) {
+    Swal.close();
+    Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+    console.error(err);
+  }
+}
+
+
+// ===================== INIT =====================
+document.addEventListener("DOMContentLoaded", () => {
+  loadOffDayTable();
+});
 
