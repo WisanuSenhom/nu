@@ -1854,3 +1854,47 @@ function showGoogleLoginButton() {
     },
   });
 }
+
+
+// ฟังก์ชันตรวจสอบขนาด localStorage
+function getLocalStorageSizeBytes() {
+  let total = 0;
+
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      const value = localStorage.getItem(key);
+      total += (key.length + value.length) * 2; // UTF-16
+    }
+  }
+
+  return total; // bytes
+}
+
+function clearOffDayIfExceedLimit() {
+  const LIMIT_MB = 4.5;
+  const LIMIT_BYTES = LIMIT_MB * 1024 * 1024;
+
+  const usedBytes = getLocalStorageSizeBytes();
+  const usedMB = (usedBytes / 1024 / 1024).toFixed(2);
+
+  console.log(`localStorage ใช้ไป ${usedMB} MB`);
+
+  if (usedBytes > LIMIT_BYTES) {
+    console.warn("⚠️ localStorage เกิน 4.5 MB → ลบข้อมูลบางส่วน");
+
+    const keysToRemove = [
+      "offDayPayloads",
+      "offDaySuccessLogs",
+      "otEntries"
+    ];
+
+    keysToRemove.forEach((key) => {
+      if (localStorage.getItem(key)) {
+        localStorage.removeItem(key);
+        console.log(`🗑️ ลบ ${key}`);
+      }
+    });
+  }
+}
+
+clearOffDayIfExceedLimit();
