@@ -322,7 +322,14 @@ function checkin() {
                             }
                     
                             try {
-                                liff.closeWindow();
+                                      if (iconx === "success" && typea === "วันหยุด") {
+        sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        boss, ceo, latitude, longitude, typea, nte,  todayx,
+        refid, token, job, docno, secureCode, chatId);
+      } else {
+        window.close();
+        liff.closeWindow();
+      }
                             } catch (error) {
                                 console.error("Failed to close window, refreshing...");
                                 location.reload(); // รีเฟรชหน้า
@@ -498,7 +505,14 @@ function checkout() {
                             }
                     
                             try {
-                                liff.closeWindow();
+                                      if (iconx === "success" && typea === "วันหยุด") {
+        sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        boss, ceo, latitude, longitude, typea, nte,  todayx,
+        refid, token, job, docno, secureCode, chatId);
+      } else {
+        window.close();
+        liff.closeWindow();
+      }
                             } catch (error) {
                                 console.error("Failed to close window, refreshing...");
                                 location.reload(); // รีเฟรชหน้า
@@ -1523,3 +1537,265 @@ async function processCheckinOrCheckout(ctype, latitude, longitude, staff, isRet
     });
   }
 }
+
+
+
+// ==================== ฟังก์ชันส่งรายงานปฏิบัติงานในวันหยุด ====================
+
+// ===================== CONFIG =====================
+const PAYLOAD_KEY = "offDayPayloads";        // payload ค้างก่อนส่ง
+const SUCCESS_KEY = "offDaySuccessLogs";    // payload ส่งสำเร็จ
+const GAS_URL =
+  "https://script.google.com/macros/s/AKfycbxhtJ_nYOJzZ3jVkH8uwzzS2f-BP7MneE9xOOG8Ds7Nifst4UhmuECI26iIVN4DarzE/exec";
+
+let offDayTable = null;
+
+
+// ===================== LOCAL STORAGE UTILS =====================
+function getArray(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function setArray(key, arr) {
+  localStorage.setItem(key, JSON.stringify(arr));
+}
+
+function addToArray(key, obj) {
+  const arr = getArray(key);
+  arr.push(obj);
+  setArray(key, arr);
+}
+
+function clearArray(key) {
+  localStorage.removeItem(key);
+}
+
+function formatOtTime(date) {
+    if (!date || isNaN(date)) return "-";
+    return date.toLocaleTimeString("th-TH", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
+}
+
+
+// อ้างอิง
+function generateReferenceH(dateObj = new Date(),  ctype) {
+    const refid = localStorage.getItem("refid") || "NOID";
+
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+  // const hh = String(dateObj.getHours()).padStart(2, "0");
+   // const mi = String(dateObj.getMinutes()).padStart(2, "0");
+
+    // รูปแบบ: Holiday-20251229-123456
+    return `Holiday-${ctype}-${yyyy}${mm}${dd}-${refid}`;
+}
+
+// ตรวจสอบการซ้ำของอ้างอิง
+function isDuplicateOT(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    return usedRefs.includes(reference);
+}
+
+// บันทึกอ้างอิง
+function saveReference(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    usedRefs.push(reference);
+    localStorage.setItem("otReferences", JSON.stringify(usedRefs));
+}
+
+
+// ===================== DATATABLE =====================
+function loadOffDayTable() {
+  const data = getArray(SUCCESS_KEY);
+
+  if (offDayTable) {
+    offDayTable.clear().rows.add(data).draw();
+    return;
+  }
+
+  offDayTable = $("#offDayTable").DataTable({
+    data,
+    columns: [
+      { data: "date", title: "วันที่" },
+      { data: "name", title: "ชื่อ" },
+      { data: "office", title: "หน่วยงาน" },
+      { data: "type", title: "ประเภท" },
+      { data: "note", title: "หมายเหตุ" }
+    ],
+    order: [[0, "desc"]],
+    language: {
+      search: "ค้นหา:",
+      lengthMenu: "แสดง _MENU_ รายการ",
+      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
+      zeroRecords: "ไม่พบข้อมูล"
+    }
+  });
+}
+
+
+// ===================== SAVE SUCCESS LOG =====================
+function saveSuccessLog(payload) {
+  addToArray(SUCCESS_KEY, {
+    date: payload.todayx || "",
+    name: payload.name || "",
+    office: payload.office || "",
+    type: payload.typea || "",
+    note: payload.nte || "",
+    savedAt: new Date().toISOString()
+  });
+}
+
+
+// ===================== SEND OFF DAY REPORT =====================
+function sendOffDayReport(
+  ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+  boss, ceo, latitude, longitude, typea, nte, todayx,
+  refid, job, chatId
+) {
+
+  const payload = {
+    ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+    boss, ceo, latitude, longitude, typea, nte, todayx,
+    refid, job, chatId,
+    _savedAt: new Date().toISOString()
+  };
+
+  // เก็บ payload ค้าง (array)
+  addToArray(PAYLOAD_KEY, payload);
+
+  Swal.fire({
+    title: "คุณต้องการส่งรายงานปฏิบัติงานในวันหยุดหรือไม่?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "ส่งรายงาน",
+    cancelButtonText: "ยกเลิก",
+    allowOutsideClick: false
+  }).then((res) => {
+    if (!res.isConfirmed) return;
+
+    Swal.fire({
+      title: "กำลังส่งรายงาน...",
+      html: "กรุณารอสักครู่",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+        const lastPayload = getArray(PAYLOAD_KEY).slice(-1)[0];
+        saveOffDayToGAS(lastPayload);
+      }
+    });
+  });
+}
+
+
+// ===================== SEND TO GAS =====================
+async function saveOffDayToGAS(payload) {
+
+  // ================== Validate payload ==================
+  if (!payload || typeof payload !== "object") {
+    Swal.fire("ไม่พบข้อมูล", "payload ว่าง", "warning");
+    return;
+  }
+
+  if (!payload.name) {
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบชื่อผู้ปฏิบัติงาน", "warning");
+    return;
+  }
+
+  if (!payload.todayx) {
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบวันที่ลงเวลา", "warning");
+    return;
+  }
+
+  // แปลง todayx ให้เป็น Date เสมอ
+  const today = payload.todayx instanceof Date
+    ? payload.todayx
+    : new Date(payload.todayx);
+
+  if (isNaN(today.getTime())) {
+    Swal.fire("ข้อมูลไม่ถูกต้อง", "รูปแบบวันที่ไม่ถูกต้อง", "error");
+    return;
+  }
+
+  // ================== Prepare date/time ==================
+  const date = today.toISOString().slice(0, 10);
+  const timeStr = payload.ctype === "In" ? formatOtTime(today) : "";
+  const timeEnd = payload.ctype !== "In" ? formatOtTime(today) : "";
+
+  // ================== Generate reference ==================
+  const ref = generateReferenceH(new Date(), payload.ctype);
+
+  if (isDuplicateOT(ref)) {
+    resetOTState();
+    Swal.fire("แจ้งเตือน", "มีการลงเวลานอกเวลาในวันหยุดซ้ำแล้ว", "warning");
+    return;
+  }
+
+  saveReference(ref);
+
+  // ================== เติมข้อมูลจาก localStorage ==================
+  payload.userName    = localStorage.getItem("name") || "unknown";
+  payload.userJob     = localStorage.getItem("job") || "";
+  payload.userID      = localStorage.getItem("refid") || "";
+  payload.userBoss    = localStorage.getItem("boss") || "";
+  payload.otstaffName = localStorage.getItem("otStaffName") || "-";
+  payload.otapprover  = localStorage.getItem("otApproverName") || "-";
+  payload.otpayer     = localStorage.getItem("otPayerName") || "-";
+  payload.otbank      = localStorage.getItem("otbank") || "-";
+  payload.otRateDay   = localStorage.getItem("otRateDay") || "";
+  payload.reference   = ref;
+  payload.date        = date;
+  payload.timeStr     = timeStr;
+  payload.timeEnd     = timeEnd;
+
+  // ================== ตรวจอัตรา OT ==================
+  if (!payload.otRateDay) {
+    Swal.fire({
+      title: "กรุณากำหนดอัตราค่าตอบแทน",
+      icon: "warning",
+      confirmButtonText: "ตกลง"
+    }).then(() => {
+      new bootstrap.Modal(
+        document.getElementById("otConfigModal")
+      ).show();
+    });
+    return;
+  }
+
+  // ================== ส่งข้อมูล ==================
+  try {
+    Swal.fire({
+      title: "กำลังส่งข้อมูล",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    saveSuccessLog(payload);
+    clearArray(PAYLOAD_KEY);
+
+    Swal.fire({
+      icon: "success",
+      title: "ส่งข้อมูลสำเร็จ",
+      timer: 1500,
+      showConfirmButton: false,
+      didClose: () => location.reload()
+    });
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire("เกิดข้อผิดพลาด", err.message || "ไม่สามารถส่งข้อมูลได้", "error");
+  }
+}
+
+
+
