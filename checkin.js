@@ -92,7 +92,9 @@ function showError(error) {
     text,
     footer,
     showCancelButton: true,
-    confirmButtonText: "ตกลง",
+    showDenyButton: true,
+    confirmButtonText: "ลองใหม่",
+    denyButtonText: "ใช้ค่าเดิม",
     cancelButtonText: "สแกน QR Code",
     allowOutsideClick: false,
   }).then((result) => {
@@ -454,37 +456,75 @@ L.control.layers(baseMaps).addTo(map);
 
 async function checkonmap() {
   const mapContainer = document.getElementById("map");
-  mapContainer.innerHTML = ""; // เคลียร์เนื้อหาของ div ก่อนเริ่ม
+  if (!mapContainer) return;
 
-  // แสดงข้อความโหลด
+  mapContainer.innerHTML = "";
+
   const loadingText = document.createElement("p");
   loadingText.textContent = "กำลังโหลดแผนที่...";
   loadingText.style.textAlign = "center";
-  loadingText.style.color = "blue"; // Set text color here
+  loadingText.style.color = "blue";
   mapContainer.appendChild(loadingText);
 
   try {
-    const location = await getLocation();
-    const lat = location.latitude;
-    const lon = location.longitude;
+    let lat, lon;
 
-    localStorage.setItem("mylat", lat);
-    localStorage.setItem("mylon", lon);
+    // ================== 1) พยายามดึง GPS ใหม่ ==================
+    try {
+      const location = await getLocation();
+      lat = Number(location.latitude);
+      lon = Number(location.longitude);
 
-    const destinationLat = parseFloat(localStorage.getItem("oflat"));
-    const destinationLon = parseFloat(localStorage.getItem("oflong"));
+      if (!isNaN(lat) && !isNaN(lon)) {
+        localStorage.setItem("mylat", lat);
+        localStorage.setItem("mylon", lon);
+        console.log("📍 ใช้พิกัดจาก GPS");
+      } else {
+        throw new Error("GPS invalid");
+      }
+    } catch (gpsError) {
+      console.warn("⚠️ ไม่สามารถดึง GPS ได้ ใช้ค่าจาก localStorage แทน");
+
+      // ================== 2) fallback ไปใช้ localStorage ==================
+      lat = Number(localStorage.getItem("mylat"));
+      lon = Number(localStorage.getItem("mylon"));
+
+      if (isNaN(lat) || isNaN(lon)) {
+        throw new Error("ไม่มีพิกัดสำรองใน localStorage");
+      }
+
+      console.log("📦 ใช้พิกัดจาก localStorage");
+    }
+
+    // ================== จุดหมาย ==================
+    const destinationLat = Number(localStorage.getItem("oflat"));
+    const destinationLon = Number(localStorage.getItem("oflong"));
     const officer = localStorage.getItem("office") || "หน่วยงาน";
 
-    // เรียกฟังก์ชัน initializeMap
+    if (isNaN(destinationLat) || isNaN(destinationLon)) {
+      throw new Error("พิกัดหน่วยงานไม่ถูกต้อง");
+    }
+
+    mapContainer.innerHTML = "";
+
+    // ================== แสดงแผนที่ ==================
     displayLatLon(lat, lon);
     initializeMap(lat, lon, destinationLat, destinationLon, officer);
+
   } catch (error) {
-    console.error("Error displaying map: ", error);
-    mapContainer.innerHTML = `<p style="text-align: center; color: red;">ไม่สามารถโหลดแผนที่ได้: ${error.message}</p>`;
+    console.error("❌ โหลดแผนที่ล้มเหลว:", error);
+
+    mapContainer.innerHTML = `
+      <p style="text-align:center; color:red;">
+        ไม่สามารถโหลดแผนที่ได้<br>
+        <small>${error.message}</small>
+      </p>
+    `;
   }
 }
 
 checkonmap();
+
 
 function refreshMap() {
   const mainContent = document.getElementById("mainContent");
@@ -1304,7 +1344,7 @@ data.res.forEach((datas) => {
 
     // ส่งรายงานวันหยุดถ้าเป็น In + วันหยุด
     try {
-      if (iconx === "success" && ctype === "In" && typea === "วันหยุด") {
+      if (iconx === "success" && typea === "วันหยุด") {
         sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
         boss, ceo, latitude, longitude, typea, nte,  todayx,
         refid, token, job, docno, secureCode, chatId);
@@ -2007,6 +2047,43 @@ function clearArray(key) {
   localStorage.removeItem(key);
 }
 
+function formatOtTime(date) {
+    if (!date || isNaN(date)) return "-";
+    return date.toLocaleTimeString("th-TH", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
+}
+
+
+// อ้างอิง
+function generateReferenceH(dateObj = new Date(),  ctype) {
+    const refid = localStorage.getItem("refid") || "NOID";
+
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+  // const hh = String(dateObj.getHours()).padStart(2, "0");
+   // const mi = String(dateObj.getMinutes()).padStart(2, "0");
+
+    // รูปแบบ: Holiday-20251229-123456
+    return `Holiday-${ctype}-${yyyy}${mm}${dd}-${refid}`;
+}
+
+// ตรวจสอบการซ้ำของอ้างอิง
+function isDuplicateOT(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    return usedRefs.includes(reference);
+}
+
+// บันทึกอ้างอิง
+function saveReference(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    usedRefs.push(reference);
+    localStorage.setItem("otReferences", JSON.stringify(usedRefs));
+}
+
 
 // ===================== DATATABLE =====================
 function loadOffDayTable() {
@@ -2094,19 +2171,49 @@ function sendOffDayReport(
 // ===================== SEND TO GAS =====================
 async function saveOffDayToGAS(payload) {
 
-  if (!payload) {
-    Swal.close();
+  // ================== Validate payload ==================
+  if (!payload || typeof payload !== "object") {
     Swal.fire("ไม่พบข้อมูล", "payload ว่าง", "warning");
     return;
   }
 
-    if (!payload.name) {
-    Swal.close();
-    Swal.fire("ไม่พบข้อมูล", "payload ว่าง", "warning");
+  if (!payload.name) {
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบชื่อผู้ปฏิบัติงาน", "warning");
     return;
   }
 
-  // เติมข้อมูลจาก localStorage
+  if (!payload.todayx) {
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบวันที่ลงเวลา", "warning");
+    return;
+  }
+
+  // แปลง todayx ให้เป็น Date เสมอ
+  const today = payload.todayx instanceof Date
+    ? payload.todayx
+    : new Date(payload.todayx);
+
+  if (isNaN(today.getTime())) {
+    Swal.fire("ข้อมูลไม่ถูกต้อง", "รูปแบบวันที่ไม่ถูกต้อง", "error");
+    return;
+  }
+
+  // ================== Prepare date/time ==================
+  const date = today.toISOString().slice(0, 10);
+  const timeStr = payload.ctype === "In" ? formatOtTime(today) : "";
+  const timeEnd = payload.ctype !== "In" ? formatOtTime(today) : "";
+
+  // ================== Generate reference ==================
+  const ref = generateReferenceH(new Date(), payload.ctype);
+
+  if (isDuplicateOT(ref)) {
+    resetOTState();
+    Swal.fire("แจ้งเตือน", "มีการลงเวลานอกเวลาในวันหยุดซ้ำแล้ว", "warning");
+    return;
+  }
+
+  saveReference(ref);
+
+  // ================== เติมข้อมูลจาก localStorage ==================
   payload.userName    = localStorage.getItem("name") || "unknown";
   payload.userJob     = localStorage.getItem("job") || "";
   payload.userID      = localStorage.getItem("refid") || "";
@@ -2116,24 +2223,33 @@ async function saveOffDayToGAS(payload) {
   payload.otpayer     = localStorage.getItem("otPayerName") || "-";
   payload.otbank      = localStorage.getItem("otbank") || "-";
   payload.otRateDay   = localStorage.getItem("otRateDay") || "";
+  payload.reference   = ref;
+  payload.date        = date;
+  payload.timeStr     = timeStr;
+  payload.timeEnd     = timeEnd;
 
-  // ตรวจอัตรา OT
+  // ================== ตรวจอัตรา OT ==================
   if (!payload.otRateDay) {
-    Swal.close();
     Swal.fire({
       title: "กรุณากำหนดอัตราค่าตอบแทน",
       icon: "warning",
       confirmButtonText: "ตกลง"
     }).then(() => {
-      const modal = new bootstrap.Modal(
+      new bootstrap.Modal(
         document.getElementById("otConfigModal")
-      );
-      modal.show();
+      ).show();
     });
     return;
   }
 
+  // ================== ส่งข้อมูล ==================
   try {
+    Swal.fire({
+      title: "กำลังส่งข้อมูล",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
     await fetch(GAS_URL, {
       method: "POST",
       mode: "no-cors",
@@ -2141,32 +2257,22 @@ async function saveOffDayToGAS(payload) {
       body: JSON.stringify(payload)
     });
 
-    // ✅ บันทึกข้อมูลสำเร็จ
     saveSuccessLog(payload);
-
-    // ล้าง payload ค้าง
     clearArray(PAYLOAD_KEY);
 
-    Swal.close();
     Swal.fire({
       icon: "success",
       title: "ส่งข้อมูลสำเร็จ",
-      text: "บันทึกข้อมูลเรียบร้อยแล้ว",
       timer: 1500,
       showConfirmButton: false,
       didClose: () => location.reload()
     });
 
   } catch (err) {
-    Swal.close();
-    Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
     console.error(err);
+    Swal.fire("เกิดข้อผิดพลาด", err.message || "ไม่สามารถส่งข้อมูลได้", "error");
   }
 }
 
 
-// ===================== INIT =====================
-document.addEventListener("DOMContentLoaded", () => {
-  loadOffDayTable();
-});
 
