@@ -31,9 +31,38 @@ function formatOtTime(date) {
     });
 }
 
-function generateReference(date = new Date()) {
-    const pad = (n) => n.toString().padStart(2, "0");
-    return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}${userid}`;
+// อ้างอิง
+function generateReference(dateObj = new Date()) {
+    const refid = localStorage.getItem("refid") || "NOID";
+
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+    const hh = String(dateObj.getHours()).padStart(2, "0");
+    const mi = String(dateObj.getMinutes()).padStart(2, "0");
+
+    // รูปแบบ: OT-20251229-0930-123456
+    return `OT-${yyyy}${mm}${dd}-${hh}${mi}-${refid}`;
+}
+
+// ตรวจสอบการซ้ำของอ้างอิง
+function isDuplicateOT(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    return usedRefs.includes(reference);
+}
+
+// บันทึกอ้างอิง
+function saveReference(reference) {
+    const usedRefs = JSON.parse(localStorage.getItem("otReferences") || "[]");
+    usedRefs.push(reference);
+    localStorage.setItem("otReferences", JSON.stringify(usedRefs));
+}
+
+// รีเซ็ตสถานะ OT
+function resetOTState() {
+    localStorage.removeItem("otStartData");
+    otStartTime = null;
+    otEndTime = null;
 }
 
 // ฟังก์ชันแปลง decimal hours → "ชม. นาที"
@@ -71,6 +100,8 @@ function loadOtEntries() {
 }
 
 // -------------------------------------------------------- ส่งข้อมูล OT ไปยัง GAS --------------------------------------------------------
+
+
 async function saveOTToGAS(data) {
     // เพิ่มข้อมูลผู้ใช้
     data.userName = localStorage.getItem("name") || "unknown";
@@ -106,9 +137,7 @@ async function saveOTToGAS(data) {
             body: JSON.stringify(data)
         });
         // ล้างสถานะเริ่มงาน
-        localStorage.removeItem("otStartData");
-        otStartTime = null;
-        otEndTime = null;
+            resetOTState();
 
         Swal.close();
         Swal.fire({
@@ -206,6 +235,14 @@ async function submitOTEntry({ startTime, endTime, autoClosed = false, note = ""
 
     const now = new Date();
     const ref = generateReference(now);
+
+    if (isDuplicateOT(ref)) {
+        resetOTState();
+    Swal.fire("แจ้งเตือน", "มีการลงเวลานอกเวลาซ้ำแล้ว", "warning");
+    return;
+}
+
+saveReference(ref);
 
     const data = {
         rate: rate,
@@ -908,5 +945,6 @@ async function loadOtConfigByRefid() {
     console.error("โหลด OT config ไม่สำเร็จ:", error);
   }
 }
+
 
 // ------------------------------------------- END OF FILE ---------------------------------------------
