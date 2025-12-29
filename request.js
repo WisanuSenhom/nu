@@ -323,7 +323,7 @@ function checkin() {
                     
                             try {
                                       if (iconx === "success" && typea === "วันหยุด") {
-        sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        sendOffDayReport( 'In', uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
         boss, ceo, latitude, longitude, typea, nte,  todayx,
         refid, token, job, docno, secureCode, chatId);
       } else {
@@ -506,7 +506,7 @@ function checkout() {
                     
                             try {
                                       if (iconx === "success" && typea === "วันหยุด") {
-        sendOffDayReport( ctype, uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
+        sendOffDayReport( "Out", uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
         boss, ceo, latitude, longitude, typea, nte,  todayx,
         refid, token, job, docno, secureCode, chatId);
       } else {
