@@ -631,6 +631,8 @@ function logupdate() {
   Swal.fire({
     title: "การปรับปรุงล่าสุด",
     html:
+         "<strong>25 ธ.ค. 2568</strong><br>" +
+      "เพิ่มระบบบันทึกปฏิบัติงานนอกเวลา) <br><br>" +
       "<strong>16 พ.ค. 2568</strong><br>" +
       "แยก API ในการบันทึก (3 API) <br><br>" +
       "<strong>5 ก.พ. 2568</strong><br>" +
