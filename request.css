@@ -148,6 +148,7 @@ h4 {
   font-size: 1em;
   color: #fff;
   font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .btn2 {
@@ -319,3 +320,41 @@ h4 {
             align-items: center;
             width: 100%;
         }
+
+
+
+#ExitBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #212529; /* ตัวอักษรสีเข้ม อ่านชัด */
+  background-color: #ffc107; /* เหลือง */
+  border: none;
+  border-radius: 6px;
+
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+#ExitBtn i {
+  font-size: 13px;
+}
+
+#ExitBtn:hover {
+  background-color: #e0a800; /* เหลืองเข้ม */
+  transform: translateY(-1px);
+}
+
+#ExitBtn:active {
+  transform: scale(0.96);
+}
+
+#ExitBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.45);
+}
