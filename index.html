@@ -162,10 +162,49 @@
             <option value="อื่นๆ">อื่นๆ (โปรดระบุรายละเอียด)</option>
           </select>
 
-          <div id="otherInput">
+          <div id="otherInput" style="display:none">
             <label for="otherDetails"><i class="fas fa-info-circle"></i> รายละเอียดเพิ่มเติม:</label>
-            <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" />
+            <input type="text" id="otherDetails" name="OtherDetails" placeholder="ระบุรายละเอียดเพิ่มเติม" list="other-suggestions" autofocus />
 
+<datalist id="other-suggestions">
+
+  <!-- ปกติ -->
+  <option value="ปฏิบัติงานประจำที่สำนักงาน/หน่วยงาน">
+  <option value="ทำงานเอกสาร/จัดทำรายงาน">
+  <option value="ประชุมภายในหน่วยงาน">
+  <option value="ประสานงานกับทีม/เจ้าหน้าที่อื่น">
+  <option value="ตรวจสอบข้อมูลและสถิติ">
+
+  <!-- นอกสถานที่ -->
+  <option value="ลงพื้นที่ชุมชน/บ้านผู้ป่วย">
+  <option value="ติดตามผู้ป่วยหรือผู้สูงอายุที่บ้าน">
+  <option value="ให้บริการฉีดวัคซีน/ตรวจสุขภาพประชาชน">
+  <option value="ร่วมงานรณรงค์สุขภาพ/โครงการสาธารณสุข">
+  <option value="เข้าร่วมปฏิบัติการควบคุมโรคระบาด">
+  <option value="ช่วยเหลือผู้ป่วยฉุกเฉิน">
+  <option value="พื้นที่ชายแดน/หมู่บ้านห่างไกล">
+  <option value="ตรวจสอบ/แจกเวชภัณฑ์ฉุกเฉิน">
+
+  <!-- วันหยุด -->
+   <option value="ปฏิบัติหน้าที่เวรในวันหยุด">
+  <option value="ปฏิบัติหน้าที่เวร On-call ช่วงวันหยุด">
+  <option value="ช่วยเหลือเหตุฉุกเฉินหรือภัยพิบัติ">
+  <option value="ติดประชุม/อบรมวันหยุด">
+  <option value="ออกตรวจเยี่ยมผู้ป่วย/ชุมชนในวันหยุด">
+
+  <!-- ไปราชการ -->
+  <option value="เข้าร่วมประชุม/อบรม/สัมมนา">
+  <option value="ไปราชการตามคำสั่งหัวหน้า">
+  <option value="ไปยื่นเอกสารราชการ/ธนาคาร">
+  <option value="ประชุมร่วมกับหน่วยงานอื่น">
+  <option value="อบรม/ฝึกซ้อมสถานการณ์ฉุกเฉิน">
+
+  <!-- อื่นๆ -->
+  <option value="เหตุผลส่วนตัว/ครอบครัว">
+  <option value="งานพิเศษหรือโครงการเฉพาะ">
+  <option value="งานภารกิจชั่วคราว/พิเศษที่ได้รับมอบหมาย">
+
+</datalist>
             <input type="text" id="llat" name="llat" placeholder="ละติจูด" hidden />
             <input type="text" id="llon" name="llon" placeholder="ลองจิจูด" hidden />
           </div>
@@ -576,13 +615,14 @@
   </div>
       <!-- tap end -->
 
+<!-- แถบปุ่ม -->
   <div id="trackerContent" class="tracker-bar">
     <button id="startBtn" type="button" onclick="checkin()"><i class="fas fa-sign-in-alt"></i> มา</button>
     <button id="requestBtn" type="button" onclick="window.location.href='request.html'"><i class="fas fa-file-alt"></i> คำขอ</button>
     <button id="statusBtn" type="button" onclick="checkinfo()"><i class="fas fa-check-circle"></i> สถานะ</button>
     <button id="endBtn" type="button" onclick="checkout()"><i class="fas fa-sign-out-alt"></i> กลับ</button>
     <button id="imapBtn" type="button" onclick="refreshMap()"><i class="fa-solid fa-location-dot"></i> พิกัด</button>
-     <!-- <button id="requestBtn" type="button" onclick="sendOffDayReport()"><i class="fa-solid fa-location-dot"></i> ทดสอบ function</button> -->
+     <!-- <button id="requestBtn" type="button" onclick="clearOffDayIfExceedLimit()"><i class="fa-solid fa-code"></i></i> ทดสอบ function</button> -->
   </div>
 
   <!-- Modal OT -->
@@ -715,11 +755,26 @@
 
   <script>
     // Handle "Other" option in select dropdown
-    function handleOtherOption() {
-      const select = document.getElementById("typea");
-      const otherInput = document.getElementById("otherInput");
-      otherInput.style.display = select.value !== "ปกติ" ? "block" : "none";
+ const select = document.getElementById("typea");
+  const otherInput = document.getElementById("otherInput");
+
+  let otherShown = false; // ตัวแปรเก็บว่าเคยเปิดแล้วหรือยัง
+
+  function handleOtherOption() {
+    const value = select.value;
+
+    if (value !== "ปกติ" || otherShown) {
+      otherInput.style.display = "block"; // แสดงทันที
+      otherShown = true; // บันทึกว่าเคยเปิดแล้ว
+    } else {
+      otherInput.style.display = "none"; // ซ่อนเฉพาะตอนเริ่มต้น
     }
+  }
+
+  // ค่าเริ่มต้น
+  document.addEventListener("DOMContentLoaded", () => {
+    otherInput.style.display = "none"; // เริ่มต้นซ่อน
+  });
 
     // Time-based button visibility
     let publicHolidays = [];
