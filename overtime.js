@@ -172,12 +172,11 @@ function updateOtReport() {
     }
 
     // สร้าง array ของ row
-    const data = window.otEntries.map((entry, i) => {
+    const data = window.otEntries.map((entry) => {
         let statusColor = entry.status === "สำเร็จ" ? "text-success" :
                           entry.status === "ผิดพลาด" ? "text-danger" : "text-secondary";
 
         return [
-            // i + 1,
             entry.date || "-",
             entry.start || "-",
             entry.end || "-",
@@ -193,20 +192,19 @@ function updateOtReport() {
     $("#otReport").DataTable({
         data: data,
         columns: [
-            // { title: "ลำดับ" },
             { title: "วันที่" },
             { title: "เริ่ม" },
-            { title: "สิ้นสุด" },
+            { title: "สิ้นสุด" }, 
             { title: "ระยะเวลา" },
             { title: "สถานะ" },
             { title: "หมายเหตุ" },
             { title: "อ้างอิง" },
             { title: "Stamp" }
         ],
-                language: {
+        language: {
             url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
         },
-        order: [[0, "desc"], [1, "desc"]], // เรียงวันที่+เวลา ใหม่→เก่า
+        order: [[0, "desc"], [1, "desc"]],
         pageLength: 30,
         lengthMenu: [
             [10, 30, 50, 100, 150, -1],
@@ -214,7 +212,164 @@ function updateOtReport() {
         ],
         responsive: true,
         dom: "lBfrtip",
+        select: { style: "multi" },
+        buttons: [
+            {
+                extend: "copy",
+                text: "คัดลอก",
+                className: "btn btn-secondary",
+                exportOptions: {
+                    columns: [0,1,2,3,4,5,6,7]
+                }
+            },
+            {
+                extend: "excel",
+                text: "ส่งออก Excel",
+                className: "btn btn-success",
+                exportOptions: {
+                    columns: [0,1,2,3,4,5,6,7]
+                }
+            },
+            {
+                text: "🗑️ ลบรายการที่เลือก",
+                className: "btn btn-danger",
+                action: async function (e, dt) {
+                    const rows = dt.rows({ selected: true });
+
+                    if (!rows.any()) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "ยังไม่ได้เลือกรายการ",
+                            text: "กรุณาเลือกรายการ OT ที่ต้องการลบ"
+                        });
+                        return;
+                    }
+
+                    const rowData = rows.data().toArray();
+
+                    // 🔥 รับค่า reference จาก column index 6
+                    const references = rowData
+                        .map(r => r[6])
+                        .filter(r => r && r !== "-");
+
+                    if (!references.length) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "ข้อมูลไม่สมบูรณ์",
+                            text: "ไม่พบค่าอ้างอิงสำหรับลบข้อมูล"
+                        });
+                        return;
+                    }
+
+                    // 🔥 แสดง reference ใน Swal
+                    const listHtml = references
+                        .map((ref, i) => `<div>${i + 1}. ${ref}</div>`)
+                        .join("");
+
+                    const confirm = await Swal.fire({
+                        icon: "warning",
+                        title: "ยืนยันการลบข้อมูล",
+                        html: `
+                            <p>คุณต้องการลบข้อมูล OT <b>${references.length}</b> รายการ</p>
+                            <hr>
+                            <div style="text-align:left;font-size:0.9em">
+                                <b>อ้างอิง:</b>
+                                ${listHtml}
+                            </div>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonText: "ยกเลิก",
+                        confirmButtonText: "ลบข้อมูล"
+                    });
+
+                    if (!confirm.isConfirmed) return;
+
+                    try {
+                        Swal.fire({
+                            title: "กำลังลบข้อมูล...",
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+
+                        // 🔥 ลบใน GAS โดยใช้ reference
+                        for (const reference of references) {
+                            await deleteOtInGAS(reference);
+                        }
+
+                        // 🔥 ลบใน localStorage
+                        window.otEntries = window.otEntries.filter(
+                            e => !references.includes(e.reference)
+                        );
+                        localStorage.setItem(
+                            "otEntries",
+                            JSON.stringify(window.otEntries)
+                        );
+
+                        // 🔥 ลบแถวใน DataTable
+                        rows.remove().draw(false);
+
+                        Swal.fire({
+                            icon: "success",
+                            title: "ลบข้อมูลสำเร็จ",
+                            timer: 1800,
+                            showConfirmButton: false
+                        });
+
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire({
+                            icon: "error",
+                            title: "เกิดข้อผิดพลาด",
+                            text: "ไม่สามารถลบข้อมูลได้"
+                        });
+                    }
+                }
+            }
+        ]
     });
+}
+
+// เพิ่มที่ส่วนบนของ updateOtReport
+const WEB_OT_APP_URL = 'https://script.google.com/macros/s/AKfycbwEK18vinrHl_1BQNoHB5buRDw_d1Sn2L73cj4YyD8255nnqWDRE4KJIzGNqzWGkjs3/exec';
+
+async function deleteHOLIDAYInGAS(reference) {
+    try {
+        console.log('กำลังลบข้อมูล reference:', reference);
+        
+        // ใช้ timeout เพื่อป้องกัน quota
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const response = await fetch(WEB_OT_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'deleteOt',
+                reference: reference
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('ผลลัพธ์จากการลบ:', result);
+        
+        if (result.success) {
+            alert('ลบข้อมูลสำเร็จ: ' + result.message);
+            return true;
+        } else {
+            throw new Error('ลบข้อมูลไม่สำเร็จ: ' + result.message);
+        }
+        
+    } catch (error) {
+        console.error('ลบข้อมูลไม่สำเร็จ:', error);
+        alert('ลบข้อมูลไม่สำเร็จ: ' + error.message);
+        throw error;
+    }
 }
 
 
