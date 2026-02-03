@@ -454,12 +454,60 @@ L.control.layers(baseMaps).addTo(map);
   }
 }
 
+/* ================== ตัวช่วยอ่านตัวเลขจาก localStorage ================== */
+function getNumber(key) {
+  const value = localStorage.getItem(key);
+  return value !== null ? Number(value) : NaN;
+}
+
+/* ================== ดึงพิกัดปัจจุบัน (GPS → fallback localStorage) ================== */
+async function getCurrentLatLon() {
+  try {
+    const location = await getLocation(); // ต้องมีอยู่แล้วในระบบคุณ
+    const lat = Number(location.latitude);
+    const lon = Number(location.longitude);
+
+    if (isNaN(lat) || isNaN(lon)) {
+      throw new Error("พิกัด GPS ไม่ถูกต้อง");
+    }
+
+    localStorage.setItem("mylat", lat);
+    localStorage.setItem("mylon", lon);
+    console.log("📍 ใช้พิกัดจาก GPS");
+
+    return { lat, lon };
+
+  } catch (error) {
+    console.warn("⚠️ GPS ใช้งานไม่ได้ → ใช้ localStorage");
+
+    const lat = getNumber("mylat");
+    const lon = getNumber("mylon");
+
+    if (isNaN(lat) || isNaN(lon)) {
+      throw new Error("ไม่มีพิกัดสำรองใน localStorage");
+    }
+
+    console.log("📦 ใช้พิกัดจาก localStorage");
+    return { lat, lon };
+  }
+}
+
+/* ================== ป้องกันเรียกซ้ำ ================== */
+let mapLoading = false;
+
+/* ================== ฟังก์ชันหลัก ================== */
 async function checkonmap() {
+  if (mapLoading) return;
+  mapLoading = true;
+
   const mapContainer = document.getElementById("map");
-  if (!mapContainer) return;
+  if (!mapContainer) {
+    mapLoading = false;
+    return;
+  }
 
+  // แสดง Loading
   mapContainer.innerHTML = "";
-
   const loadingText = document.createElement("p");
   loadingText.textContent = "กำลังโหลดแผนที่...";
   loadingText.style.textAlign = "center";
@@ -467,49 +515,30 @@ async function checkonmap() {
   mapContainer.appendChild(loadingText);
 
   try {
-    let lat, lon;
+    // ===== 1) พิกัดปัจจุบัน =====
+    const { lat, lon } = await getCurrentLatLon();
 
-    // ================== 1) พยายามดึง GPS ใหม่ ==================
-    try {
-      const location = await getLocation();
-      lat = Number(location.latitude);
-      lon = Number(location.longitude);
-
-      if (!isNaN(lat) && !isNaN(lon)) {
-        localStorage.setItem("mylat", lat);
-        localStorage.setItem("mylon", lon);
-        console.log("📍 ใช้พิกัดจาก GPS");
-      } else {
-        throw new Error("GPS invalid");
-      }
-    } catch (gpsError) {
-      console.warn("⚠️ ไม่สามารถดึง GPS ได้ ใช้ค่าจาก localStorage แทน");
-
-      // ================== 2) fallback ไปใช้ localStorage ==================
-      lat = Number(localStorage.getItem("mylat"));
-      lon = Number(localStorage.getItem("mylon"));
-
-      if (isNaN(lat) || isNaN(lon)) {
-        throw new Error("ไม่มีพิกัดสำรองใน localStorage");
-      }
-
-      console.log("📦 ใช้พิกัดจาก localStorage");
-    }
-
-    // ================== จุดหมาย ==================
-    const destinationLat = Number(localStorage.getItem("oflat"));
-    const destinationLon = Number(localStorage.getItem("oflong"));
+    // ===== 2) พิกัดหน่วยงาน =====
+    const destinationLat = getNumber("oflat");
+    const destinationLon = getNumber("oflong");
     const officer = localStorage.getItem("office") || "หน่วยงาน";
 
     if (isNaN(destinationLat) || isNaN(destinationLon)) {
       throw new Error("พิกัดหน่วยงานไม่ถูกต้อง");
     }
 
-    mapContainer.innerHTML = "";
+    // ลบ loading
+    loadingText.remove();
 
-    // ================== แสดงแผนที่ ==================
-    displayLatLon(lat, lon);
-    initializeMap(lat, lon, destinationLat, destinationLon, officer);
+    // ===== 3) แสดงแผนที่ =====
+    displayLatLon(lat, lon); // ฟังก์ชันของคุณ
+    initializeMap(
+      lat,
+      lon,
+      destinationLat,
+      destinationLon,
+      officer
+    );
 
   } catch (error) {
     console.error("❌ โหลดแผนที่ล้มเหลว:", error);
@@ -520,9 +549,12 @@ async function checkonmap() {
         <small>${error.message}</small>
       </p>
     `;
+  } finally {
+    mapLoading = false;
   }
 }
 
+/* ================== เรียกใช้งาน ================== */
 checkonmap();
 
 
@@ -2101,16 +2133,176 @@ function loadOffDayTable() {
       { data: "name", title: "ชื่อ" },
       { data: "office", title: "หน่วยงาน" },
       { data: "type", title: "ประเภท" },
-      { data: "note", title: "หมายเหตุ" }
+      { data: "note", title: "หมายเหตุ" },
+      { data: "ref", title: "อ้างอิง" }
     ],
-    order: [[0, "desc"]],
-    language: {
-      search: "ค้นหา:",
-      lengthMenu: "แสดง _MENU_ รายการ",
-      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
-      zeroRecords: "ไม่พบข้อมูล"
-    }
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.7/i18n/th.json",
+        },
+        order: [[0, "desc"], [1, "desc"]],
+        pageLength: 30,
+        lengthMenu: [
+            [10, 30, 50, 100, 150, -1],
+            [10, 30, 50, 100, 150, "ทั้งหมด"]
+        ],
+        responsive: true,
+        dom: "lBfrtip",
+        select: { style: "multi" },
+        buttons: [
+            {
+                extend: "copy",
+                text: "คัดลอก",
+                className: "btn btn-secondary",
+                exportOptions: {
+                    columns: [0,1,2,3,4,5]
+                }
+            },
+            {
+                extend: "excel",
+                text: "ส่งออก Excel",
+                className: "btn btn-success",
+                exportOptions: {
+                    columns: [0,1,2,3,4,5]
+                }
+            },
+            {
+                text: "🗑️ ลบรายการที่เลือก",
+                className: "btn btn-danger",
+action: async function (e, dt) {
+  const rows = dt.rows({ selected: true });
+
+  if (!rows.any()) {
+    Swal.fire({
+      icon: "warning",
+      title: "ยังไม่ได้เลือกรายการ",
+      text: "กรุณาเลือกรายการที่ต้องการลบ"
+    });
+    return;
+  }
+
+  const rowData = rows.data().toArray();
+
+  // ✅ ดึง ref จาก object
+  const references = rowData
+    .map(r => r.ref)
+    .filter(r => r && r !== "-");
+
+  if (!references.length) {
+    Swal.fire({
+      icon: "error",
+      title: "ข้อมูลไม่สมบูรณ์",
+      text: "ไม่พบค่าอ้างอิงสำหรับลบข้อมูล"
+    });
+    return;
+  }
+
+  const listHtml = references
+    .map((ref, i) => `<div>${i + 1}. ${ref}</div>`)
+    .join("");
+
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "ยืนยันการลบข้อมูล",
+    html: `
+      <p>คุณต้องการลบข้อมูล <b>${references.length}</b> รายการ</p>
+      <hr>
+      <div style="text-align:left;font-size:0.9em">
+        <b>อ้างอิง:</b>
+        ${listHtml}
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonText: "ยกเลิก",
+    confirmButtonText: "ลบข้อมูล"
   });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    Swal.fire({
+      title: "กำลังลบข้อมูล...",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    for (const reference of references) {
+      await deleteHOLIDAYInGAS(reference);
+    }
+
+    // ลบ localStorage
+  try {
+    let offDaySuccessLogs = JSON.parse(localStorage.getItem('offDaySuccessLogs') || '[]');
+    const updatedLogs = offDaySuccessLogs.filter(log => !references.includes(log.ref));
+    localStorage.setItem('offDaySuccessLogs', JSON.stringify(updatedLogs));
+} catch (localStorageErr) {
+    console.warn('ไม่สามารถลบข้อมูลจาก localStorage ได้:', localStorageErr);
+}
+
+    rows.remove().draw(false);
+
+    Swal.fire({
+      icon: "success",
+      title: "ลบข้อมูลสำเร็จ",
+      timer: 1500,
+      showConfirmButton: false
+    });
+
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: "error",
+      title: "เกิดข้อผิดพลาด",
+      text: "ไม่สามารถลบข้อมูลได้"
+    });
+  }
+}
+
+            }
+        ]
+    });
+}
+
+// เพิ่มที่ส่วนบนของ updateOtReport
+const WEB_HOLIDAY_APP_URL = 'https://script.google.com/macros/s/AKfycbwpnJlFwwaVGinRKhDy2RuvfgheijVt3F_r4epkOJx0nWH8jm4hfCsTHMYlUkxDm0BTEw/exec';
+
+async function deleteHOLIDAYInGAS(reference) {
+    try {
+        console.log('กำลังลบข้อมูล reference:', reference);
+        
+        // ใช้ timeout เพื่อป้องกัน quota
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const response = await fetch(WEB_HOLIDAY_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                action: 'deleteOt',
+                reference: reference
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('ผลลัพธ์จากการลบ:', result);
+        
+        if (result.success) {
+            alert('ลบข้อมูลสำเร็จ: ' + result.message);
+            return true;
+        } else {
+            throw new Error('ลบข้อมูลไม่สำเร็จ: ' + result.message);
+        }
+        
+    } catch (error) {
+        console.error('ลบข้อมูลไม่สำเร็จ:', error);
+        alert('ลบข้อมูลไม่สำเร็จ: ' + error.message);
+        throw error;
+    }
 }
 
 
@@ -2122,6 +2314,7 @@ function saveSuccessLog(payload) {
     office: payload.office || "",
     type: payload.typea || "",
     note: payload.nte || "",
+    ref: payload.reference || "",
     savedAt: new Date().toISOString()
   });
 }
@@ -2178,12 +2371,12 @@ async function saveOffDayToGAS(payload) {
   }
 
   if (!payload.name) {
-    Swal.fire("ไม่พบข้อมูล", "ไม่พบชื่อผู้ปฏิบัติงาน", "warning");
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบข้อมูล", "warning");
     return;
   }
 
   if (!payload.todayx) {
-    Swal.fire("ไม่พบข้อมูล", "ไม่พบวันที่ลงเวลา", "warning");
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบข้อมูล", "warning");
     return;
   }
 
@@ -2206,7 +2399,7 @@ async function saveOffDayToGAS(payload) {
   const ref = generateReferenceH(new Date(), payload.ctype);
 
   if (isDuplicateOT(ref)) {
-    resetOTState();
+    // resetOTState();
     Swal.fire("แจ้งเตือน", "มีการลงเวลานอกเวลาในวันหยุดซ้ำแล้ว", "warning");
     return;
   }
