@@ -260,6 +260,7 @@ function checkin() {
         let todays = new Date();
         todays.toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })
         let todayx = todays.toLocaleTimeString('th-TH');
+        
         let dt = document.getElementById("daytime").value;
         if (nte === null || nte === 0 || nte.length < 2) {
             Swal.fire({
@@ -308,38 +309,45 @@ function checkin() {
                         allowOutsideClick: false
                     }).then((result) => {
                         // ตรวจสอบว่าผู้ใช้กดปุ่มตกลงหรือไม่
-                        if (result.isConfirmed) {
-                            // กระทำที่ต้องการทำหลังจากกดปุ่มตกลง
-                            if (iconx === 'success') {
-                                const cktoday = new Date();
-                                const ckfd = cktoday.toLocaleDateString('th-TH'); // รูปแบบวันที่แบบไทย
-                                const hours = cktoday.getHours().toString().padStart(2, '0');
-                                const minutes = cktoday.getMinutes().toString().padStart(2, '0');
-                                const seconds = cktoday.getSeconds().toString().padStart(2, '0');
-                                const ckfdtime = `${hours}:${minutes}:${seconds}`;
-                                localStorage.setItem("datecheck", ckfd);
-                                localStorage.setItem("datetimecheck", ckfdtime);
-                            }
-                    
-                            try {
-                                      if (iconx === "success" && typea === "วันหยุด") {
-        sendOffDayReport( 'In', uuid, cidhash, userid, name, mainsub, office, latx, longx, db1,
-        boss, ceo, latitude, longitude, typea, nte,  todayx,
-        refid, token, job, docno, secureCode, chatId);
-      } else {
-        window.close();
-        liff.closeWindow();
-      }
-                            } catch (error) {
-                                console.error("Failed to close window, refreshing...");
-                                location.reload(); // รีเฟรชหน้า
-                            }
-                    
-                            // Use a timeout to refresh the page after trying to close the window
-                            setTimeout(() => {
-                                location.reload();  // Refresh if liff.closeWindow() does not work
-                            }, 500);  // Adjust the delay time as needed (500ms in this case)
-                        }
+if (!result.isConfirmed) return;
+
+// บันทึกวันเวลาเมื่อ success
+if (iconx === "success") {
+  const now = new Date();
+  localStorage.setItem(
+    "datecheck",
+    now.toLocaleDateString("th-TH")
+  );
+  localStorage.setItem(
+    "datetimecheck",
+    now.toTimeString().slice(0, 8)
+  );
+}
+
+try {
+  // กรณีวันหยุด → ส่งรายงาน
+  if (iconx === "success" && typea === "วันหยุด") {
+    sendOffDayReport(
+      "In", uuid, cidhash, userid, name, mainsub, office,
+      latx, longx, db1, boss, ceo,
+      latitude, longitude, typea, nte, todayx = dt,
+      refid, token, job, docno
+    );
+    return;
+  }
+
+  // กรณีทั่วไป → ปิด LIFF
+  if (window.liff) {
+    liff.closeWindow();
+  } else {
+    window.close();
+  }
+
+} catch (err) {
+  console.error("Close window failed:", err);
+  setTimeout(() => location.reload(), 500);
+}
+
                     });
 
                     // ---
@@ -472,7 +480,6 @@ function checkout() {
        //     console.log(dt);
             let urlout = 'https://script.google.com/macros/s/AKfycbyziNGhQaE2jRgi8LZTDhqOWiWyOV0k9zP9kSK8ontoKM1_oSQZsUSlb9JZP7-cN0UdlA/exec';
             let prmout = `?ctype=Out&uuid=${uuid}&cidhash=${cidhash}&userid=${userid}&name=${name}&mainsub=${mainsub}&office=${office}&latx=${latx}&longx=${longx}&db1=${db1}&boss=${boss}&ceo=${ceo}&lat=${latitude}&long=${longitude}&typea=${typea}&nte=${nte}&stampx=${todayx}&refid=${refid}&dt=${dt}&token=${token}&job=${job}&docno=${docno}`;
-            console.log(urlout + prmout);
             await fetch(urlout + prmout)
                 .then(response => response.json())
                 .then(data => {
@@ -1581,7 +1588,7 @@ function formatOtTime(date) {
 
 
 // อ้างอิง
-function generateReferenceH(dateObj = new Date(),  ctype) {
+function generateReferenceH(dateObj = today,  ctype) {
     const refid = localStorage.getItem("refid") || "NOID";
 
     const yyyy = dateObj.getFullYear();
@@ -1607,36 +1614,6 @@ function saveReference(reference) {
     localStorage.setItem("otReferences", JSON.stringify(usedRefs));
 }
 
-
-// ===================== DATATABLE =====================
-function loadOffDayTable() {
-  const data = getArray(SUCCESS_KEY);
-
-  if (offDayTable) {
-    offDayTable.clear().rows.add(data).draw();
-    return;
-  }
-
-  offDayTable = $("#offDayTable").DataTable({
-    data,
-    columns: [
-      { data: "date", title: "วันที่" },
-      { data: "name", title: "ชื่อ" },
-      { data: "office", title: "หน่วยงาน" },
-      { data: "type", title: "ประเภท" },
-      { data: "note", title: "หมายเหตุ" }
-    ],
-    order: [[0, "desc"]],
-    language: {
-      search: "ค้นหา:",
-      lengthMenu: "แสดง _MENU_ รายการ",
-      info: "แสดง _START_ ถึง _END_ จาก _TOTAL_ รายการ",
-      zeroRecords: "ไม่พบข้อมูล"
-    }
-  });
-}
-
-
 // ===================== SAVE SUCCESS LOG =====================
 function saveSuccessLog(payload) {
   addToArray(SUCCESS_KEY, {
@@ -1645,6 +1622,7 @@ function saveSuccessLog(payload) {
     office: payload.office || "",
     type: payload.typea || "",
     note: payload.nte || "",
+    ref: payload.reference || "",
     savedAt: new Date().toISOString()
   });
 }
@@ -1701,12 +1679,12 @@ async function saveOffDayToGAS(payload) {
   }
 
   if (!payload.name) {
-    Swal.fire("ไม่พบข้อมูล", "ไม่พบชื่อผู้ปฏิบัติงาน", "warning");
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบข้อมูล", "warning");
     return;
   }
 
   if (!payload.todayx) {
-    Swal.fire("ไม่พบข้อมูล", "ไม่พบวันที่ลงเวลา", "warning");
+    Swal.fire("ไม่พบข้อมูล", "ไม่พบข้อมูล", "warning");
     return;
   }
 
@@ -1726,10 +1704,10 @@ async function saveOffDayToGAS(payload) {
   const timeEnd = payload.ctype !== "In" ? formatOtTime(today) : "";
 
   // ================== Generate reference ==================
-  const ref = generateReferenceH(new Date(), payload.ctype);
+  const ref = generateReferenceH(today, payload.ctype);
 
   if (isDuplicateOT(ref)) {
-    resetOTState();
+    // resetOTState();
     Swal.fire("แจ้งเตือน", "มีการลงเวลานอกเวลาในวันหยุดซ้ำแล้ว", "warning");
     return;
   }
@@ -1796,6 +1774,9 @@ async function saveOffDayToGAS(payload) {
     Swal.fire("เกิดข้อผิดพลาด", err.message || "ไม่สามารถส่งข้อมูลได้", "error");
   }
 }
+
+
+
 
 
 
