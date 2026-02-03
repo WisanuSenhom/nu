@@ -2268,39 +2268,48 @@ const WEB_HOLIDAY_APP_URL = 'https://script.google.com/macros/s/AKfycbwpnJlFwwaV
 
 async function deleteHOLIDAYInGAS(reference) {
     try {
-        console.log('กำลังลบข้อมูล reference:', reference);
+        // ใช้ setTimeout เพื่อหลีกเลี่ยงปัญหา Quota
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // สร้าง URL พร้อม query parameters สำหรับ GET
+        const url = `${WEB_HOLIDAY_APP_URL}?action=deleteOt&reference=${encodeURIComponent(reference)}`;
         
-        // ใช้ timeout เพื่อป้องกัน quota
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        const response = await fetch(WEB_HOLIDAY_APP_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: 'deleteOt',
-                reference: reference
-            })
+        const response = await fetch(url, {
+            method: 'GET',
+            // mode: 'no-cors', // ถ้าใช้ no-cors ต้องระวังเรื่องการอ่าน response
         });
         
-        if (!response.ok) {
+        // ถ้าไม่ได้ใช้ no-cors สามารถอ่าน response ได้
+        if (response.ok) {
+            const result = await response.json();
+            return result.success;
+        } else {
+            console.error('ลบข้อมูลไม่สำเร็จ:', response.status);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
-        const result = await response.json();
-        console.log('ผลลัพธ์จากการลบ:', result);
-        
-        if (result.success) {
-            alert('ลบข้อมูลสำเร็จ: ' + result.message);
-            return true;
-        } else {
-            throw new Error('ลบข้อมูลไม่สำเร็จ: ' + result.message);
-        }
-        
     } catch (error) {
         console.error('ลบข้อมูลไม่สำเร็จ:', error);
-        alert('ลบข้อมูลไม่สำเร็จ: ' + error.message);
+        throw error;
+    }
+}
+
+// หรือถ้าต้องการใช้ no-cors (แต่จะอ่าน response ไม่ได้)
+async function deleteHOLIDAYInGAS_NoCors(reference) {
+    try {
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const url = `${WEB_HOLIDAY_APP_URL}?action=deleteOt&reference=${encodeURIComponent(reference)}`;
+        
+        // ใช้ no-cors แต่จะอ่าน response ไม่ได้
+        await fetch(url, {
+            method: 'GET',
+            mode: 'no-cors'
+        });
+        
+        // สมมติว่าสำเร็จเนื่องจากใช้ no-cors
+        return true;
+    } catch (error) {
+        console.error('ลบข้อมูลไม่สำเร็จ:', error);
         throw error;
     }
 }
